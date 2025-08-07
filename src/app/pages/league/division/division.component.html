@@ -1,0 +1,110 @@
+<div class="division-container" *ngIf="division" [style.--division-color]="division.color">
+  <!-- Division Header -->
+  <section class="division-header">
+    <div class="header-content">
+      <div class="breadcrumb">
+        <a routerLink="/league">League</a> / Division {{ division.romanNumeral }}
+      </div>
+      
+      <div class="division-title-section">
+        <div class="division-badge">
+          <span class="roman-numeral">{{ division.romanNumeral }}</span>
+        </div>
+        <div class="title-content">
+          <h1 class="division-title">{{ division.name }}</h1>
+          <p class="division-subtitle">{{ division.description }}</p>
+        </div>
+      </div>
+
+      <div class="division-stats-bar">
+        <div class="stat-item">
+          <span class="stat-value">{{ division.teamCount }}</span>
+          <span class="stat-label">Teams</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ currentWeek }}/{{ totalWeeks }}</span>
+          <span class="stat-label">Weeks</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ totalWeeks - currentWeek }}</span>
+          <span class="stat-label">Remaining</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">ALGS</span>
+          <span class="stat-label">Format</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Standings Table -->
+  <section class="standings-section">
+    <div class="standings-content">
+      <h2>Current Standings</h2>
+      
+      <div class="standings-table">
+        <div class="table-header">
+          <div class="rank-col">Rank</div>
+          <div class="team-col">Team</div>
+          <div class="points-col">Points</div>
+          <div class="wins-col">Wins</div>
+          <div class="games-col">Games</div>
+          <div class="kills-col">Kills</div>
+          <div class="trend-col">Trend</div>
+        </div>
+        
+        <div class="table-body">
+          <div class="team-row" *ngFor="let team of teams; let i = index">
+            <div class="rank-col">
+              <span class="rank-number" [class]="'rank-' + (i + 1)">{{ i + 1 }}</span>
+            </div>
+            <div class="team-col">
+              <span class="team-name">{{ team.name }}</span>
+            </div>
+            <div class="points-col">
+              <span class="points-value">{{ team.points }}</span>
+            </div>
+            <div class="wins-col">{{ team.wins }}</div>
+            <div class="games-col">{{ team.gamesPlayed }}</div>
+            <div class="kills-col">{{ team.kills }}</div>
+            <div class="trend-col">
+              <span class="trend-indicator" [class]="getTrendClass(team.trend)">
+                {{ getTrendIcon(team.trend) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Division Info -->
+  <section class="info-section">
+    <div class="info-content">
+      <div class="info-grid">
+        <div class="info-card">
+          <h3>Season Format</h3>
+          <p>5 weeks of regular season play followed by Match Point Finals. Teams earn points based on placement and eliminations using ALGS scoring.</p>
+        </div>
+        <div class="info-card">
+          <h3>Promotion/Relegation</h3>
+          <p>Top 3 teams advance to higher division. Bottom 3 teams may be relegated to lower division based on performance.</p>
+        </div>
+        <div class="info-card">
+          <h3>Match Schedule</h3>
+          <p>Weekly matches every Sunday. Each team plays multiple games per week with points accumulated across all matches.</p>
+        </div>
+        <div class="info-card">
+          <h3>Finals Qualification</h3>
+          <p>All teams qualify for their division finals. Match Point format determines the division champion.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="error-container" *ngIf="!division">
+  <h2>Division Not Found</h2>
+  <p>The requested division could not be found.</p>
+  <a routerLink="/league" class="back-link">← Back to League</a>
+</div>
