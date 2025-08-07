@@ -19,10 +19,16 @@
   font-size: 4rem;
   font-weight: 900;
   margin: 0 0 1rem 0;
+  /* Fallback color in case gradient doesn't work */
+  color: var(--color-text-primary);
   background: linear-gradient(45deg, var(--color-accent-primary), var(--color-accent-secondary));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  /* Support for browsers that don't support background-clip: text */
+  @supports not (background-clip: text) {
+    color: var(--color-text-primary);
+  }
 }
 
 .hero-subtitle {
@@ -109,10 +115,16 @@
   font-size: 2.5rem;
   font-weight: 900;
   margin: 0 0 0.5rem 0;
+  /* Fallback color in case gradient doesn't work */
+  color: var(--color-text-primary);
   background: linear-gradient(45deg, var(--color-accent-primary), var(--color-accent-secondary));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  /* Support for browsers that don't support background-clip: text */
+  @supports not (background-clip: text) {
+    color: var(--color-text-primary);
+  }
 }
 
 .stat-card p {
@@ -121,6 +133,104 @@
   font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 1px;
+  font-weight: 500;
+}
+
+/* Detailed Stats Section */
+.detailed-stats {
+  padding: 4rem 2rem;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.stats-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.stats-content h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: var(--color-text-primary);
+  font-weight: 700;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+.stats-category {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.stats-category:hover {
+  transform: translateY(-5px);
+  border-color: var(--color-accent-primary);
+  box-shadow: 0 10px 40px rgba(255, 44, 92, 0.15);
+}
+
+.stats-category h3 {
+  font-size: 1.75rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: var(--color-text-primary);
+  font-weight: 600;
+  position: relative;
+}
+
+.stats-category h3::after {
+  content: '';
+  position: absolute;
+  bottom: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(45deg, var(--color-accent-primary), var(--color-accent-secondary));
+  border-radius: 2px;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: scale(1.02);
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-accent-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
 }
 
 .features {
@@ -137,10 +247,17 @@
   text-align: center;
   font-size: 3rem;
   margin-bottom: 3rem;
+  font-weight: 700;
+  /* Fallback color in case gradient doesn't work */
+  color: var(--color-text-primary);
   background: linear-gradient(45deg, var(--color-text-primary), var(--color-accent-tertiary));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  /* Support for browsers that don't support background-clip: text */
+  @supports not (background-clip: text) {
+    color: var(--color-text-primary);
+  }
 }
 
 .features-grid {
@@ -170,6 +287,7 @@
   font-size: 1.5rem;
   margin-bottom: 1rem;
   color: var(--color-text-primary);
+  font-weight: 600;
 }
 
 .feature-card p {
@@ -191,6 +309,7 @@
   font-size: 2.5rem;
   margin-bottom: 3rem;
   color: var(--color-text-primary);
+  font-weight: 700;
 }
 
 .activity-feed {
@@ -226,6 +345,7 @@
   margin: 0 0 0.5rem 0;
   color: var(--color-text-primary);
   font-size: 1.125rem;
+  font-weight: 600;
 }
 
 .activity-details p {
@@ -249,6 +369,17 @@
   }
   .hero-content h1 {
     font-size: 3rem;
+  }
+  .detailed-stats {
+    padding: 3rem 1rem;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .stats-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
   .features {
     padding: 4rem 1rem;

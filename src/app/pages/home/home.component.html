@@ -18,15 +18,66 @@
       <div class="stats-preview">
         <div class="stat-card">
           <h3>{{ totalPlayers }}</h3>
-          <p>Active Players</p>
+          <p>Total Players</p>
         </div>
         <div class="stat-card">
           <h3>{{ totalGames }}</h3>
-          <p>Games Played</p>
+          <p>Total Games</p>
         </div>
         <div class="stat-card">
-          <h3>{{ totalKills }}</h3>
-          <p>Total Eliminations</p>
+          <h3>{{ totalMatches }}</h3>
+          <p>Total Matches</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Detailed Stats Section -->
+  <section class="detailed-stats">
+    <div class="stats-content">
+      <h2>VESA Statistics</h2>
+      <div class="stats-grid">
+        <div class="stats-category">
+          <h3>League Stats</h3>
+          <div class="stats-row">
+            <div class="stat-item">
+              <span class="stat-number">{{ leagueStats.matchesPlayed }}</span>
+              <span class="stat-label">Matches Played</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ leagueStats.gamesPlayed }}</span>
+              <span class="stat-label">Games Played</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ leagueStats.uniquePlayers }}</span>
+              <span class="stat-label">Unique Players</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ leagueStats.totalPlaytime }}</span>
+              <span class="stat-label">Total Playtime</span>
+            </div>
+          </div>
+        </div>
+        <div class="stats-category">
+          <h3>Scrims Stats</h3>
+          <div class="stats-row">
+            <div class="stat-item">
+              <span class="stat-number">{{ scrimsStats.matchesPlayed }}</span>
+              <span class="stat-label">Matches Played</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ scrimsStats.gamesPlayed }}</span>
+              <span class="stat-label">Games Played</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ scrimsStats.uniquePlayers }}</span>
+              <span class="stat-label">Unique Players</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ scrimsStats.totalPlaytime }}</span>
+              <span class="stat-label">Total Playtime</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

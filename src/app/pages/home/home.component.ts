@@ -10,9 +10,34 @@ import { RouterModule } from '@angular/router';
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
-  totalPlayers = 247;
-  totalGames = 1853;
-  totalKills = 12967;
+  // League Stats
+  leagueStats = {
+    matchesPlayed: 115,
+    gamesPlayed: 825,
+    uniquePlayers: 644,
+    totalPlaytime: '1yrs 3mo 24d 2h 40m 00s'
+  };
+
+  // Scrims Stats
+  scrimsStats = {
+    matchesPlayed: 1045,
+    gamesPlayed: 5854,
+    uniquePlayers: 3896,
+    totalPlaytime: '8yrs 9mo 29d 18h 30m 20s'
+  };
+
+  // Combined totals for the hero section
+  get totalPlayers() {
+    return this.leagueStats.uniquePlayers + this.scrimsStats.uniquePlayers;
+  }
+
+  get totalGames() {
+    return this.leagueStats.gamesPlayed + this.scrimsStats.gamesPlayed;
+  }
+
+  get totalMatches() {
+    return this.leagueStats.matchesPlayed + this.scrimsStats.matchesPlayed;
+  }
 
   recentActivity = [
     {

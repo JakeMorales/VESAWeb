@@ -1,5 +1,31 @@
 /* Global VESA Brand Styles */
 
+:root {
+  /* Primary Colors */
+  --color-primary-dark: #0a0a0a;
+  --color-primary: #1a1a1a;
+  --color-primary-light: #2a2a2a;
+  
+  /* Accent Colors */
+  --color-accent-primary: #ff2c5c;
+  --color-accent-secondary: #2c9cff;
+  --color-accent-tertiary: #00d4ff;
+  
+  /* Text Colors */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b0b0b0;
+  --color-text-muted: #808080;
+  
+  /* Background Colors */
+  --color-bg-primary: #0a0a0a;
+  --color-bg-secondary: #1a1a1a;
+  --color-bg-card: rgba(255, 255, 255, 0.05);
+  
+  /* Border Colors */
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-hover: rgba(255, 255, 255, 0.2);
+}
+
 * {
   margin: 0;
   padding: 0;
