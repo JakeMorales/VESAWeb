@@ -34,7 +34,7 @@
 
 .load-more-btn {
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
   color: white;
   border: none;
   border-radius: 8px;

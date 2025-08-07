@@ -10,8 +10,13 @@ import { RouterModule } from '@angular/router';
     <header class="header">
       <div class="header-content">
         <div class="logo-section">
-          <h1 class="logo-text">VESA</h1>
-          <span class="tagline">Virtual Esports Association</span>
+          <a routerLink="/home" class="logo-link">
+            <img 
+              src="vesa-logo.png" 
+              alt="VESA - Virtual Esports Association" 
+              class="logo-image"
+            />
+          </a>
         </div>
         
         <nav class="nav" [class.nav-open]="isNavOpen">
@@ -41,13 +46,14 @@ import { RouterModule } from '@angular/router';
   `,
   styles: [`
     .header {
-      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+      background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
       color: white;
       position: sticky;
       top: 0;
       z-index: 1000;
       box-shadow: 0 4px 20px rgba(255, 44, 92, 0.2), 0 4px 20px rgba(44, 156, 255, 0.2);
       border-bottom: 1px solid rgba(255, 44, 92, 0.3);
+      width: 100%;
     }
 
     .header-content {
@@ -62,28 +68,26 @@ import { RouterModule } from '@angular/router';
     .logo-section {
       display: flex;
       flex-direction: column;
+      align-items: flex-start;
     }
 
-    .logo-text {
-      font-size: 2.5rem;
-      font-weight: 900;
-      margin: 0;
-      background: linear-gradient(135deg, #ff2c5c 0%, #2c9cff 50%, #00d4ff 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: 0 0 30px rgba(255, 44, 92, 0.5);
-      letter-spacing: 2px;
-      font-family: 'Inter', sans-serif;
+    .logo-link {
+      display: block;
+      text-decoration: none;
+      transition: all 0.3s ease;
     }
 
-    .tagline {
-      font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.7);
-      margin-top: -5px;
-      font-weight: 300;
-      letter-spacing: 1px;
-      text-transform: uppercase;
+    .logo-image {
+      height: 80px;
+      width: auto;
+      filter: drop-shadow(0 0 10px rgba(255, 44, 92, 0.3));
+      transition: all 0.3s ease;
+      display: block;
+    }
+
+    .logo-link:hover .logo-image {
+      filter: drop-shadow(0 0 15px rgba(255, 44, 92, 0.5)) drop-shadow(0 0 15px rgba(44, 156, 255, 0.3));
+      transform: scale(1.02);
     }
 
     .nav {
@@ -237,7 +241,7 @@ import { RouterModule } from '@angular/router';
         top: 100%;
         left: 0;
         right: 0;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
         flex-direction: column;
         padding: 2rem;
         gap: 1rem;
@@ -293,10 +297,6 @@ import { RouterModule } from '@angular/router';
       .mobile-toggle[aria-expanded="true"] .hamburger:nth-child(3) {
         transform: rotate(-45deg) translate(6px, -6px);
       }
-
-      .tagline {
-        display: none;
-      }
     }
 
     @media (max-width: 480px) {
@@ -304,8 +304,8 @@ import { RouterModule } from '@angular/router';
         padding: 0.75rem;
       }
       
-      .logo-text {
-        font-size: 1.5rem;
+      .logo-image {
+        height: 60px;
       }
     }
   `]

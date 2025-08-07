@@ -60,15 +60,14 @@ p {
 }
 
 main {
-  width: 100%;
+  width: 100vw;
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem;
-  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   position: relative;
   background: var(--vesa-dark-gradient);
+  overflow-x: hidden;
 }
 
 /* Global body styling for dark theme */
