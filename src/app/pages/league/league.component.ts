@@ -23,8 +23,9 @@ export interface Division {
 export class LeagueComponent {
   currentSeason = 3;
   totalWeeks = 5;
-  currentWeek = 3;
-  finalsDate = 'March 15, 2025';
+  currentWeek = 2; // Started 7-21, now 8-7 = 2 weeks (with bye week)
+  seasonStartDate = new Date('2025-07-21');
+  finalsDate = 'September 1, 2025';
 
   divisions: Division[] = [
     {
@@ -32,7 +33,7 @@ export class LeagueComponent {
       name: 'Pinnacle',
       romanNumeral: 'I',
       tier: 1,
-      description: 'The elite tier featuring the most skilled teams in VESA',
+      description: 'The elite tier featuring the most skilled teams in VESA. Promotion/relegation active.',
       teamCount: 20,
       currentWeek: this.currentWeek,
       color: '#ff2c5c'
@@ -42,7 +43,7 @@ export class LeagueComponent {
       name: 'Vanguard',
       romanNumeral: 'II',
       tier: 2,
-      description: 'High-level competitive play with rising stars',
+      description: 'High-level competitive play with rising stars. Promotion/relegation active.',
       teamCount: 20,
       currentWeek: this.currentWeek,
       color: '#2c9cff'
@@ -52,7 +53,7 @@ export class LeagueComponent {
       name: 'Ascendant',
       romanNumeral: 'III',
       tier: 3,
-      description: 'Competitive teams working towards the next level',
+      description: 'Competitive teams working towards the next level. Static division for this season.',
       teamCount: 20,
       currentWeek: this.currentWeek,
       color: '#00d4ff'
@@ -62,7 +63,7 @@ export class LeagueComponent {
       name: 'Emergent',
       romanNumeral: 'IV',
       tier: 4,
-      description: 'Developing teams with strong potential',
+      description: 'Developing teams with strong potential. Static division for this season.',
       teamCount: 20,
       currentWeek: this.currentWeek,
       color: '#7c3aed'
@@ -72,7 +73,7 @@ export class LeagueComponent {
       name: 'Challengers',
       romanNumeral: 'V',
       tier: 5,
-      description: 'Ambitious teams ready to prove themselves',
+      description: 'Ambitious teams ready to prove themselves. Static division for this season.',
       teamCount: 20,
       currentWeek: this.currentWeek,
       color: '#f59e0b'
@@ -82,7 +83,7 @@ export class LeagueComponent {
       name: 'Contenders',
       romanNumeral: 'VI',
       tier: 6,
-      description: 'Entry-level competitive teams building their skills',
+      description: 'Entry-level competitive teams building their skills. Static division for this season.',
       teamCount: 20,
       currentWeek: this.currentWeek,
       color: '#10b981'
@@ -95,5 +96,11 @@ export class LeagueComponent {
 
   getWeeksRemaining(): number {
     return this.totalWeeks - this.currentWeek;
+  }
+
+  getDaysIntoSeason(): number {
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - this.seasonStartDate.getTime());
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 }

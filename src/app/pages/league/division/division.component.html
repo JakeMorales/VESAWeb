@@ -29,9 +29,13 @@
           <span class="stat-value">{{ totalWeeks - currentWeek }}</span>
           <span class="stat-label">Remaining</span>
         </div>
-        <div class="stat-item">
-          <span class="stat-value">ALGS</span>
-          <span class="stat-label">Format</span>
+        <div class="stat-item" *ngIf="division.tier <= 2">
+          <span class="stat-value">Active</span>
+          <span class="stat-label">Promo/Releg</span>
+        </div>
+        <div class="stat-item" *ngIf="division.tier > 2">
+          <span class="stat-value">Static</span>
+          <span class="stat-label">Division</span>
         </div>
       </div>
     </div>
@@ -86,9 +90,13 @@
           <h3>Season Format</h3>
           <p>5 weeks of regular season play followed by Match Point Finals. Teams earn points based on placement and eliminations using ALGS scoring.</p>
         </div>
-        <div class="info-card">
+        <div class="info-card" *ngIf="division && (division.tier === 1 || division.tier === 2)">
           <h3>Promotion/Relegation</h3>
-          <p>Top 3 teams advance to higher division. Bottom 3 teams may be relegated to lower division based on performance.</p>
+          <p>Active between Divisions I & II only. Top/bottom teams may move between these divisions during the season.</p>
+        </div>
+        <div class="info-card" *ngIf="division && division.tier > 2">
+          <h3>Division Status</h3>
+          <p>Static division for this season. Teams remain in this division unless moved for lobby quality purposes.</p>
         </div>
         <div class="info-card">
           <h3>Match Schedule</h3>

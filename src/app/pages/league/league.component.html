@@ -11,6 +11,10 @@
           <span class="week-number">{{ currentWeek }} / {{ totalWeeks }}</span>
         </div>
         <div class="info-card">
+          <h3>Season Started</h3>
+          <span class="finals-date">July 21, 2025</span>
+        </div>
+        <div class="info-card">
           <h3>Finals Date</h3>
           <span class="finals-date">{{ finalsDate }}</span>
         </div>
@@ -21,7 +25,7 @@
       </div>
 
       <div class="season-progress">
-        <h4>Season Progress</h4>
+        <h4>Season Progress ({{ getDaysIntoSeason() }} days since start)</h4>
         <div class="progress-bar">
           <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
         </div>
@@ -90,7 +94,7 @@
         <div class="format-card">
           <div class="format-icon">⬆️</div>
           <h3>Promotion/Relegation</h3>
-          <p>Top teams advance to higher divisions, bottom teams may be relegated</p>
+          <p>Only active between Divisions I & II. Other divisions remain static unless moved for lobby quality.</p>
         </div>
         <div class="format-card">
           <div class="format-icon">🎯</div>

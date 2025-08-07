@@ -23,7 +23,7 @@ export interface Team {
 })
 export class DivisionComponent implements OnInit {
   division: Division | null = null;
-  currentWeek = 3;
+  currentWeek = 2; // Updated to match actual season progress
   totalWeeks = 5;
 
   divisions: Division[] = [
@@ -32,9 +32,9 @@ export class DivisionComponent implements OnInit {
       name: 'Pinnacle',
       romanNumeral: 'I',
       tier: 1,
-      description: 'The elite tier featuring the most skilled teams in VESA',
+      description: 'The elite tier featuring the most skilled teams in VESA. Promotion/relegation active.',
       teamCount: 20,
-      currentWeek: 3,
+      currentWeek: 2,
       color: '#ff2c5c'
     },
     {
@@ -42,9 +42,9 @@ export class DivisionComponent implements OnInit {
       name: 'Vanguard',
       romanNumeral: 'II',
       tier: 2,
-      description: 'High-level competitive play with rising stars',
+      description: 'High-level competitive play with rising stars. Promotion/relegation active.',
       teamCount: 20,
-      currentWeek: 3,
+      currentWeek: 2,
       color: '#2c9cff'
     },
     {
@@ -52,9 +52,9 @@ export class DivisionComponent implements OnInit {
       name: 'Ascendant',
       romanNumeral: 'III',
       tier: 3,
-      description: 'Competitive teams working towards the next level',
+      description: 'Competitive teams working towards the next level. Static division for this season.',
       teamCount: 20,
-      currentWeek: 3,
+      currentWeek: 2,
       color: '#00d4ff'
     },
     {
@@ -62,9 +62,9 @@ export class DivisionComponent implements OnInit {
       name: 'Emergent',
       romanNumeral: 'IV',
       tier: 4,
-      description: 'Developing teams with strong potential',
+      description: 'Developing teams with strong potential. Static division for this season.',
       teamCount: 20,
-      currentWeek: 3,
+      currentWeek: 2,
       color: '#7c3aed'
     },
     {
@@ -72,9 +72,9 @@ export class DivisionComponent implements OnInit {
       name: 'Challengers',
       romanNumeral: 'V',
       tier: 5,
-      description: 'Ambitious teams ready to prove themselves',
+      description: 'Ambitious teams ready to prove themselves. Static division for this season.',
       teamCount: 20,
-      currentWeek: 3,
+      currentWeek: 2,
       color: '#f59e0b'
     },
     {
@@ -82,24 +82,24 @@ export class DivisionComponent implements OnInit {
       name: 'Contenders',
       romanNumeral: 'VI',
       tier: 6,
-      description: 'Entry-level competitive teams building their skills',
+      description: 'Entry-level competitive teams building their skills. Static division for this season.',
       teamCount: 20,
-      currentWeek: 3,
+      currentWeek: 2,
       color: '#10b981'
     }
   ];
 
   teams: Team[] = [
-    { id: '1', name: 'Apex Predators', points: 156, wins: 8, gamesPlayed: 15, kills: 127, placement: 1, trend: 'up' },
-    { id: '2', name: 'Storm Legends', points: 142, wins: 7, gamesPlayed: 15, kills: 119, placement: 2, trend: 'same' },
-    { id: '3', name: 'Shadow Squad', points: 138, wins: 6, gamesPlayed: 15, kills: 104, placement: 3, trend: 'up' },
-    { id: '4', name: 'Digital Legends', points: 127, wins: 5, gamesPlayed: 15, kills: 98, placement: 4, trend: 'down' },
-    { id: '5', name: 'Void Runners', points: 121, wins: 5, gamesPlayed: 15, kills: 89, placement: 5, trend: 'up' },
-    { id: '6', name: 'Catalyst Gaming', points: 115, wins: 4, gamesPlayed: 15, kills: 86, placement: 6, trend: 'same' },
-    { id: '7', name: 'Phoenix Rising', points: 108, wins: 4, gamesPlayed: 15, kills: 82, placement: 7, trend: 'down' },
-    { id: '8', name: 'Thunder Wolves', points: 102, wins: 3, gamesPlayed: 15, kills: 78, placement: 8, trend: 'up' },
-    { id: '9', name: 'Neon Knights', points: 95, wins: 3, gamesPlayed: 15, kills: 71, placement: 9, trend: 'down' },
-    { id: '10', name: 'Crimson Elite', points: 89, wins: 2, gamesPlayed: 15, kills: 65, placement: 10, trend: 'same' }
+    { id: '1', name: 'Apex Predators', points: 87, wins: 4, gamesPlayed: 8, kills: 68, placement: 1, trend: 'up' },
+    { id: '2', name: 'Storm Legends', points: 82, wins: 3, gamesPlayed: 8, kills: 61, placement: 2, trend: 'same' },
+    { id: '3', name: 'Shadow Squad', points: 78, wins: 3, gamesPlayed: 8, kills: 59, placement: 3, trend: 'up' },
+    { id: '4', name: 'Digital Legends', points: 71, wins: 2, gamesPlayed: 8, kills: 52, placement: 4, trend: 'down' },
+    { id: '5', name: 'Void Runners', points: 68, wins: 2, gamesPlayed: 8, kills: 48, placement: 5, trend: 'up' },
+    { id: '6', name: 'Catalyst Gaming', points: 63, wins: 2, gamesPlayed: 8, kills: 45, placement: 6, trend: 'same' },
+    { id: '7', name: 'Phoenix Rising', points: 59, wins: 1, gamesPlayed: 8, kills: 41, placement: 7, trend: 'down' },
+    { id: '8', name: 'Thunder Wolves', points: 55, wins: 1, gamesPlayed: 8, kills: 38, placement: 8, trend: 'up' },
+    { id: '9', name: 'Neon Knights', points: 51, wins: 1, gamesPlayed: 8, kills: 35, placement: 9, trend: 'down' },
+    { id: '10', name: 'Crimson Elite', points: 47, wins: 0, gamesPlayed: 8, kills: 32, placement: 10, trend: 'same' }
   ];
 
   constructor(private route: ActivatedRoute) {}
