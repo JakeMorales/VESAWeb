@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { LeagueHeaderComponent } from '../../components/league/league-header.component';
+import { DivisionsGridComponent } from '../../components/league/divisions-grid.component';
 
 export interface Division {
   id: string;
@@ -16,12 +18,12 @@ export interface Division {
 @Component({
   selector: 'app-league',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, LeagueHeaderComponent, DivisionsGridComponent],
   templateUrl: './league.component.html',
   styleUrl: './league.component.css'
 })
 export class LeagueComponent {
-  currentSeason = 3;
+  currentSeason = 11;
   totalWeeks = 5;
   currentWeek = 2; // Started 7-21, now 8-7 = 2 weeks (with bye week)
   seasonStartDate = new Date('2025-07-21');

@@ -1,110 +1,17 @@
 <div class="league-container">
   <!-- League Header -->
-  <section class="league-header">
-    <div class="header-content">
-      <h1 class="league-title">VESA ALGS League</h1>
-      <p class="league-subtitle">Season {{ currentSeason }} - Competitive Apex Legends</p>
-      
-      <!-- Compact Schedule Section -->
-      <div class="schedule-section">
-        <div class="schedule-grid">
-          <div class="schedule-item">
-            <span class="schedule-label">Week</span>
-            <span class="schedule-value">{{ currentWeek }} / {{ totalWeeks }}</span>
-          </div>
-          <div class="schedule-item">
-            <span class="schedule-label">Started</span>
-            <span class="schedule-value">July 21, 2025</span>
-          </div>
-          <div class="schedule-item">
-            <span class="schedule-label">Finals</span>
-            <span class="schedule-value">{{ finalsDate }}</span>
-          </div>
-          <div class="schedule-item progress-item">
-            <div class="progress-bar">
-              <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
-            </div>
-            <span class="progress-text">{{ getWeeksRemaining() }} weeks remaining</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- League Format Section -->
-      <div class="format-section">
-        <h3>League Format</h3>
-        <div class="format-grid">
-          <div class="format-card">
-            <div class="format-icon">📅</div>
-            <div class="format-info">
-              <h4>Regular Season</h4>
-              <p>5 weeks of competitive play</p>
-            </div>
-          </div>
-          <div class="format-card">
-            <div class="format-icon">🏆</div>
-            <div class="format-info">
-              <h4>Match Point Finals</h4>
-              <p>Championship format</p>
-            </div>
-          </div>
-          <div class="format-card">
-            <div class="format-icon">⬆️</div>
-            <div class="format-info">
-              <h4>Promotion/Relegation</h4>
-              <p>Active between Divisions I & II only</p>
-            </div>
-          </div>
-          <div class="format-card">
-            <div class="format-icon">🎯</div>
-            <div class="format-info">
-              <h4>ALGS Scoring</h4>
-              <p>Placement + elimination points</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <app-league-header
+    [currentSeason]="currentSeason"
+    [currentWeek]="currentWeek"
+    [totalWeeks]="totalWeeks"
+    [finalsDate]="finalsDate"
+    [progressPercentage]="getProgressPercentage()"
+    [weeksRemaining]="getWeeksRemaining()">
+  </app-league-header>
 
   <!-- Divisions Grid -->
-  <section class="divisions-section">
-    <div class="divisions-content">
-      <h2>League Divisions</h2>
-      <p class="divisions-description">
-        Six competitive divisions organized by skill level, each featuring 20 teams competing for championship glory.
-      </p>
-      
-      <div class="divisions-grid">
-        <div class="division-card" *ngFor="let division of divisions" 
-             [routerLink]="['/league', division.id]"
-             [style.--division-color]="division.color">
-          <div class="division-header">
-            <div class="division-rank">
-              <span class="roman-numeral">{{ division.romanNumeral }}</span>
-              <span class="tier-label">Division {{ division.romanNumeral }}</span>
-            </div>
-            <div class="division-teams">{{ division.teamCount }} Teams</div>
-          </div>
-          
-          <h3 class="division-name">{{ division.name }}</h3>
-          <p class="division-description">{{ division.description }}</p>
-          
-          <div class="division-stats">
-            <div class="stat">
-              <span class="stat-label">Week</span>
-              <span class="stat-value">{{ division.currentWeek }}/{{ totalWeeks }}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">Teams</span>
-              <span class="stat-value">{{ division.teamCount }}</span>
-            </div>
-          </div>
-          
-          <div class="division-action">
-            <span class="view-division">View Division →</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <app-divisions-grid
+    [divisions]="divisions"
+    [totalWeeks]="totalWeeks">
+  </app-divisions-grid>
 </div>
