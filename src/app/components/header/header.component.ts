@@ -22,7 +22,9 @@ import { RouterModule } from '@angular/router';
         <nav class="nav" [class.nav-open]="isNavOpen">
           <a routerLink="/home" routerLinkActive="active" (click)="closeNav()">Home</a>
           <div class="nav-dropdown">
-            <a routerLink="/league" routerLinkActive="active" (click)="closeNav()">League</a>
+            <a routerLink="/league" routerLinkActive="active" (click)="closeNav()">
+              League <span class="dropdown-arrow">▼</span>
+            </a>
             <div class="dropdown-menu">
               <a routerLink="/league/pinnacle" (click)="closeNav()">Pinnacle (I)</a>
               <a routerLink="/league/vanguard" (click)="closeNav()">Vanguard (II)</a>
@@ -139,21 +141,27 @@ import { RouterModule } from '@angular/router';
       align-items: center;
     }
 
-    /* Reset the dropdown container link completely */
     .nav-dropdown > a {
-      background: transparent;
-      border-color: transparent;
-      transform: none;
-      box-shadow: none;
-      position: relative;
-      margin: 0;
-      vertical-align: baseline;
-    }
-      box-shadow: none;
-      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-width: 120px;
+      justify-content: center;
     }
 
-    /* Only apply hover effects when directly hovering the link */
+    .dropdown-arrow {
+      font-size: 0.7rem;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: scale(0.8);
+    }
+
+    .nav-dropdown:hover .dropdown-arrow {
+      opacity: 1;
+      transform: scale(1) rotate(180deg);
+    }
+
+    /* Apply hover effects to the dropdown link */
     .nav-dropdown > a:hover {
       background: linear-gradient(135deg, rgba(255, 44, 92, 0.2), rgba(44, 156, 255, 0.2));
       border-color: rgba(255, 44, 92, 0.4);
@@ -161,9 +169,12 @@ import { RouterModule } from '@angular/router';
       box-shadow: 0 4px 15px rgba(255, 44, 92, 0.3);
     }
 
-    /* Hide the sliding animation for dropdown links */
-    .nav-dropdown > a::before {
-      display: none;
+    /* Also apply hover effects when hovering the dropdown container */
+    .nav-dropdown:hover > a {
+      background: linear-gradient(135deg, rgba(255, 44, 92, 0.2), rgba(44, 156, 255, 0.2));
+      border-color: rgba(255, 44, 92, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(255, 44, 92, 0.3);
     }
 
     .dropdown-menu {
@@ -172,7 +183,8 @@ import { RouterModule } from '@angular/router';
       left: 50%;
       transform: translateX(-50%) translateY(-10px);
       background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-      min-width: 200px;
+      min-width: 180px;
+      width: 180px;
       border-radius: 8px;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
       border: 1px solid rgba(255, 44, 92, 0.3);
@@ -274,6 +286,17 @@ import { RouterModule } from '@angular/router';
         background: rgba(255, 255, 255, 0.05);
         margin-top: 0.5rem;
         border-radius: 4px;
+        width: 100%;
+        min-width: auto;
+      }
+
+      .nav-dropdown > a {
+        min-width: auto;
+        width: 100%;
+      }
+
+      .nav-dropdown:hover .dropdown-arrow {
+        transform: none;
       }
 
       .dropdown-menu a {
