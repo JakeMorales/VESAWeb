@@ -14,6 +14,28 @@ export interface Team {
   trend: 'up' | 'down' | 'same';
 }
 
+export interface Match {
+  id: string;
+  weekNumber: number;
+  matchDay: string;
+  date: string;
+  time: string;
+  status: 'upcoming' | 'live' | 'completed';
+  teamsCount: number;
+  gamesPlayed?: number;
+  totalGames?: number;
+  winner?: string;
+  streamUrl?: string;
+}
+
+export interface MatchResult {
+  matchId: string;
+  teamName: string;
+  placement: number;
+  kills: number;
+  points: number;
+}
+
 @Component({
   selector: 'app-division',
   standalone: true,
@@ -102,12 +124,74 @@ export class DivisionComponent implements OnInit {
     { id: '10', name: 'Crimson Elite', points: 47, wins: 0, gamesPlayed: 8, kills: 32, placement: 10, trend: 'same' }
   ];
 
+  matches: Match[] = [
+    {
+      id: 'week1-match1',
+      weekNumber: 1,
+      matchDay: 'Week 1 - Opening Day',
+      date: '2024-12-01',
+      time: '7:00 PM EST',
+      status: 'completed',
+      teamsCount: 20,
+      gamesPlayed: 6,
+      totalGames: 6,
+      winner: 'Apex Predators'
+    },
+    {
+      id: 'week2-match1',
+      weekNumber: 2,
+      matchDay: 'Week 2 - Regular Season',
+      date: '2024-12-08',
+      time: '7:00 PM EST',
+      status: 'completed',
+      teamsCount: 20,
+      gamesPlayed: 6,
+      totalGames: 6,
+      winner: 'Storm Legends'
+    },
+    {
+      id: 'week3-match1',
+      weekNumber: 3,
+      matchDay: 'Week 3 - Mid Season',
+      date: '2024-12-15',
+      time: '7:00 PM EST',
+      status: 'live',
+      teamsCount: 20,
+      gamesPlayed: 3,
+      totalGames: 6,
+      streamUrl: 'https://twitch.tv/vesaapex'
+    },
+    {
+      id: 'week4-match1',
+      weekNumber: 4,
+      matchDay: 'Week 4 - Late Season',
+      date: '2024-12-22',
+      time: '7:00 PM EST',
+      status: 'upcoming',
+      teamsCount: 20,
+      totalGames: 6
+    },
+    {
+      id: 'week5-match1',
+      weekNumber: 5,
+      matchDay: 'Week 5 - Finals',
+      date: '2024-12-29',
+      time: '7:00 PM EST',
+      status: 'upcoming',
+      teamsCount: 20,
+      totalGames: 6
+    }
+  ];
+
+  currentMatch?: Match;
+
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
     this.route.params.subscribe(params => {
       const divisionId = params['id'];
       this.division = this.divisions.find(d => d.id === divisionId) || null;
+      this.currentMatch = this.matches.find(m => m.status === 'live') || undefined;
     });
   }
 
@@ -125,5 +209,31 @@ export class DivisionComponent implements OnInit {
       case 'down': return 'trend-down';
       default: return 'trend-same';
     }
+  }
+
+  getMatchStatusClass(status: string): string {
+    switch (status) {
+      case 'live': return 'status-live';
+      case 'completed': return 'status-completed';
+      case 'upcoming': return 'status-upcoming';
+      default: return '';
+    }
+  }
+
+  getMatchStatusText(status: string): string {
+    switch (status) {
+      case 'live': return 'LIVE';
+      case 'completed': return 'Completed';
+      case 'upcoming': return 'Upcoming';
+      default: return '';
+    }
+  }
+
+  getCompletedMatches(): Match[] {
+    return this.matches.filter(m => m.status === 'completed').reverse();
+  }
+
+  getUpcomingMatches(): Match[] {
+    return this.matches.filter(m => m.status === 'upcoming');
   }
 }

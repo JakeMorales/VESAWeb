@@ -41,6 +41,97 @@
     </div>
   </section>
 
+  <!-- Current Match Section -->
+  <section class="current-match-section" *ngIf="currentMatch">
+    <div class="current-match-content">
+      <div class="current-match-header">
+        <h2>Current Match</h2>
+        <span class="live-indicator">🔴 LIVE</span>
+      </div>
+      
+      <div class="current-match-card">
+        <div class="match-info">
+          <h3>{{ currentMatch.matchDay }}</h3>
+          <div class="match-details">
+            <span class="match-date">{{ currentMatch.date }}</span>
+            <span class="match-time">{{ currentMatch.time }}</span>
+            <span class="teams-count">{{ currentMatch.teamsCount }} Teams</span>
+          </div>
+          <div class="match-progress" *ngIf="currentMatch.gamesPlayed && currentMatch.totalGames">
+            <span>Game {{ currentMatch.gamesPlayed }} of {{ currentMatch.totalGames }}</span>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="(currentMatch.gamesPlayed / currentMatch.totalGames) * 100"></div>
+            </div>
+          </div>
+        </div>
+        <div class="match-actions">
+          <a [href]="currentMatch.streamUrl" target="_blank" class="watch-btn" *ngIf="currentMatch.streamUrl">
+            📺 Watch Live
+          </a>
+          <a [routerLink]="['/match', currentMatch.id]" class="details-btn">
+            View Details
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Match History Section -->
+  <section class="matches-section">
+    <div class="matches-content">
+      <h2>Season 11 Matches</h2>
+      
+      <div class="matches-grid">
+        <!-- Completed Matches -->
+        <div class="match-history" *ngIf="getCompletedMatches().length > 0">
+          <h3>Match History</h3>
+          <div class="match-list">
+            <div class="match-card" *ngFor="let match of getCompletedMatches()">
+              <div class="match-header">
+                <span class="match-week">Week {{ match.weekNumber }}</span>
+                <span class="match-status" [class]="getMatchStatusClass(match.status)">
+                  {{ getMatchStatusText(match.status) }}
+                </span>
+              </div>
+              <h4>{{ match.matchDay }}</h4>
+              <div class="match-meta">
+                <span class="match-date">{{ match.date }}</span>
+                <span class="match-teams">{{ match.teamsCount }} Teams</span>
+              </div>
+              <div class="match-result" *ngIf="match.winner">
+                <span class="winner-label">Winner:</span>
+                <span class="winner-name">{{ match.winner }}</span>
+              </div>
+              <a [routerLink]="['/match', match.id]" class="match-link">View Results</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Matches -->
+        <div class="upcoming-matches" *ngIf="getUpcomingMatches().length > 0">
+          <h3>Upcoming Matches</h3>
+          <div class="match-list">
+            <div class="match-card" *ngFor="let match of getUpcomingMatches()">
+              <div class="match-header">
+                <span class="match-week">Week {{ match.weekNumber }}</span>
+                <span class="match-status" [class]="getMatchStatusClass(match.status)">
+                  {{ getMatchStatusText(match.status) }}
+                </span>
+              </div>
+              <h4>{{ match.matchDay }}</h4>
+              <div class="match-meta">
+                <span class="match-date">{{ match.date }}</span>
+                <span class="match-time">{{ match.time }}</span>
+                <span class="match-teams">{{ match.teamsCount }} Teams</span>
+              </div>
+              <a [routerLink]="['/match', match.id]" class="match-link">View Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Standings Table -->
   <section class="standings-section">
     <div class="standings-content">
