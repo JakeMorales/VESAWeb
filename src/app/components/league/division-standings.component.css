@@ -1,0 +1,116 @@
+.standings-section {
+  padding: 3rem 2rem;
+}
+
+.standings-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.standings-content h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: var(--color-text-primary);
+}
+
+.standings-table {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 60px 1fr 80px 60px 60px 60px 60px;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.table-body {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.team-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 80px 60px 60px 60px 60px;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.team-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.rank-number {
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.rank-1 {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #000;
+}
+
+.rank-2 {
+  background: linear-gradient(135deg, #c0c0c0, #e5e5e5);
+  color: #000;
+}
+
+.rank-3 {
+  background: linear-gradient(135deg, #cd7f32, #daa520);
+  color: #fff;
+}
+
+.team-name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.points-value {
+  font-weight: 700;
+  color: var(--division-color);
+}
+
+.trend-indicator {
+  font-size: 1.25rem;
+}
+
+.trend-up {
+  color: #10b981;
+}
+
+.trend-down {
+  color: #ef4444;
+}
+
+.trend-same {
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 768px) {
+  .table-header, .team-row {
+    grid-template-columns: 50px 1fr 70px 50px 50px;
+    font-size: 0.875rem;
+  }
+
+  .wins-col, .games-col {
+    display: none;
+  }
+
+  .standings-section {
+    padding: 2rem 1rem;
+  }
+}

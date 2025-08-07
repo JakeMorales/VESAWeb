@@ -2,6 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Division } from '../league.component';
+import { DivisionHeaderComponent } from '../../../components/league/division-header.component';
+import { CurrentMatchComponent } from '../../../components/league/current-match.component';
+import { DivisionStandingsComponent } from '../../../components/league/division-standings.component';
+import { MatchHistoryComponent } from '../../../components/league/match-history.component';
+import { DivisionInfoComponent } from '../../../components/league/division-info.component';
 
 export interface Team {
   id: string;
@@ -39,7 +44,15 @@ export interface MatchResult {
 @Component({
   selector: 'app-division',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    DivisionHeaderComponent,
+    CurrentMatchComponent,
+    DivisionStandingsComponent,
+    MatchHistoryComponent,
+    DivisionInfoComponent
+  ],
   templateUrl: './division.component.html',
   styleUrl: './division.component.css'
 })
@@ -193,47 +206,5 @@ export class DivisionComponent implements OnInit {
       this.division = this.divisions.find(d => d.id === divisionId) || null;
       this.currentMatch = this.matches.find(m => m.status === 'live') || undefined;
     });
-  }
-
-  getTrendIcon(trend: string): string {
-    switch (trend) {
-      case 'up': return '↗️';
-      case 'down': return '↘️';
-      default: return '➡️';
-    }
-  }
-
-  getTrendClass(trend: string): string {
-    switch (trend) {
-      case 'up': return 'trend-up';
-      case 'down': return 'trend-down';
-      default: return 'trend-same';
-    }
-  }
-
-  getMatchStatusClass(status: string): string {
-    switch (status) {
-      case 'live': return 'status-live';
-      case 'completed': return 'status-completed';
-      case 'upcoming': return 'status-upcoming';
-      default: return '';
-    }
-  }
-
-  getMatchStatusText(status: string): string {
-    switch (status) {
-      case 'live': return 'LIVE';
-      case 'completed': return 'Completed';
-      case 'upcoming': return 'Upcoming';
-      default: return '';
-    }
-  }
-
-  getCompletedMatches(): Match[] {
-    return this.matches.filter(m => m.status === 'completed').reverse();
-  }
-
-  getUpcomingMatches(): Match[] {
-    return this.matches.filter(m => m.status === 'upcoming');
   }
 }
