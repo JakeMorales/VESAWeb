@@ -5,31 +5,63 @@
       <h1 class="league-title">VESA ALGS League</h1>
       <p class="league-subtitle">Season {{ currentSeason }} - Competitive Apex Legends</p>
       
-      <div class="season-info">
-        <div class="info-card">
-          <h3>Current Week</h3>
-          <span class="week-number">{{ currentWeek }} / {{ totalWeeks }}</span>
-        </div>
-        <div class="info-card">
-          <h3>Season Started</h3>
-          <span class="finals-date">July 21, 2025</span>
-        </div>
-        <div class="info-card">
-          <h3>Finals Date</h3>
-          <span class="finals-date">{{ finalsDate }}</span>
-        </div>
-        <div class="info-card">
-          <h3>Format</h3>
-          <span class="format">Match Point Finals</span>
+      <!-- Compact Schedule Section -->
+      <div class="schedule-section">
+        <div class="schedule-grid">
+          <div class="schedule-item">
+            <span class="schedule-label">Week</span>
+            <span class="schedule-value">{{ currentWeek }} / {{ totalWeeks }}</span>
+          </div>
+          <div class="schedule-item">
+            <span class="schedule-label">Started</span>
+            <span class="schedule-value">July 21, 2025</span>
+          </div>
+          <div class="schedule-item">
+            <span class="schedule-label">Finals</span>
+            <span class="schedule-value">{{ finalsDate }}</span>
+          </div>
+          <div class="schedule-item progress-item">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+            </div>
+            <span class="progress-text">{{ getWeeksRemaining() }} weeks remaining</span>
+          </div>
         </div>
       </div>
 
-      <div class="season-progress">
-        <h4>Season Progress ({{ getDaysIntoSeason() }} days since start)</h4>
-        <div class="progress-bar">
-          <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+      <!-- League Format Section -->
+      <div class="format-section">
+        <h3>League Format</h3>
+        <div class="format-grid">
+          <div class="format-card">
+            <div class="format-icon">📅</div>
+            <div class="format-info">
+              <h4>Regular Season</h4>
+              <p>5 weeks of competitive play</p>
+            </div>
+          </div>
+          <div class="format-card">
+            <div class="format-icon">🏆</div>
+            <div class="format-info">
+              <h4>Match Point Finals</h4>
+              <p>Championship format</p>
+            </div>
+          </div>
+          <div class="format-card">
+            <div class="format-icon">⬆️</div>
+            <div class="format-info">
+              <h4>Promotion/Relegation</h4>
+              <p>Active between Divisions I & II only</p>
+            </div>
+          </div>
+          <div class="format-card">
+            <div class="format-icon">🎯</div>
+            <div class="format-info">
+              <h4>ALGS Scoring</h4>
+              <p>Placement + elimination points</p>
+            </div>
+          </div>
         </div>
-        <p class="progress-text">{{ getWeeksRemaining() }} weeks remaining until finals</p>
       </div>
     </div>
   </section>
@@ -71,35 +103,6 @@
           <div class="division-action">
             <span class="view-division">View Division →</span>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- League Format Info -->
-  <section class="format-section">
-    <div class="format-content">
-      <h2>League Format</h2>
-      <div class="format-grid">
-        <div class="format-card">
-          <div class="format-icon">📅</div>
-          <h3>Regular Season</h3>
-          <p>5 weeks of competitive play with weekly matches across all divisions</p>
-        </div>
-        <div class="format-card">
-          <div class="format-icon">🏆</div>
-          <h3>Match Point Finals</h3>
-          <p>Final day championship format where teams compete for ultimate victory</p>
-        </div>
-        <div class="format-card">
-          <div class="format-icon">⬆️</div>
-          <h3>Promotion/Relegation</h3>
-          <p>Only active between Divisions I & II. Other divisions remain static unless moved for lobby quality.</p>
-        </div>
-        <div class="format-card">
-          <div class="format-icon">🎯</div>
-          <h3>Point System</h3>
-          <p>ALGS-style scoring with placement and elimination points</p>
         </div>
       </div>
     </div>
