@@ -34,6 +34,7 @@ import { RouterModule } from '@angular/router';
               <a routerLink="/league/contenders" (click)="closeNav()">Contenders (VI)</a>
             </div>
           </div>
+          <a routerLink="/scrims" routerLinkActive="active" (click)="closeNav()">Scrims</a>
           <a routerLink="/players" routerLinkActive="active" (click)="closeNav()">Player Stats</a>
           <a routerLink="/games" routerLinkActive="active" (click)="closeNav()">Games</a>
         </nav>
