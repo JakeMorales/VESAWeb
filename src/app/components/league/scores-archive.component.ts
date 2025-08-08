@@ -1,331 +1,58 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BaseGridComponent, GridConfig } from '../base-grid/base-grid.component';
-
-export interface Season {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  status: 'completed' | 'active' | 'upcoming';
-}
-
-export interface SeasonChampions {
-  seasonId: string;
-  seasonName: string;
-  champions: {
-    division1: string;  // Pinnacle
-    division2: string;  // Vanguard  
-    division3: string;  // Ascendant
-    division4: string;  // Emergent
-    division5: string;  // Challengers
-    division6?: string; // Contenders (added in later seasons)
-  };
-  totalPoints: {
-    division1: number;
-    division2: number;
-    division3: number;
-    division4: number;
-    division5: number;
-    division6?: number;
-  };
-}
-
-export interface SeasonLeaderboard {
-  seasonId: string;
-  division: string;
-  teams: SeasonTeamResult[];
-}
-
-export interface SeasonTeamResult {
-  rank: number;
-  teamName: string;
-  totalPoints: number;
-  wins: number;
-  gamesPlayed: number;
-  kills: number;
-  avgPlacement: number;
-}
-
-export interface HistoricalMatch {
-  id: string;
-  seasonId: string;
-  division: string;
-  matchNumber: number;
-  date: string;
-  teams: string[];
-  results: MatchGameResult[];
-}
-
-export interface MatchGameResult {
-  gameNumber: number;
-  results: GameTeamResult[];
-}
-
-export interface GameTeamResult {
-  teamName: string;
-  placement: number;
-  kills: number;
-  points: number;
-}
+import { ArchiveHeaderComponent } from './archive-header.component';
+import { ArchiveFiltersComponent, Season } from './archive-filters.component';
+import { SeasonChampionsComponent, SeasonChampions } from './season-champions.component';
+import { SeasonLeaderboardsComponent, SeasonLeaderboard, SeasonTeamResult } from './season-leaderboards.component';
+import { ArchiveMatchHistoryComponent, HistoricalMatch, MatchGameResult, GameTeamResult } from './archive-match-history.component';
 
 @Component({
   selector: 'app-scores-archive',
   standalone: true,
-  imports: [CommonModule, FormsModule, BaseGridComponent],
-  styles: [`
-    .season-champions-row {
-      margin-bottom: 2rem;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      border-radius: 8px;
-      padding: 1.5rem;
-    }
-
-    .season-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid rgba(59, 130, 246, 0.3);
-    }
-
-    .season-header h3 {
-      margin: 0;
-      color: #60a5fa;
-      font-size: 1.25rem;
-      font-weight: 600;
-    }
-
-    .season-id {
-      color: #94a3b8;
-      font-size: 0.875rem;
-      text-transform: uppercase;
-    }
-
-    .champions-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-
-    /* Single division view - make champion item wider */
-    .champions-row:has(.champion-item:only-child) .champion-item {
-      max-width: 300px;
-      margin: 0 auto;
-    }
-
-    .champion-item {
-      background: rgba(30, 41, 59, 0.8);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      border-radius: 6px;
-      padding: 1rem;
-      text-align: center;
-      transition: all 0.2s ease;
-    }
-
-    .champion-item:hover {
-      border-color: rgba(99, 102, 241, 0.6);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-    }
-
-    .champion-name {
-      font-weight: 600;
-      color: #e2e8f0;
-      margin: 0.5rem 0;
-      font-size: 0.9rem;
-    }
-
-    .champion-points {
-      color: #60a5fa;
-      font-size: 0.875rem;
-      font-weight: 500;
-    }
-
-    .division-badge {
-      font-size: 0.75rem;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.5rem;
-      display: inline-block;
-    }
-
-    .division-pinnacle { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
-    .division-vanguard { background: linear-gradient(135deg, #f97316, #ea580c); color: white; }
-    .division-ascendant { background: linear-gradient(135deg, #eab308, #ca8a04); color: white; }
-    .division-emergent { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
-    .division-challengers { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
-    .division-contenders { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
-  `],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    ArchiveHeaderComponent,
+    ArchiveFiltersComponent,
+    SeasonChampionsComponent,
+    SeasonLeaderboardsComponent,
+    ArchiveMatchHistoryComponent
+  ],
   template: `
     <div class="scores-archive-container">
-      <div class="archive-header">
-        <h1>Scores Archive</h1>
-        <p>Complete historical records for all VESA League seasons and divisions</p>
-      </div>
+      <app-archive-header></app-archive-header>
 
-      <!-- Season & Division Filters -->
-      <div class="filter-section">
-        <div class="filter-row">
-          <select [(ngModel)]="selectedSeason" (ngModelChange)="onSeasonChange()" class="filter-select">
-            <option value="">All Seasons</option>
-            <option *ngFor="let season of seasons" [value]="season.id">
-              {{ season.name }}
-            </option>
-          </select>
-
-          <select [(ngModel)]="selectedDivision" (ngModelChange)="onDivisionChange()" class="filter-select">
-            <option value="">All Divisions</option>
-            <option value="Pinnacle">Pinnacle</option>
-            <option value="Vanguard">Vanguard</option>
-            <option value="Ascendant">Ascendant</option>
-            <option value="Emergent">Emergent</option>
-            <option value="Challengers">Challengers</option>
-            <option value="Contenders">Contenders</option>
-          </select>
-
-          <select [(ngModel)]="viewMode" (ngModelChange)="onViewModeChange()" class="filter-select">
-            <option value="champions">Season Champions</option>
-            <option value="leaderboards">Final Leaderboards</option>
-            <option value="matches">Match History</option>
-          </select>
-        </div>
-      </div>
+      <app-archive-filters
+        [seasons]="seasons"
+        [selectedSeason]="selectedSeason"
+        [selectedDivision]="selectedDivision"
+        [viewMode]="viewMode"
+        (seasonChange)="onSeasonChange($event)"
+        (divisionChange)="onDivisionChange($event)"
+        (viewModeChange)="onViewModeChange($event)">
+      </app-archive-filters>
 
       <!-- Season Champions View -->
-      <div *ngIf="viewMode === 'champions'" class="champions-section">
-        <h2>Season Champions</h2>
-        <div class="seasons-list">
-          <ng-container *ngFor="let season of filteredChampions">
-            <div class="season-champions-row" *ngIf="hasSelectedDivisionChampion(season)">
-              <div class="season-header">
-                <h3>{{ season.seasonName }}</h3>
-                <div class="season-id">{{ season.seasonId }}</div>
-              </div>
-              <div class="champions-row">
-                <!-- Division 1 Champion (Pinnacle) -->
-                <div class="champion-item" *ngIf="season.champions.division1 && (!selectedDivision || selectedDivision === 'Pinnacle')">
-                  <div class="division-badge division-pinnacle">Pinnacle</div>
-                  <div class="champion-name">{{ season.champions.division1 }}</div>
-                  <div class="champion-points">{{ season.totalPoints.division1 }}pts</div>
-                </div>
-                
-                <!-- Division 2 Champion (Vanguard) -->
-                <div class="champion-item" *ngIf="season.champions.division2 && (!selectedDivision || selectedDivision === 'Vanguard')">
-                  <div class="division-badge division-vanguard">Vanguard</div>
-                  <div class="champion-name">{{ season.champions.division2 }}</div>
-                  <div class="champion-points">{{ season.totalPoints.division2 }}pts</div>
-                </div>
-                
-                <!-- Division 3 Champion (Ascendant) -->
-                <div class="champion-item" *ngIf="season.champions.division3 && (!selectedDivision || selectedDivision === 'Ascendant')">
-                  <div class="division-badge division-ascendant">Ascendant</div>
-                  <div class="champion-name">{{ season.champions.division3 }}</div>
-                  <div class="champion-points">{{ season.totalPoints.division3 }}pts</div>
-                </div>
-                
-                <!-- Division 4 Champion (Emergent) -->
-                <div class="champion-item" *ngIf="season.champions.division4 && (!selectedDivision || selectedDivision === 'Emergent')">
-                  <div class="division-badge division-emergent">Emergent</div>
-                  <div class="champion-name">{{ season.champions.division4 }}</div>
-                  <div class="champion-points">{{ season.totalPoints.division4 }}pts</div>
-                </div>
-                
-                <!-- Division 5 Champion (Challengers) -->
-                <div class="champion-item" *ngIf="season.champions.division5 && (!selectedDivision || selectedDivision === 'Challengers')">
-                  <div class="division-badge division-challengers">Challengers</div>
-                  <div class="champion-name">{{ season.champions.division5 }}</div>
-                  <div class="champion-points">{{ season.totalPoints.division5 }}pts</div>
-                </div>
-                
-                <!-- Division 6 Champion (Contenders) -->
-                <div class="champion-item" *ngIf="season.champions.division6 && (!selectedDivision || selectedDivision === 'Contenders')">
-                  <div class="division-badge division-contenders">Contenders</div>
-                  <div class="champion-name">{{ season.champions.division6 }}</div>
-                  <div class="champion-points">{{ season.totalPoints.division6 }}pts</div>
-                </div>
-              </div>
-            </div>
-          </ng-container>
-        </div>
-      </div>
+      <app-season-champions 
+        *ngIf="viewMode === 'champions'"
+        [filteredChampions]="filteredChampions"
+        [selectedDivision]="selectedDivision">
+      </app-season-champions>
 
       <!-- Final Leaderboards View -->
-      <div *ngIf="viewMode === 'leaderboards'" class="leaderboards-section">
-        <h2>Final Season Leaderboards</h2>
-        <div *ngFor="let leaderboard of filteredLeaderboards" class="leaderboard-container">
-          <h3>{{ getSeasonName(leaderboard.seasonId) }} - {{ leaderboard.division }}</h3>
-          
-          <app-base-grid 
-            [data]="leaderboard.teams" 
-            [config]="leaderboardGridConfig"
-            containerClass="archive-leaderboard-grid">
-            
-            <ng-template #cellTemplate let-item let-column="column" let-value="value" let-index="index">
-              <ng-container [ngSwitch]="column.key">
-                <span *ngSwitchCase="'rank'" class="rank-number" [class]="'rank-' + item.rank">{{ item.rank }}</span>
-                <span *ngSwitchCase="'teamName'" class="team-name">{{ value }}</span>
-                <span *ngSwitchCase="'totalPoints'" class="points-value">{{ value }}</span>
-                <span *ngSwitchCase="'wins'" class="wins-value">{{ value }}</span>
-                <span *ngSwitchCase="'gamesPlayed'" class="games-value">{{ value }}</span>
-                <span *ngSwitchCase="'kills'" class="kills-value">{{ value }}</span>
-                <span *ngSwitchCase="'avgPlacement'" class="placement-value">{{ value }}</span>
-                <span *ngSwitchDefault>{{ value }}</span>
-              </ng-container>
-            </ng-template>
-          </app-base-grid>
-        </div>
-      </div>
+      <app-season-leaderboards
+        *ngIf="viewMode === 'leaderboards'"
+        [filteredLeaderboards]="filteredLeaderboards"
+        [seasons]="seasons">
+      </app-season-leaderboards>
 
       <!-- Match History View -->
-      <div *ngIf="viewMode === 'matches'" class="matches-section">
-        <h2>Historical Matches</h2>
-        <div class="matches-list">
-          <div *ngFor="let match of filteredMatches" class="match-card">
-            <div class="match-header">
-              <h3>{{ getSeasonName(match.seasonId) }} - {{ match.division }}</h3>
-              <div class="match-info">
-                <span class="match-number">Match {{ match.matchNumber }}</span>
-                <span class="match-date">{{ formatDate(match.date) }}</span>
-              </div>
-            </div>
-            
-            <div class="match-teams">
-              <span *ngFor="let team of match.teams; let last = last" class="team-name">
-                {{ team }}<span *ngIf="!last"> vs </span>
-              </span>
-            </div>
-
-            <div class="match-results">
-              <div *ngFor="let gameResult of match.results" class="game-result">
-                <h4>Game {{ gameResult.gameNumber }}</h4>
-                
-                <app-base-grid 
-                  [data]="gameResult.results" 
-                  [config]="matchGridConfig"
-                  containerClass="match-result-grid">
-                  
-                  <ng-template #cellTemplate let-item let-column="column" let-value="value">
-                    <ng-container [ngSwitch]="column.key">
-                      <span *ngSwitchCase="'teamName'" class="team-name">{{ value }}</span>
-                      <span *ngSwitchCase="'placement'" class="placement-value" [class]="'placement-' + value">{{ getPlacementText(value) }}</span>
-                      <span *ngSwitchCase="'kills'" class="kills-value">{{ value }}</span>
-                      <span *ngSwitchCase="'points'" class="points-value">{{ value }}</span>
-                      <span *ngSwitchDefault>{{ value }}</span>
-                    </ng-container>
-                  </ng-template>
-                </app-base-grid>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <app-archive-match-history
+        *ngIf="viewMode === 'matches'"
+        [filteredMatches]="filteredMatches"
+        [seasons]="seasons">
+      </app-archive-match-history>
     </div>
   `,
   styleUrl: './scores-archive.component.css'
@@ -344,33 +71,23 @@ export class ScoresArchiveComponent implements OnInit {
   filteredLeaderboards: SeasonLeaderboard[] = [];
   filteredMatches: HistoricalMatch[] = [];
 
-  leaderboardGridConfig: GridConfig = {
-    columns: [
-      { key: 'rank', label: 'Rank', width: '80px', class: 'rank-col' },
-      { key: 'teamName', label: 'Team', width: '2fr', class: 'team-col' },
-      { key: 'totalPoints', label: 'Points', width: '1fr', class: 'points-col' },
-      { key: 'wins', label: 'Wins', width: '1fr', class: 'wins-col' },
-      { key: 'gamesPlayed', label: 'Games', width: '1fr', class: 'games-col' },
-      { key: 'kills', label: 'Kills', width: '1fr', class: 'kills-col' },
-      { key: 'avgPlacement', label: 'Avg Place', width: '1fr', class: 'placement-col' }
-    ],
-    hoverable: true,
-    showHeader: true
-  };
-
-  matchGridConfig: GridConfig = {
-    columns: [
-      { key: 'teamName', label: 'Team', width: '2fr', class: 'team-col' },
-      { key: 'placement', label: 'Place', width: '1fr', class: 'placement-col' },
-      { key: 'kills', label: 'Kills', width: '1fr', class: 'kills-col' },
-      { key: 'points', label: 'Points', width: '1fr', class: 'points-col' }
-    ],
-    hoverable: true,
-    showHeader: true
-  };
-
   ngOnInit() {
     this.loadMockData();
+    this.filterData();
+  }
+
+  onSeasonChange(value: string) {
+    this.selectedSeason = value;
+    this.filterData();
+  }
+
+  onDivisionChange(value: string) {
+    this.selectedDivision = value;
+    this.filterData();
+  }
+
+  onViewModeChange(value: string) {
+    this.viewMode = value;
     this.filterData();
   }
 
@@ -938,18 +655,6 @@ export class ScoresArchiveComponent implements OnInit {
     ];
   }
 
-  onSeasonChange() {
-    this.filterData();
-  }
-
-  onDivisionChange() {
-    this.filterData();
-  }
-
-  onViewModeChange() {
-    this.filterData();
-  }
-
   filterData() {
     // Filter champions based on season and division
     this.filteredChampions = this.champions.filter(season => {
@@ -967,47 +672,5 @@ export class ScoresArchiveComponent implements OnInit {
       return (!this.selectedSeason || match.seasonId === this.selectedSeason) &&
              (!this.selectedDivision || match.division === this.selectedDivision);
     });
-  }
-
-  // Helper method to get division property name from division display name
-  getDivisionProperty(divisionName: string): keyof SeasonChampions['champions'] | null {
-    const divisionMap: { [key: string]: keyof SeasonChampions['champions'] } = {
-      'Pinnacle': 'division1',
-      'Vanguard': 'division2', 
-      'Ascendant': 'division3',
-      'Emergent': 'division4',
-      'Challengers': 'division5',
-      'Contenders': 'division6'
-    };
-    return divisionMap[divisionName] || null;
-  }
-
-  // Helper method to check if a season has a champion for the selected division
-  hasSelectedDivisionChampion(season: SeasonChampions): boolean {
-    if (!this.selectedDivision) return true;
-    
-    const divisionProperty = this.getDivisionProperty(this.selectedDivision);
-    return divisionProperty ? !!season.champions[divisionProperty] : false;
-  }
-
-  getSeasonName(seasonId: string): string {
-    // For champions, we now have direct season names, but this method
-    // is still used by leaderboards and matches that use season IDs
-    const season = this.seasons.find(s => s.id === seasonId);
-    return season ? season.name : seasonId;
-  }
-
-  formatDate(date: string): string {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  }
-
-  getPlacementText(placement: number): string {
-    const suffixes = ['', 'st', 'nd', 'rd'];
-    const suffix = suffixes[placement] || 'th';
-    return `${placement}${suffix}`;
   }
 }
