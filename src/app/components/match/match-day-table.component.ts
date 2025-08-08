@@ -199,13 +199,14 @@ const PLACEMENT_POINTS: { [key: number]: number } = {
                   </div>
                 </div>
                 <div class="cell kills-col">
-                  <span class="kills-value">{{ standing.totalPoints }}</span>
+                  <span class="kills-value total-points-highlight">{{ standing.totalPoints }}</span>
                 </div>
                 <div class="cell placement-points-col">
-                  <span class="placement-points">{{ standing.avgPlacement.toFixed(1) }}</span>
+                  <span class="placement-points" 
+                        [ngClass]="getAvgPlacementColorClass(standing.avgPlacement)">{{ standing.avgPlacement.toFixed(1) }}</span>
                 </div>
                 <div class="cell total-points-col">
-                  <span class="total-points">{{ standing.totalKills }}</span>
+                  <span class="total-kills">{{ standing.totalKills }}</span>
                 </div>
                 <div class="cell expand-col">
                   <div class="expand-arrow" 
@@ -448,6 +449,24 @@ export class MatchDayTableComponent {
   getMapName(gameNumber: number): string {
     const gameResults = this.getGameResults(gameNumber);
     return gameResults.length > 0 ? gameResults[0].mapName : '';
+  }
+
+  // Helper function to get color class for average placement
+  getAvgPlacementColorClass(avgPlacement: number): string {
+    // Scale from 1 (best - green) to 20 (worst - red)
+    // Clamp the value between 1 and 20
+    const clampedPlacement = Math.max(1, Math.min(20, avgPlacement));
+    
+    if (clampedPlacement <= 6.67) {
+      // Green range (1-6.67)
+      return 'placement-excellent';
+    } else if (clampedPlacement <= 13.33) {
+      // Yellow range (6.67-13.33)
+      return 'placement-good';
+    } else {
+      // Red range (13.33-20)
+      return 'placement-poor';
+    }
   }
 
   // Helper function to calculate placement points

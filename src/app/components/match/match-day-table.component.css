@@ -306,6 +306,32 @@
   font-weight: 700;
 }
 
+/* Highlighting for total points column in overall standings */
+.total-points-highlight {
+  color: #ffd700 !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 4px rgba(255, 215, 0, 0.8);
+}
+
+/* Color scale for average placement */
+.placement-excellent {
+  color: #10b981 !important; /* Green */
+  font-weight: 600;
+  text-shadow: 0 0 2px rgba(16, 185, 129, 0.6);
+}
+
+.placement-good {
+  color: #f59e0b !important; /* Yellow/Orange */
+  font-weight: 600;
+  text-shadow: 0 0 2px rgba(245, 158, 11, 0.6);
+}
+
+.placement-poor {
+  color: #ef4444 !important; /* Red */
+  font-weight: 600;
+  text-shadow: 0 0 2px rgba(239, 68, 68, 0.6);
+}
+
 /* Expand Arrow */
 .expand-arrow {
   display: flex;
