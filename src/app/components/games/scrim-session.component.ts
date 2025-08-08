@@ -1,34 +1,13 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatchDayTableComponent, MatchDayResults, TeamGameResult, PlayerStats } from '../match/match-day-table.component';
+import { MatchDataService } from '../../services/match-data.service';
 
 export interface ScrimSession {
   id: number;
   date: string;
   time: string;
   maps: string[];
-  matches: ScrimMatch[];
-}
-
-export interface ScrimMatch {
-  id: number;
-  map: string;
-  teams: ScrimTeam[];
-}
-
-export interface ScrimTeam {
-  name: string;
-  players: ScrimPlayer[];
-  placement: number;
-  totalKills: number;
-  totalDamage: number;
-}
-
-export interface ScrimPlayer {
-  username: string;
-  kills: number;
-  damage: number;
-  placement: number;
 }
 
 @Component({
@@ -58,8 +37,11 @@ export interface ScrimPlayer {
 
       <!-- Expanded Content -->
       <div class="session-content" [class.expanded]="isExpanded">
-        <div class="session-matches">
-          <app-match-day-table [matchResults]="convertAllMatchesToResults()"></app-match-day-table>
+        <div class="session-matches" *ngIf="matchResults">
+          <app-match-day-table [matchResults]="matchResults"></app-match-day-table>
+        </div>
+        <div class="loading-message" *ngIf="!matchResults">
+          <p>Loading match data...</p>
         </div>
       </div>
     </div>
@@ -170,6 +152,13 @@ export interface ScrimPlayer {
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
+    .loading-message {
+      text-align: center;
+      padding: 2rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-style: italic;
+    }
+
     @media (max-width: 768px) {
       .session-header {
         padding: 1rem;
@@ -197,51 +186,24 @@ export interface ScrimPlayer {
     }
   `]
 })
-export class ScrimSessionComponent {
+export class ScrimSessionComponent implements OnInit {
   @Input() scrimSession!: ScrimSession;
   
   isExpanded = false;
+  matchResults: MatchDayResults | null = null;
+
+  constructor(private matchDataService: MatchDataService) {}
+
+  ngOnInit() {
+    // Load match day results using the existing service
+    this.matchDataService.getMatchDayResults(this.scrimSession.id.toString()).subscribe(
+      results => {
+        this.matchResults = results;
+      }
+    );
+  }
 
   toggleExpanded() {
     this.isExpanded = !this.isExpanded;
-  }
-
-  convertAllMatchesToResults(): MatchDayResults {
-    // Convert all matches in the session to a single MatchDayResults object
-    const allResults: MatchDayResults = {};
-    
-    this.scrimSession.matches.forEach((match, index) => {
-      const gameNumber = index + 1;
-      const teamResults: TeamGameResult[] = match.teams.map(team => ({
-        gameNumber: gameNumber,
-        teamName: team.name,
-        placement: team.placement,
-        teamKills: team.totalKills,
-        placementPoints: this.getPlacementPoints(team.placement),
-        totalPoints: this.getPlacementPoints(team.placement) + Math.floor(team.totalKills * 0.5),
-        mapName: match.map,
-        players: team.players.map(player => ({
-          playerName: player.username,
-          kills: player.kills,
-          damage: player.damage,
-          downs: Math.floor(player.damage / 100), // Estimate downs from damage
-          revives: Math.floor(Math.random() * 3), // Mock data
-          respawns: Math.floor(Math.random() * 2) // Mock data
-        } as PlayerStats)),
-        isExpanded: false
-      }));
-      
-      allResults[gameNumber] = teamResults;
-    });
-
-    return allResults;
-  }
-
-  private getPlacementPoints(placement: number): number {
-    const points: { [key: number]: number } = {
-      1: 10, 2: 6, 3: 5, 4: 4, 5: 3, 6: 3, 7: 2, 8: 2, 9: 1, 10: 1,
-      11: 1, 12: 1, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0
-    };
-    return points[placement] || 0;
   }
 }

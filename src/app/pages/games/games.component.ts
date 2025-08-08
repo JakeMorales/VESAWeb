@@ -228,18 +228,6 @@ export class GamesComponent implements OnInit {
 
   generateScrimData() {
     const maps = ['World\'s Edge', 'Kings Canyon', 'Olympus', 'Storm Point'];
-    const teamNames = [
-      'Team Apex', 'Storm Runners', 'Void Walkers', 'Third Party Kings',
-      'Ring Runners', 'Hot Drop Squad', 'Gatekeepers', 'Zone Fighters',
-      'Chaos Squad', 'Elite Strikers', 'Phantom Force', 'Night Owls'
-    ];
-    const playerNames = [
-      'Wraith_Main_BTW', 'Octane_Speed', 'Lifeline_Healer', 'Pathfinder_Grapple',
-      'Bangalore_Smoke', 'Bloodhound_Hunter', 'Gibraltar_Tank', 'Caustic_Gas',
-      'Mirage_Bamboozle', 'Revenant_Shadow', 'Loba_Thief', 'Rampart_Builder',
-      'Wattson_Fence', 'Crypto_Drone', 'Horizon_Gravity', 'Fuse_Explosives',
-      'Valkyrie_Jets', 'Seer_Scan', 'Ash_Portal', 'Mad_Maggie_Drill'
-    ];
 
     // Generate scrim sessions for the last few weeks
     this.scrimSessions = Array.from({ length: 15 }, (_, i) => {
@@ -249,22 +237,12 @@ export class GamesComponent implements OnInit {
       const time = Math.random() > 0.5 ? '8:00 PM EST' : '11:00 PM EST';
       const numMaps = 6; // Standard 6-game scrim set
       const sessionMaps = this.getRandomMaps(maps, numMaps);
-      
-      const matches = sessionMaps.map((map, mapIndex) => {
-        const teams = this.generateScrimTeams(teamNames, playerNames, 6); // 6 teams per match
-        return {
-          id: i * 10 + mapIndex,
-          map: map,
-          teams: teams
-        };
-      });
 
       return {
         id: i,
         date: date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
         time: time,
-        maps: sessionMaps,
-        matches: matches
+        maps: sessionMaps
       };
     });
   }
@@ -281,19 +259,20 @@ export class GamesComponent implements OnInit {
 
   private generateScrimTeams(teamNames: string[], playerNames: string[], teamCount: number) {
     const teams = [];
-    const usedPlayers = new Set<string>();
     
     for (let i = 0; i < teamCount; i++) {
       const teamPlayers = [];
+      const playersPerTeam = Math.floor(Math.random() * 3) + 3; // 3-5 players per team
+      const usedPlayersThisTeam = new Set<string>();
       
-      // Generate 3 players per team
-      for (let p = 0; p < 3; p++) {
+      // Generate players for this specific team
+      for (let p = 0; p < playersPerTeam; p++) {
         let playerName;
         do {
           playerName = playerNames[Math.floor(Math.random() * playerNames.length)];
-        } while (usedPlayers.has(playerName));
+        } while (usedPlayersThisTeam.has(playerName));
         
-        usedPlayers.add(playerName);
+        usedPlayersThisTeam.add(playerName);
         
         const kills = Math.floor(Math.random() * 8);
         const damage = Math.floor(Math.random() * 2000) + 200;
@@ -338,15 +317,11 @@ export class GamesComponent implements OnInit {
 
     const searchLower = this.searchTerm.toLowerCase();
     this.filteredScrimSessions = this.scrimSessions.filter(session => {
-      // Search in team names and player names across all matches
-      return session.matches.some(match => 
-        match.teams.some(team => 
-          team.name.toLowerCase().includes(searchLower) ||
-          team.players.some(player => 
-            player.username.toLowerCase().includes(searchLower)
-          )
-        )
-      );
+      // For now, just search by date/time/maps since we're using the service for actual match data
+      // In the future, we could enhance this to search within the loaded match results
+      return session.date.toLowerCase().includes(searchLower) ||
+             session.time.toLowerCase().includes(searchLower) ||
+             session.maps.some(map => map.toLowerCase().includes(searchLower));
     });
   }
 
