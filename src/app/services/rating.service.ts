@@ -54,11 +54,11 @@ export interface RatingCalculationResult {
 })
 export class RatingService {
   
-  // Battle Royale specific constants (updated based on pro player analysis)
+  // Battle Royale specific constants (balanced weight distribution)
   private readonly BR_TEAMS_COUNT = 20;
-  private readonly BR_PLACEMENT_WEIGHT = 0.45;   // 45% from placement 
-  private readonly BR_COMBAT_WEIGHT = 0.325;     // 32.5% from kills/combat (increased)
-  private readonly BR_DAMAGE_WEIGHT = 0.175;     // 17.5% from damage (decreased)
+  private readonly BR_PLACEMENT_WEIGHT = 0.55;   // 55% from placement (primary factor)
+  private readonly BR_COMBAT_WEIGHT = 0.28;      // 28% from kills/combat
+  private readonly BR_DAMAGE_WEIGHT = 0.12;      // 12% from damage
   private readonly BR_SUPPORT_WEIGHT = 0.05;     // 5% from team support
   
   // Elo constants
@@ -121,10 +121,12 @@ export class RatingService {
     // 1. Placement Factor (45% weight) - Higher placement = better score
     const placementFactor = this.calculatePlacementScore(teamResult.placement, this.BR_TEAMS_COUNT);
     
-    // 2. Combat Factor (30% weight) - Kills and eliminations (more realistic expectations)
-    // Use a reasonable max based on typical player performance rather than game max
-    const realisticMaxKills = 6; // Pro players average ~1.1 kills, so 6 is very good for typical players
-    const combatFactor = Math.min(1.0, (player.kills + (player.downs * 0.5)) / realisticMaxKills);
+    // 2. Combat Factor (32.5% weight) - Kills and assists (more realistic expectations)
+    // Pro players average ~1.1 kills + 1.67 assists per game
+    // Weight: kills = 1.0, assists = 1.0 (assists count the same as kills)
+    const combatScore = player.kills + (player.assists || 0);
+    const realisticMaxCombat = 6; // Pro-level combined score ~2.8, so 6 is very good for typical players
+    const combatFactor = Math.min(1.0, combatScore / realisticMaxCombat);
     
     // 3. Damage Factor (20% weight) - Consistent damage output (more realistic expectations)
     // Use a reasonable max based on typical player performance rather than game max  
@@ -175,13 +177,14 @@ export class RatingService {
     const opponentStrengthBonus = performance.opponentStrengthFactor * 0.1;
     const finalScore = Math.min(1.0, performanceScore + (performance.consistencyFactor * 0.1) + opponentStrengthBonus);
     
-    // Expected score based on current rating vs game average
-    const expectedScore = 1 / (1 + Math.pow(10, (gameAverageRating - currentRating) / 400));
+    // Expected score based on current rating vs game average (adjusted for BR)
+    const baseExpectedScore = 1 / (1 + Math.pow(10, (gameAverageRating - currentRating) / 400));
+    const adjustedExpectedScore = Math.max(0.35, baseExpectedScore); // Higher baseline to prevent inflation
     
     // K-factor adjustment based on game context (battle royale has more variance)
-    const brKFactor = this.ELO_K_FACTOR * 1.2; // 20% higher K-factor for BR
+    const brKFactor = this.ELO_K_FACTOR * 1.25; // 25% higher K-factor for BR
     
-    return Math.round(brKFactor * (finalScore - expectedScore));
+    return Math.round(brKFactor * (finalScore - adjustedExpectedScore));
   }
 
   /**
@@ -265,7 +268,30 @@ export class RatingService {
    * Calculate placement score (0 to 1) based on team placement
    */
   private calculatePlacementScore(placement: number, totalTeams: number): number {
-    return (totalTeams - placement + 1) / totalTeams;
+    // Explicit placement scoring - clear values we can verify
+    switch (placement) {
+      case 1: return 1.00;   // 100%
+      case 2: return 0.80;   // 80%  
+      case 3: return 0.65;   // 65%
+      case 4: return 0.50;   // 50%
+      case 5: return 0.35;   // 35%
+      case 6: return 0.25;   // 25%
+      case 7: return 0.20;   // 20%
+      case 8: return 0.16;   // 16%
+      case 9: return 0.13;   // 13%
+      case 10: return 0.10;  // 10%
+      case 11: return 0.08;  // 8%
+      case 12: return 0.06;  // 6%
+      case 13: return 0.05;  // 5%
+      case 14: return 0.04;  // 4%
+      case 15: return 0.03;  // 3%
+      case 16: return 0.02;  // 2%
+      case 17: return 0.015; // 1.5%
+      case 18: return 0.01;  // 1%
+      case 19: return 0.005; // 0.5%
+      case 20: return 0.0;   // 0%
+      default: return 0.0;
+    }
   }
 
   /**
