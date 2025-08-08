@@ -1,27 +1,51 @@
 <div class="games-container">
   <div class="header-section">
-    <h1>Match History</h1>
-    <p>Complete record of all VESA league matches and scrimmages</p>
+    <h1>Match History & Archives</h1>
+    <p>Complete record of all VESA league matches, scrimmages, and historical data</p>
     
+    <!-- View Mode Switcher -->
+    <div class="view-switcher">
+      <button 
+        class="view-btn" 
+        [class.active]="viewMode === 'current'"
+        (click)="switchToCurrentGames()">
+        Current Season
+      </button>
+      <button 
+        class="view-btn" 
+        [class.active]="viewMode === 'archive'"
+        (click)="switchToArchive()">
+        Scores Archive
+      </button>
+    </div>
+  </div>
+
+  <!-- Current Games View -->
+  <div *ngIf="viewMode === 'current'" class="current-games-view">
     <app-game-filters 
       (mapChange)="onMapChange($event)"
       (modeChange)="onModeChange($event)"
       (searchChange)="onSearchChange($event)">
     </app-game-filters>
+
+    <app-game-stats-overview [stats]="gameStats"></app-game-stats-overview>
+
+    <div class="games-list">
+      <app-game-card 
+        *ngFor="let game of filteredGames | slice:0:displayedCount" 
+        [game]="game">
+      </app-game-card>
+    </div>
+
+    <div class="load-more" *ngIf="displayedCount < filteredGames.length">
+      <button class="load-more-btn" (click)="loadMoreGames()">
+        Load More Games
+      </button>
+    </div>
   </div>
 
-  <app-game-stats-overview [stats]="gameStats"></app-game-stats-overview>
-
-  <div class="games-list">
-    <app-game-card 
-      *ngFor="let game of filteredGames | slice:0:displayedCount" 
-      [game]="game">
-    </app-game-card>
-  </div>
-
-  <div class="load-more" *ngIf="displayedCount < filteredGames.length">
-    <button class="load-more-btn" (click)="loadMoreGames()">
-      Load More Games
-    </button>
+  <!-- Scores Archive View -->
+  <div *ngIf="viewMode === 'archive'" class="archive-view">
+    <app-scores-archive></app-scores-archive>
   </div>
 </div>

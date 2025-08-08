@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { GameFiltersComponent } from '../../components/games/game-filters.component';
 import { GameStatsOverviewComponent, GameStats } from '../../components/games/game-stats-overview.component';
 import { GameCardComponent, GameMatch } from '../../components/games/game-card.component';
+import { ScoresArchiveComponent } from '../../components/league/scores-archive.component';
 import { Team } from '../../components/games/team-card.component';
 import { GamePlayer } from '../../components/games/player-item.component';
 
 @Component({
   selector: 'app-games',
   standalone: true,
-  imports: [CommonModule, GameFiltersComponent, GameStatsOverviewComponent, GameCardComponent],
+  imports: [CommonModule, GameFiltersComponent, GameStatsOverviewComponent, GameCardComponent, ScoresArchiveComponent],
   templateUrl: './games.component.html',
   styleUrl: './games.component.css'
 })
@@ -20,6 +21,7 @@ export class GamesComponent implements OnInit {
   filterMode = '';
   searchTerm = '';
   displayedCount = 10;
+  viewMode: 'current' | 'archive' = 'current';
   gameStats: GameStats = {
     totalMatches: 0,
     averageKills: 0,
@@ -214,5 +216,13 @@ export class GamesComponent implements OnInit {
     this.searchTerm = search;
     this.filterGames();
     this.updateStats();
+  }
+
+  switchToCurrentGames() {
+    this.viewMode = 'current';
+  }
+
+  switchToArchive() {
+    this.viewMode = 'archive';
   }
 }
