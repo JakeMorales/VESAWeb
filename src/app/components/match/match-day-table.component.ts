@@ -131,7 +131,7 @@ const PLACEMENT_POINTS: { [key: number]: number } = {
 export class MatchDayTableComponent {
   @Input() matchResults!: MatchDayResults;
   
-  selectedGame = 1;
+  selectedGame = 0; // Default to overall standings view
   private cachedOverallStandings: OverallTeamStanding[] = [];
   private lastMatchResultsHash: string = '';
 

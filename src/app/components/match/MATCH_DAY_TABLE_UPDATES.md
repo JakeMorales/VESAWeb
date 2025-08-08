@@ -33,6 +33,11 @@ Updated to use a proper green-yellow-orange-red gradient based on placement rang
 - **Perfect centering**: Dropdown arrows now take full cell width/height and are perfectly centered
 - **Consistent behavior**: Applied to both game results and overall standings tables
 - **Clean styling**: Removed default margins/padding that could cause misalignment
+
+### Default View Change
+- **Overall standings as default**: Page now loads with overall standings view instead of Game 1
+- **Better user experience**: Users see the summary view first, then can drill down into individual games
+- **Improved navigation flow**: More logical progression from general to specific results
 - Added `teamScores` and `teamKills` inputs to game indicators
 - Enhanced tooltip to display: "Game X: Yth place, Z pts, W kills"
 - Updated parent components to pass additional data for rich tooltips
