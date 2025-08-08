@@ -1,5 +1,6 @@
 .grid-container {
   width: 100%;
+  max-width: 100%;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -14,6 +15,21 @@
   position: sticky;
   top: 0;
   z-index: 10;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+.grid-header::-webkit-scrollbar {
+  width: 12px;
+  background: transparent;
+}
+
+.grid-header::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+.grid-header::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .header-cell {
@@ -28,6 +44,7 @@
   align-items: center;
   justify-content: space-between;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .header-cell:last-child {
@@ -54,6 +71,25 @@
 .grid-body {
   max-height: 60vh;
   overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.grid-body::-webkit-scrollbar {
+  width: 12px;
+}
+
+.grid-body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+}
+
+.grid-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+}
+
+.grid-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .grid-body.no-scrollbar {
@@ -75,6 +111,10 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   transition: all 0.3s ease;
   min-height: 60px;
+}
+
+.scrims-leaderboard-grid .grid-row {
+  min-height: 35px;
 }
 
 .grid-row:last-child {
@@ -105,6 +145,14 @@
   display: flex;
   align-items: center;
   min-height: 60px;
+  box-sizing: border-box;
+}
+
+/* Thinner rows for specific grid types */
+.scrims-leaderboard-grid .grid-cell {
+  min-height: 35px;
+  padding: 0.5rem 1.5rem;
+  box-sizing: border-box;
 }
 
 .grid-cell:last-child {

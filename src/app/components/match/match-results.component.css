@@ -4,6 +4,14 @@
   margin: 0 auto;
 }
 
+/* Grid Alignment */
+.game-results-grid .grid-cell,
+.game-results-grid .header-cell,
+.overall-standings-grid .grid-cell,
+.overall-standings-grid .header-cell {
+  box-sizing: border-box;
+}
+
 .results-content h2 {
   font-size: 2rem;
   font-weight: 700;

@@ -1,6 +1,13 @@
 /* Division Standings Section */
 .standings-section {
   padding: 2rem 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.standings-content {
+  padding: 0 1rem;
 }
 
 .standings-content h2 {
@@ -13,7 +20,40 @@
 
 /* Division Standings Grid Styling */
 .division-standings-grid {
-  margin: 1rem 0;
+  margin: 1rem auto;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.division-standings-grid .grid-container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.division-standings-grid .grid-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+}
+
+.division-standings-grid .header-cell {
+  box-sizing: border-box;
+}
+
+.division-standings-grid .rank-col {
+  justify-content: center;
+}
+
+.division-standings-grid .points-col,
+.division-standings-grid .wins-col,
+.division-standings-grid .games-col,
+.division-standings-grid .kills-col {
+  justify-content: center;
+}
+
+.division-standings-grid .trend-col {
+  justify-content: center;
 }
 
 /* Custom Cell Styling */
@@ -111,6 +151,11 @@
     font-size: 1.5rem;
   }
 
+  .division-standings-grid .grid-header,
+  .division-standings-grid .grid-row {
+    grid-template-columns: 60px 2fr 1fr 1fr 1fr 1fr 80px !important;
+  }
+
   .rank-number {
     font-size: 0.75rem;
     padding: 0.2rem 0.4rem;
@@ -134,5 +179,14 @@
 @media (max-width: 480px) {
   .standings-content h2 {
     font-size: 1.25rem;
+  }
+  
+  .division-standings-grid .grid-header,
+  .division-standings-grid .grid-row {
+    grid-template-columns: 50px 2fr 1fr 1fr 60px !important;
+  }
+  
+  .division-standings-grid .games-col {
+    display: none;
   }
 }

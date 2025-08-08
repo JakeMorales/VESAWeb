@@ -57,13 +57,13 @@ export class DivisionStandingsComponent {
 
   gridConfig: GridConfig = {
     columns: [
-      { key: 'rank', label: 'Rank', width: '60px', class: 'rank-col' },
-      { key: 'name', label: 'Team', width: '1fr', class: 'team-col', sortable: true },
-      { key: 'points', label: 'Points', width: '100px', class: 'points-col', sortable: true },
-      { key: 'wins', label: 'Wins', width: '80px', class: 'wins-col', sortable: true },
-      { key: 'gamesPlayed', label: 'Games', width: '80px', class: 'games-col', sortable: true },
-      { key: 'kills', label: 'Kills', width: '80px', class: 'kills-col', sortable: true },
-      { key: 'trend', label: 'Trend', width: '80px', class: 'trend-col' }
+      { key: 'rank', label: 'Rank', width: '80px', class: 'rank-col' },
+      { key: 'name', label: 'Team', width: '2fr', class: 'team-col', sortable: true },
+      { key: 'points', label: 'Points', width: '1fr', class: 'points-col', sortable: true },
+      { key: 'wins', label: 'Wins', width: '1fr', class: 'wins-col', sortable: true },
+      { key: 'gamesPlayed', label: 'Games', width: '1fr', class: 'games-col', sortable: true },
+      { key: 'kills', label: 'Kills', width: '1fr', class: 'kills-col', sortable: true },
+      { key: 'trend', label: 'Trend', width: '100px', class: 'trend-col' }
     ],
     hoverable: true,
     showHeader: true
