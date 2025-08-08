@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-join-scrims',
@@ -15,9 +15,9 @@ import { RouterModule } from '@angular/router';
           <a href="https://discord.gg/xsAH38Jazz" target="_blank" rel="noopener noreferrer" class="join-button primary">
             🎮 Join Scrims Discord
           </a>
-          <a routerLink="/players" class="join-button secondary">
+          <button type="button" (click)="navigateToLeaderboard()" class="join-button secondary">
             📊 View Full Leaderboard
-          </a>
+          </button>
         </div>
       </div>
     </section>
@@ -72,6 +72,8 @@ import { RouterModule } from '@angular/router';
       border: 2px solid transparent;
       min-width: 200px;
       justify-content: center;
+      cursor: pointer;
+      font-family: inherit;
     }
 
     .join-button.primary {
@@ -128,4 +130,12 @@ import { RouterModule } from '@angular/router';
   `]
 })
 export class JoinScrimsComponent {
+  constructor(private router: Router) {}
+
+  navigateToLeaderboard(): void {
+    this.router.navigate(['/players']).then(() => {
+      // Scroll to top of the page after navigation
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
 }
