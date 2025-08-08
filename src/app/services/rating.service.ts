@@ -54,13 +54,12 @@ export interface RatingCalculationResult {
 })
 export class RatingService {
   
-  // Battle Royale specific constants
+  // Battle Royale specific constants (updated based on pro player analysis)
   private readonly BR_TEAMS_COUNT = 20;
-  private readonly BR_PLACEMENT_WEIGHT = 0.4;    // 40% from placement
-  private readonly BR_COMBAT_WEIGHT = 0.25;      // 25% from kills/combat
-  private readonly BR_DAMAGE_WEIGHT = 0.15;      // 15% from damage
-  private readonly BR_SUPPORT_WEIGHT = 0.1;      // 10% from team support
-  private readonly BR_OPPONENT_WEIGHT = 0.1;     // 10% from opponent strength
+  private readonly BR_PLACEMENT_WEIGHT = 0.45;   // 45% from placement (increased)
+  private readonly BR_COMBAT_WEIGHT = 0.30;      // 30% from kills/combat (increased)
+  private readonly BR_DAMAGE_WEIGHT = 0.20;      // 20% from damage (increased)
+  private readonly BR_SUPPORT_WEIGHT = 0.05;     // 5% from team support (decreased)
   
   // Elo constants
   private readonly ELO_K_FACTOR = 32;
@@ -119,19 +118,21 @@ export class RatingService {
     allResults: TeamGameResult[]
   ): BattleRoyalePerformanceFactors {
     
-    // 1. Placement Factor (40% weight) - Higher placement = better score
+    // 1. Placement Factor (45% weight) - Higher placement = better score
     const placementFactor = this.calculatePlacementScore(teamResult.placement, this.BR_TEAMS_COUNT);
     
-    // 2. Combat Factor (25% weight) - Kills and eliminations
-    const maxKillsInGame = Math.max(...allResults.flatMap(r => r.players.map(p => p.kills)));
-    const combatFactor = Math.min(1.0, (player.kills + (player.downs * 0.5)) / Math.max(1, maxKillsInGame));
+    // 2. Combat Factor (30% weight) - Kills and eliminations (more realistic expectations)
+    // Use a reasonable max based on typical player performance rather than game max
+    const realisticMaxKills = 6; // Pro players average ~1.1 kills, so 6 is very good for typical players
+    const combatFactor = Math.min(1.0, (player.kills + (player.downs * 0.5)) / realisticMaxKills);
     
-    // 3. Damage Factor (15% weight) - Consistent damage output
-    const maxDamageInGame = Math.max(...allResults.flatMap(r => r.players.map(p => p.damage)));
-    const damageFactor = Math.min(1.0, player.damage / Math.max(1, maxDamageInGame));
+    // 3. Damage Factor (20% weight) - Consistent damage output (more realistic expectations)
+    // Use a reasonable max based on typical player performance rather than game max  
+    const realisticMaxDamage = 1200; // Pro players average ~510, so 1200 is very good for typical players
+    const damageFactor = Math.min(1.0, player.damage / realisticMaxDamage);
     
-    // 4. Support Factor (10% weight) - Team play (revives/respawns)
-    const maxSupportActions = 5; // Reasonable max for support actions per game
+    // 4. Support Factor (5% weight) - Team play (revives/respawns) - more realistic expectations
+    const maxSupportActions = 3; // Pro players average ~0.22 revives, so 3 is very good for typical players
     const supportFactor = Math.min(1.0, (player.revives + player.respawns) / maxSupportActions);
     
     // 5. Opponent Strength Factor (10% weight) - Quality of competition
@@ -163,16 +164,16 @@ export class RatingService {
     performance: BattleRoyalePerformanceFactors,
     gameAverageRating: number = this.ELO_BASE_RATING
   ): number {
-    // Calculate overall performance score
+    // Calculate overall performance score (weights sum to 100%)
     const performanceScore = 
       (performance.placementFactor * this.BR_PLACEMENT_WEIGHT) +
       (performance.combatFactor * this.BR_COMBAT_WEIGHT) +
       (performance.damageFactor * this.BR_DAMAGE_WEIGHT) +
-      (performance.supportFactor * this.BR_SUPPORT_WEIGHT) +
-      (performance.opponentStrengthFactor * this.BR_OPPONENT_WEIGHT);
+      (performance.supportFactor * this.BR_SUPPORT_WEIGHT);
     
-    // Add consistency bonus (up to 10% bonus)
-    const finalScore = Math.min(1.0, performanceScore + (performance.consistencyFactor * 0.1));
+    // Add consistency bonus (up to 10% bonus) and opponent strength consideration
+    const opponentStrengthBonus = performance.opponentStrengthFactor * 0.1;
+    const finalScore = Math.min(1.0, performanceScore + (performance.consistencyFactor * 0.1) + opponentStrengthBonus);
     
     // Expected score based on current rating vs game average
     const expectedScore = 1 / (1 + Math.pow(10, (gameAverageRating - currentRating) / 400));

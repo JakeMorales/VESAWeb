@@ -21,21 +21,21 @@
           
           <div class="input-group">
             <label>Kills</label>
-            <input type="range" min="0" max="15" [value]="testKills" 
+            <input type="range" min="0" max="8" [value]="testKills" 
                    class="test-slider" (input)="updateTestValue('kills', $event)">
             <span class="test-value">{{testKills}}</span>
           </div>
           
           <div class="input-group">
             <label>Damage</label>
-            <input type="range" min="0" max="3000" step="50" [value]="testDamage" 
+            <input type="range" min="0" max="1500" step="25" [value]="testDamage" 
                    class="test-slider" (input)="updateTestValue('damage', $event)">
             <span class="test-value">{{testDamage}}</span>
           </div>
           
           <div class="input-group">
             <label>Revives</label>
-            <input type="range" min="0" max="8" [value]="testRevives" 
+            <input type="range" min="0" max="4" [value]="testRevives" 
                    class="test-slider" (input)="updateTestValue('revives', $event)">
             <span class="test-value">{{testRevives}}</span>
           </div>
@@ -51,28 +51,28 @@
       <div class="factor-breakdown">
         <h4>Factor Contributions:</h4>
         <div class="factor">
-          <span>Placement (40%):</span>
+          <span>Placement (45%):</span>
           <div class="factor-bar">
             <div class="factor-fill placement" [style.width.%]="getFactorContribution('placement')"></div>
           </div>
           <span>{{getFactorContribution('placement').toFixed(1)}}%</span>
         </div>
         <div class="factor">
-          <span>Combat (25%):</span>
+          <span>Combat (30%):</span>
           <div class="factor-bar">
             <div class="factor-fill combat" [style.width.%]="getFactorContribution('combat')"></div>
           </div>
           <span>{{getFactorContribution('combat').toFixed(1)}}%</span>
         </div>
         <div class="factor">
-          <span>Damage (15%):</span>
+          <span>Damage (20%):</span>
           <div class="factor-bar">
             <div class="factor-fill damage" [style.width.%]="getFactorContribution('damage')"></div>
           </div>
           <span>{{getFactorContribution('damage').toFixed(1)}}%</span>
         </div>
         <div class="factor">
-          <span>Support (10%):</span>
+          <span>Support (5%):</span>
           <div class="factor-bar">
             <div class="factor-fill support" [style.width.%]="getFactorContribution('support')"></div>
           </div>
