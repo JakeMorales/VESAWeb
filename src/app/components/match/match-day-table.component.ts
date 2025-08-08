@@ -1,6 +1,9 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { GameTabsComponent } from './game-tabs.component';
+import { GameResultsTableComponent } from './game-results-table.component';
+import { OverallStandingsTableComponent } from './overall-standings-table.component';
 
 export interface PlayerStats {
   playerName: string;
@@ -66,187 +69,32 @@ const PLACEMENT_POINTS: { [key: number]: number } = {
 @Component({
   selector: 'app-match-day-table',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, GameTabsComponent, GameResultsTableComponent, OverallStandingsTableComponent],
   template: `
     <section class="match-day-section" *ngIf="matchResults && getGameNumbers().length > 0">
       <div class="match-day-content">
         <h2>Match Day Results</h2>
         
-        <div class="games-tabs">
-          <button 
-            *ngFor="let gameNum of getGameNumbers()" 
-            (click)="selectedGame = gameNum"
-            [class.active]="selectedGame === gameNum"
-            class="game-tab">
-            Game {{ gameNum }} - {{ getMapName(gameNum) }}
-          </button>
-          <button 
-            (click)="selectedGame = 0"
-            [class.active]="selectedGame === 0"
-            class="game-tab overall-tab">
-            Overall Standings
-          </button>
-        </div>
+        <app-game-tabs
+          [gameNumbers]="getGameNumbers()"
+          [selectedGame]="selectedGame"
+          [mapNames]="getMapNames()"
+          (gameSelected)="onGameSelected($event)">
+        </app-game-tabs>
         
-        <!-- Game Results Table -->
-        <div *ngIf="selectedGame > 0" class="game-results-container">
-          <div class="results-table">
-            <div class="table-header">
-              <div class="header-cell placement-col">#</div>
-              <div class="header-cell team-col">Team</div>
-              <div class="header-cell kills-col">Kills</div>
-              <div class="header-cell placement-points-col">Placement Pts</div>
-              <div class="header-cell total-points-col">Total Points</div>
-              <div class="header-cell expand-col"></div>
-            </div>
-            
-            <ng-container *ngFor="let result of getGameResults(selectedGame); let i = index; trackBy: trackByTeam">
-              <!-- Team Row -->
-              <div class="table-row team-row" 
-                   (click)="toggleTeamExpanded(result)"
-                   [class.expanded]="result.isExpanded"
-                   [class]="'place-' + result.placement">
-                <div class="cell placement-col">
-                  <span class="placement-number">{{ result.placement }}</span>
-                </div>
-                <div class="cell team-col">
-                  <span class="team-name">{{ result.teamName }}</span>
-                </div>
-                <div class="cell kills-col">
-                  <span class="kills-value">{{ result.teamKills }}</span>
-                </div>
-                <div class="cell placement-points-col">
-                  <span class="placement-points">{{ result.placementPoints }}</span>
-                </div>
-                <div class="cell total-points-col">
-                  <span class="total-points">{{ result.totalPoints }}</span>
-                </div>
-                <div class="cell expand-col">
-                  <div class="expand-arrow" 
-                       [class.expanded]="result.isExpanded">
-                    <span class="arrow-icon">▼</span>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Player Details Rows -->
-              <div class="player-details" *ngIf="result.isExpanded" [@slideDown]>
-                <div class="player-header">
-                  <div class="player-header-cell player-name-col">Player</div>
-                  <div class="player-header-cell player-kills-col">Kills</div>
-                  <div class="player-header-cell player-damage-col">Damage</div>
-                  <div class="player-header-cell player-downs-col">Downs</div>
-                  <div class="player-header-cell player-headshots-col">Headshots</div>
-                  <div class="player-header-cell player-assists-col">Assists</div>
-                  <div class="player-header-cell player-shots-col">Shots</div>
-                  <div class="player-header-cell player-hits-col">Hits</div>
-                  <div class="player-header-cell player-respawns-col">Respawns</div>
-                  <div class="player-header-cell player-revives-col">Revives</div>
-                </div>
-                
-                <div class="player-row" *ngFor="let player of result.players; trackBy: trackByPlayer">
-                  <div class="player-cell player-name-col">{{ player.playerName }}</div>
-                  <div class="player-cell player-kills-col">{{ player.kills }}</div>
-                  <div class="player-cell player-damage-col">{{ player.damage | number:'1.0-0' }}</div>
-                  <div class="player-cell player-downs-col">{{ player.downs }}</div>
-                  <div class="player-cell player-headshots-col">{{ player.headshots || 0 }}</div>
-                  <div class="player-cell player-assists-col">{{ player.assists || 0 }}</div>
-                  <div class="player-cell player-shots-col">{{ player.shots || 0 }}</div>
-                  <div class="player-cell player-hits-col">{{ player.hits || 0 }}</div>
-                  <div class="player-cell player-respawns-col">{{ player.respawns }}</div>
-                  <div class="player-cell player-revives-col">{{ player.revives }}</div>
-                </div>
-              </div>
-            </ng-container>
-          </div>
-        </div>
+        <app-game-results-table
+          *ngIf="selectedGame > 0"
+          [results]="getGameResults(selectedGame)"
+          (teamToggled)="onTeamToggled($event)">
+        </app-game-results-table>
         
-        <!-- Overall Standings -->
-        <div *ngIf="selectedGame === 0" class="game-results-container">
-          <div class="results-table">
-            <div class="table-header">
-              <div class="header-cell placement-col">Rank</div>
-              <div class="header-cell team-col">Team</div>
-              <div class="header-cell kills-col">Total Points</div>
-              <div class="header-cell placement-points-col">Avg Place</div>
-              <div class="header-cell total-points-col">Total Kills</div>
-              <div class="header-cell expand-col"></div>
-            </div>
-            
-            <ng-container *ngFor="let standing of getOverallStandings(); let i = index">
-              <!-- Team Row -->
-              <div class="table-row team-row" 
-                   (click)="toggleStandingExpanded(standing)"
-                   [class.expanded]="standing.isExpanded"
-                   [class]="'place-' + (i + 1)">
-                <div class="cell placement-col">
-                  <span class="placement-number">{{ i + 1 }}</span>
-                </div>
-                <div class="cell team-col">
-                  <span class="team-name">{{ standing.teamName }}</span>
-                  <div class="game-indicators">
-                    <div class="game-indicator" 
-                         *ngFor="let gameResult of getTeamGameResults(standing.teamName)"
-                         [title]="'Game ' + gameResult.gameNumber + ': ' + gameResult.placement + getPlaceSuffix(gameResult.placement) + ' place, ' + gameResult.totalPoints + ' pts, ' + gameResult.teamKills + ' kills'">
-                      <span class="trophy-icon" 
-                            [ngClass]="{
-                              'gold': gameResult.placement === 1,
-                              'silver': gameResult.placement === 2,
-                              'bronze': gameResult.placement === 3,
-                              'default': gameResult.placement > 3
-                            }">●</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="cell kills-col">
-                  <span class="kills-value total-points-highlight">{{ standing.totalPoints }}</span>
-                </div>
-                <div class="cell placement-points-col">
-                  <span class="placement-points" 
-                        [ngClass]="getAvgPlacementColorClass(standing.avgPlacement)">{{ standing.avgPlacement.toFixed(1) }}</span>
-                </div>
-                <div class="cell total-points-col">
-                  <span class="total-kills">{{ standing.totalKills }}</span>
-                </div>
-                <div class="cell expand-col">
-                  <div class="expand-arrow" 
-                       [class.expanded]="standing.isExpanded">
-                    <span class="arrow-icon">▼</span>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Player Details Rows -->
-              <div class="player-details" *ngIf="standing.isExpanded" [@slideDown]>
-                <div class="player-header">
-                  <div class="player-header-cell player-name-col">Player</div>
-                  <div class="player-header-cell player-kills-col">Kills</div>
-                  <div class="player-header-cell player-damage-col">Damage</div>
-                  <div class="player-header-cell player-downs-col">Downs</div>
-                  <div class="player-header-cell player-headshots-col">Headshots</div>
-                  <div class="player-header-cell player-assists-col">Assists</div>
-                  <div class="player-header-cell player-shots-col">Shots</div>
-                  <div class="player-header-cell player-hits-col">Hits</div>
-                  <div class="player-header-cell player-respawns-col">Respawns</div>
-                  <div class="player-header-cell player-revives-col">Revives</div>
-                </div>
-                
-                <div class="player-row" *ngFor="let player of standing.players; trackBy: trackByOverallPlayer">
-                  <div class="player-cell player-name-col">{{ player.playerName }}</div>
-                  <div class="player-cell player-kills-col">{{ player.totalKills }}</div>
-                  <div class="player-cell player-damage-col">{{ player.totalDamage | number:'1.0-0' }}</div>
-                  <div class="player-cell player-downs-col">{{ player.totalDowns }}</div>
-                  <div class="player-cell player-headshots-col">{{ player.totalHeadshots || 0 }}</div>
-                  <div class="player-cell player-assists-col">{{ player.totalAssists || 0 }}</div>
-                  <div class="player-cell player-shots-col">{{ player.totalShots || 0 }}</div>
-                  <div class="player-cell player-hits-col">{{ player.totalHits || 0 }}</div>
-                  <div class="player-cell player-respawns-col">{{ player.totalRespawns }}</div>
-                  <div class="player-cell player-revives-col">{{ player.totalRevives }}</div>
-                </div>
-              </div>
-            </ng-container>
-          </div>
-        </div>
+        <app-overall-standings-table
+          *ngIf="selectedGame === 0"
+          [standings]="getOverallStandings()"
+          [gameNumbers]="getGameNumbers()"
+          [teamPlacements]="getTeamPlacementsForIndicators()"
+          (teamToggled)="onStandingToggled($event)">
+        </app-overall-standings-table>
       </div>
     </section>
   `,
@@ -449,6 +297,42 @@ export class MatchDayTableComponent {
   getMapName(gameNumber: number): string {
     const gameResults = this.getGameResults(gameNumber);
     return gameResults.length > 0 ? gameResults[0].mapName : '';
+  }
+
+  getMapNames(): { [key: number]: string } {
+    const mapNames: { [key: number]: string } = {};
+    this.getGameNumbers().forEach(gameNum => {
+      mapNames[gameNum] = this.getMapName(gameNum);
+    });
+    return mapNames;
+  }
+
+  onGameSelected(gameNumber: number): void {
+    this.selectedGame = gameNumber;
+  }
+
+  onTeamToggled(result: TeamGameResult): void {
+    // Team expansion state is already handled in the child component
+  }
+
+  onStandingToggled(standing: OverallTeamStanding): void {
+    // Standing expansion state is already handled in the child component
+  }
+
+  getTeamPlacementsForIndicators(): { [teamName: string]: { [gameNumber: number]: number } } {
+    const teamPlacements: { [teamName: string]: { [gameNumber: number]: number } } = {};
+    
+    this.getGameNumbers().forEach(gameNum => {
+      const gameResults = this.getGameResults(gameNum);
+      gameResults.forEach(result => {
+        if (!teamPlacements[result.teamName]) {
+          teamPlacements[result.teamName] = {};
+        }
+        teamPlacements[result.teamName][gameNum] = result.placement;
+      });
+    });
+    
+    return teamPlacements;
   }
 
   // Helper function to get color class for average placement

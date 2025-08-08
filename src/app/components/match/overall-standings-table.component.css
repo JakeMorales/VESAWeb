@@ -1,0 +1,213 @@
+/* Overall Standings Table */
+.overall-standings-container {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  transform: translateZ(0);
+}
+
+.standings-table {
+  width: 100%;
+  position: relative;
+  transform: translateZ(0);
+}
+
+/* Table Headers */
+.table-header {
+  display: grid;
+  background: linear-gradient(135deg, #1e293b, #334155);
+  border-bottom: 2px solid rgba(0, 212, 255, 0.3);
+  font-weight: 600;
+  color: #00d4ff;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  grid-template-columns: 60px 1fr 120px 100px 100px 60px;
+}
+
+.header-cell {
+  padding: 1rem 0.75rem;
+  text-align: center;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-cell:last-child {
+  border-right: none;
+}
+
+/* Team Rows */
+.table-row {
+  display: grid;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  grid-template-columns: 60px 1fr 120px 100px 100px 60px;
+}
+
+.team-row {
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  user-select: none;
+  pointer-events: auto;
+  position: relative;
+}
+
+.team-row .cell {
+  pointer-events: none;
+}
+
+.team-row .expand-arrow {
+  pointer-events: none;
+}
+
+.team-row:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(2px);
+}
+
+.team-row.expanded {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Team Column */
+.team-col {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Rank-based styling for overall standings */
+.rank-1 {
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+  border-left: 4px solid #ffd700;
+}
+
+.rank-2 {
+  background: linear-gradient(90deg, rgba(192, 192, 192, 0.15), rgba(192, 192, 192, 0.05));
+  border-left: 4px solid #c0c0c0;
+}
+
+.rank-3 {
+  background: linear-gradient(90deg, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.05));
+  border-left: 4px solid #cd7f32;
+}
+
+/* Cells */
+.cell {
+  padding: 1rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e2e8f0;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  min-height: 60px;
+}
+
+.cell:last-child {
+  border-right: none;
+}
+
+.team-col {
+  justify-content: flex-start;
+  padding-left: 1.5rem;
+}
+
+/* Specific cell styling */
+.rank-number {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #f1f5f9;
+}
+
+.team-name {
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.total-points,
+.games-won,
+.total-kills,
+.avg-placement {
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.total-points {
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+/* Highlighting for total points column in overall standings */
+.total-points-highlight {
+  color: #ffd700 !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 4px rgba(255, 215, 0, 0.8);
+}
+
+/* Color scale for average placement */
+.placement-excellent {
+  color: #10b981 !important; /* Green */
+  font-weight: 600;
+  text-shadow: 0 0 2px rgba(16, 185, 129, 0.6);
+}
+
+.placement-good {
+  color: #f59e0b !important; /* Yellow/Orange */
+  font-weight: 600;
+  text-shadow: 0 0 2px rgba(245, 158, 11, 0.6);
+}
+
+.placement-poor {
+  color: #ef4444 !important; /* Red */
+  font-weight: 600;
+  text-shadow: 0 0 2px rgba(239, 68, 68, 0.6);
+}
+
+/* Expand Arrow */
+.expand-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  transition: all 0.3s ease;
+}
+
+.arrow-icon {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  transition: transform 0.3s ease;
+  transform: rotate(0deg);
+}
+
+.expand-arrow.expanded .arrow-icon {
+  transform: rotate(180deg);
+  color: #f1f5f9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 50px 1fr 90px 80px 80px 50px;
+  }
+
+  .cell {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+    min-height: 50px;
+  }
+
+  .header-cell {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 40px 1fr 80px 70px 70px 40px;
+  }
+}

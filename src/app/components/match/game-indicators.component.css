@@ -1,0 +1,56 @@
+/* Game Indicators */
+.game-indicators {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+  padding-right: 0.5rem;
+}
+
+.game-indicator {
+  position: relative;
+  cursor: help;
+  transition: all 0.2s ease;
+}
+
+.trophy-icon {
+  font-size: 1rem;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Default greyed out trophy */
+.trophy-icon.default {
+  color: #666666 !important;
+  opacity: 0.4 !important;
+}
+
+/* Gold trophy for 1st place */
+.trophy-icon.gold {
+  color: #FFD700 !important;
+  opacity: 1 !important;
+  text-shadow: 0 0 4px rgba(255, 215, 0, 0.8) !important;
+}
+
+/* Silver trophy for 2nd place */
+.trophy-icon.silver {
+  color: #C0C0C0 !important;
+  opacity: 1 !important;
+  text-shadow: 0 0 4px rgba(192, 192, 192, 0.8) !important;
+}
+
+/* Bronze trophy for 3rd place */
+.trophy-icon.bronze {
+  color: #CD7F32 !important;
+  opacity: 1 !important;
+  text-shadow: 0 0 4px rgba(205, 127, 50, 0.8) !important;
+}
+
+.game-indicator:hover .trophy-icon {
+  transform: scale(1.1);
+}
+
+.game-indicator:hover .trophy-icon.default {
+  opacity: 0.6;
+  filter: grayscale(50%);
+}
