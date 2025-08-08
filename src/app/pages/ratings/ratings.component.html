@@ -1,61 +1,94 @@
 <div class="ratings-container">
   <div class="ratings-header">
-    <h1>Rating System Playground</h1>
+    <h1>🎯 Battle Royale Rating Calculator</h1>
     <p class="header-description">
-      Experiment with Elo and Glicko rating calculations using our mock data.
-      This is a testing environment for developing our proprietary rating system.
+      Test different performance scenarios to see how they affect your rating in real-time.
     </p>
   </div>
 
-  <div class="ratings-content">
-    <!-- Rating Calculator Section -->
-    <section class="rating-section">
-      <h2>⚡ Interactive Rating Calculator</h2>
-      <app-rating-calculator></app-rating-calculator>
-    </section>
-
-    <!-- Player Ratings Section -->
-    <section class="rating-section">
-      <h2>👤 Player Ratings</h2>
-      <app-player-ratings></app-player-ratings>
-    </section>
-
-    <!-- Team Ratings Section -->
-    <section class="rating-section">
-      <h2>🏆 Team Ratings</h2>
-      <app-team-ratings></app-team-ratings>
-    </section>
-
-    <!-- Additional Rating Tools -->
-    <section class="rating-section">
-      <h2>📈 Additional Rating Tools</h2>
-      <div class="placeholder-content">
-        <p>📈 <strong>Rating History</strong> - Track rating changes over time with visual charts</p>
-        
-        <div class="status-message">
-          <h3>🚀 Next Features Coming Soon!</h3>
-          <p>Additional rating system components are in development:</p>
-          <ul>
-            <li>Visual rating history charts</li>
-            <li>Advanced rating scenario testing</li>
-            <li>Custom rating algorithm parameters</li>
-          </ul>
+  <div class="calculator-content">
+    <!-- Performance Testing Section -->
+    <section class="test-section">
+      <h2>🧪 Performance Scenario</h2>
+      <div class="scenario-inputs">
+        <div class="input-grid">
+          <div class="input-group">
+            <label>Team Placement (1-20)</label>
+            <input type="range" min="1" max="20" [value]="testPlacement" 
+                   class="test-slider" (input)="updateTestValue('placement', $event)">
+            <span class="test-value">{{testPlacement}}</span>
+          </div>
+          
+          <div class="input-group">
+            <label>Kills</label>
+            <input type="range" min="0" max="15" [value]="testKills" 
+                   class="test-slider" (input)="updateTestValue('kills', $event)">
+            <span class="test-value">{{testKills}}</span>
+          </div>
+          
+          <div class="input-group">
+            <label>Damage</label>
+            <input type="range" min="0" max="3000" step="50" [value]="testDamage" 
+                   class="test-slider" (input)="updateTestValue('damage', $event)">
+            <span class="test-value">{{testDamage}}</span>
+          </div>
+          
+          <div class="input-group">
+            <label>Revives</label>
+            <input type="range" min="0" max="8" [value]="testRevives" 
+                   class="test-slider" (input)="updateTestValue('revives', $event)">
+            <span class="test-value">{{testRevives}}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="rating-result">
+        <h3>Rating Change: <span [class]="getRatingChangeClass()">{{calculatedRatingChange >= 0 ? '+' : ''}}{{calculatedRatingChange}}</span></h3>
+        <p>New Rating: <strong>{{1500 + calculatedRatingChange}}</strong></p>
+        <p class="performance-score">Performance Score: {{(calculatedPerformanceScore * 100).toFixed(1)}}%</p>
+      </div>
+      
+      <div class="factor-breakdown">
+        <h4>Factor Contributions:</h4>
+        <div class="factor">
+          <span>Placement (40%):</span>
+          <div class="factor-bar">
+            <div class="factor-fill placement" [style.width.%]="getFactorContribution('placement')"></div>
+          </div>
+          <span>{{getFactorContribution('placement').toFixed(1)}}%</span>
+        </div>
+        <div class="factor">
+          <span>Combat (25%):</span>
+          <div class="factor-bar">
+            <div class="factor-fill combat" [style.width.%]="getFactorContribution('combat')"></div>
+          </div>
+          <span>{{getFactorContribution('combat').toFixed(1)}}%</span>
+        </div>
+        <div class="factor">
+          <span>Damage (15%):</span>
+          <div class="factor-bar">
+            <div class="factor-fill damage" [style.width.%]="getFactorContribution('damage')"></div>
+          </div>
+          <span>{{getFactorContribution('damage').toFixed(1)}}%</span>
+        </div>
+        <div class="factor">
+          <span>Support (10%):</span>
+          <div class="factor-bar">
+            <div class="factor-fill support" [style.width.%]="getFactorContribution('support')"></div>
+          </div>
+          <span>{{getFactorContribution('support').toFixed(1)}}%</span>
         </div>
       </div>
     </section>
 
-    <!-- Mock Data Preview -->
-    <section class="rating-section">
-      <h2>📊 Available Mock Data</h2>
-      <div class="mock-data-info">
-        <p>Our system has access to comprehensive mock match data including:</p>
-        <ul>
-          <li><strong>Match Results:</strong> Team placements, kills, and point scores</li>
-          <li><strong>Player Stats:</strong> Individual performance metrics (kills, damage, assists)</li>
-          <li><strong>Team Data:</strong> Complete team compositions and results</li>
-          <li><strong>Historical Data:</strong> Multiple games and match days for trend analysis</li>
-        </ul>
-        <p class="note">This data will be used to calculate and experiment with our rating algorithms.</p>
+    <!-- Quick Test Scenarios -->
+    <section class="presets-section">
+      <h2>🎮 Quick Scenarios</h2>
+      <div class="preset-buttons">
+        <button (click)="loadScenario('winner')" class="preset-btn winner">🏆 Winner</button>
+        <button (click)="loadScenario('top5')" class="preset-btn top5">⭐ Top 5</button>
+        <button (click)="loadScenario('mid')" class="preset-btn mid">📊 Average</button>
+        <button (click)="loadScenario('poor')" class="preset-btn poor">💀 Poor</button>
       </div>
     </section>
   </div>

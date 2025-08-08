@@ -1,0 +1,143 @@
+<div class="ratings-container">
+  <div class="ratings-header">
+    <h1>🎯 Battle Royale Rating System Configurator</h1>
+    <p class="header-description">
+      Adjust the weights of different performance factors to see how they affect rating calculations in real-time.
+      This tool helps visualize how placement, combat, damage, and support actions feed into our Elo rating model.
+    </p>
+  </div>
+
+  <div class="configurator-content">
+    <!-- Weight Configuration Section -->
+    <section class="config-section">
+      <h2>⚖️ Performance Factor Weights</h2>
+      <div class="weight-sliders">
+        <div class="weight-group">
+          <label>Placement Weight ({{placementWeight}}%)</label>
+          <input type="range" min="0" max="60" [value]="placementWeight" 
+                 class="weight-slider placement" (input)="updateWeight('placement', $event)">
+          <span class="weight-value">{{placementWeight}}%</span>
+        </div>
+        
+        <div class="weight-group">
+          <label>Combat Weight ({{combatWeight}}%)</label>
+          <input type="range" min="0" max="50" [value]="combatWeight" 
+                 class="weight-slider combat" (input)="updateWeight('combat', $event)">
+          <span class="weight-value">{{combatWeight}}%</span>
+        </div>
+        
+        <div class="weight-group">
+          <label>Damage Weight ({{damageWeight}}%)</label>
+          <input type="range" min="0" max="40" [value]="damageWeight" 
+                 class="weight-slider damage" (input)="updateWeight('damage', $event)">
+          <span class="weight-value">{{damageWeight}}%</span>
+        </div>
+        
+        <div class="weight-group">
+          <label>Support Weight ({{supportWeight}}%)</label>
+          <input type="range" min="0" max="30" [value]="supportWeight" 
+                 class="weight-slider support" (input)="updateWeight('support', $event)">
+          <span class="weight-value">{{supportWeight}}%</span>
+        </div>
+        
+        <div class="weight-group">
+          <label>Opponent Strength Weight ({{opponentWeight}}%)</label>
+          <input type="range" min="0" max="20" [value]="opponentWeight" 
+                 class="weight-slider opponent" (input)="updateWeight('opponent', $event)">
+          <span class="weight-value">{{opponentWeight}}%</span>
+        </div>
+      </div>
+      
+      <div class="weight-summary">
+        <h4>Total Weight: <span [class]="getTotalWeightClass()">{{getTotalWeight()}}%</span></h4>
+        <p class="weight-note">Weights should total 100% for optimal rating calculations</p>
+        <button (click)="normalizeWeights()" class="normalize-btn">Auto-Normalize to 100%</button>
+      </div>
+    </section>
+
+    <!-- Performance Testing Section -->
+    <section class="test-section">
+      <h2>🧪 Test Performance Scenarios</h2>
+      <div class="scenario-inputs">
+        <div class="input-grid">
+          <div class="input-group">
+            <label>Team Placement (1-20)</label>
+            <input type="range" min="1" max="20" [value]="testPlacement" 
+                   class="test-slider" (input)="updateTestValue('placement', $event)">
+            <span class="test-value">{{testPlacement}}</span>
+          </div>
+          
+          <div class="input-group">
+            <label>Kills</label>
+            <input type="range" min="0" max="15" [value]="testKills" 
+                   class="test-slider" (input)="updateTestValue('kills', $event)">
+            <span class="test-value">{{testKills}}</span>
+          </div>
+          
+          <div class="input-group">
+            <label>Damage</label>
+            <input type="range" min="0" max="3000" step="50" [value]="testDamage" 
+                   class="test-slider" (input)="updateTestValue('damage', $event)">
+            <span class="test-value">{{testDamage}}</span>
+          </div>
+          
+          <div class="input-group">
+            <label>Revives</label>
+            <input type="range" min="0" max="8" [value]="testRevives" 
+                   class="test-slider" (input)="updateTestValue('revives', $event)">
+            <span class="test-value">{{testRevives}}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="rating-result">
+        <h3>Calculated Rating Change: <span [class]="getRatingChangeClass()">{{calculatedRatingChange >= 0 ? '+' : ''}}{{calculatedRatingChange}}</span></h3>
+        <p>New Rating: <strong>{{1500 + calculatedRatingChange}}</strong></p>
+        <p class="performance-score">Performance Score: {{(calculatedPerformanceScore * 100).toFixed(1)}}%</p>
+      </div>
+      
+      <div class="factor-breakdown">
+        <h4>Factor Contributions:</h4>
+        <div class="factor">
+          <span>Placement:</span>
+          <div class="factor-bar">
+            <div class="factor-fill placement" [style.width.%]="getFactorContribution('placement')"></div>
+          </div>
+          <span>{{getFactorContribution('placement').toFixed(1)}}%</span>
+        </div>
+        <div class="factor">
+          <span>Combat:</span>
+          <div class="factor-bar">
+            <div class="factor-fill combat" [style.width.%]="getFactorContribution('combat')"></div>
+          </div>
+          <span>{{getFactorContribution('combat').toFixed(1)}}%</span>
+        </div>
+        <div class="factor">
+          <span>Damage:</span>
+          <div class="factor-bar">
+            <div class="factor-fill damage" [style.width.%]="getFactorContribution('damage')"></div>
+          </div>
+          <span>{{getFactorContribution('damage').toFixed(1)}}%</span>
+        </div>
+        <div class="factor">
+          <span>Support:</span>
+          <div class="factor-bar">
+            <div class="factor-fill support" [style.width.%]="getFactorContribution('support')"></div>
+          </div>
+          <span>{{getFactorContribution('support').toFixed(1)}}%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Preset Scenarios -->
+    <section class="presets-section">
+      <h2>🎮 Quick Test Scenarios</h2>
+      <div class="preset-buttons">
+        <button (click)="loadScenario('winner')" class="preset-btn winner">🏆 Winner (1st Place)</button>
+        <button (click)="loadScenario('top5')" class="preset-btn top5">⭐ Top 5 Finish</button>
+        <button (click)="loadScenario('mid')" class="preset-btn mid">📊 Average Performance</button>
+        <button (click)="loadScenario('poor')" class="preset-btn poor">💀 Poor Performance</button>
+      </div>
+    </section>
+  </div>
+</div>

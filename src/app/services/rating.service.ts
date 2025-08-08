@@ -9,6 +9,11 @@ export interface PlayerRating {
   gamesPlayed: number;
   wins: number;
   losses: number;
+  avgPlacement: number;
+  avgKills: number;
+  avgDamage: number;
+  avgRevives: number;
+  avgRespawns: number;
   lastUpdated: Date;
 }
 
@@ -21,7 +26,18 @@ export interface TeamRating {
   wins: number;
   losses: number;
   avgPlacement: number;
+  avgTeamKills: number;
+  avgTotalPoints: number;
   lastUpdated: Date;
+}
+
+export interface BattleRoyalePerformanceFactors {
+  placementFactor: number;      // Based on final placement (1-20)
+  combatFactor: number;         // Kills + assists weighted
+  damageFactor: number;         // Damage dealt normalized
+  supportFactor: number;        // Revives + respawns
+  opponentStrengthFactor: number; // Average rating of eliminated opponents
+  consistencyFactor: number;    // Based on performance variance
 }
 
 export interface RatingCalculationResult {
@@ -30,12 +46,21 @@ export interface RatingCalculationResult {
   newGlickoDeviation: number;
   eloChange: number;
   glickoChange: number;
+  performanceBreakdown: BattleRoyalePerformanceFactors;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class RatingService {
+  
+  // Battle Royale specific constants
+  private readonly BR_TEAMS_COUNT = 20;
+  private readonly BR_PLACEMENT_WEIGHT = 0.4;    // 40% from placement
+  private readonly BR_COMBAT_WEIGHT = 0.25;      // 25% from kills/combat
+  private readonly BR_DAMAGE_WEIGHT = 0.15;      // 15% from damage
+  private readonly BR_SUPPORT_WEIGHT = 0.1;      // 10% from team support
+  private readonly BR_OPPONENT_WEIGHT = 0.1;     // 10% from opponent strength
   
   // Elo constants
   private readonly ELO_K_FACTOR = 32;
@@ -86,28 +111,118 @@ export class RatingService {
   }
 
   /**
+   * Calculate battle royale performance factors for rating adjustment
+   */
+  private calculateBattleRoyalePerformance(
+    player: PlayerStats, 
+    teamResult: TeamGameResult, 
+    allResults: TeamGameResult[]
+  ): BattleRoyalePerformanceFactors {
+    
+    // 1. Placement Factor (40% weight) - Higher placement = better score
+    const placementFactor = this.calculatePlacementScore(teamResult.placement, this.BR_TEAMS_COUNT);
+    
+    // 2. Combat Factor (25% weight) - Kills and eliminations
+    const maxKillsInGame = Math.max(...allResults.flatMap(r => r.players.map(p => p.kills)));
+    const combatFactor = Math.min(1.0, (player.kills + (player.downs * 0.5)) / Math.max(1, maxKillsInGame));
+    
+    // 3. Damage Factor (15% weight) - Consistent damage output
+    const maxDamageInGame = Math.max(...allResults.flatMap(r => r.players.map(p => p.damage)));
+    const damageFactor = Math.min(1.0, player.damage / Math.max(1, maxDamageInGame));
+    
+    // 4. Support Factor (10% weight) - Team play (revives/respawns)
+    const maxSupportActions = 5; // Reasonable max for support actions per game
+    const supportFactor = Math.min(1.0, (player.revives + player.respawns) / maxSupportActions);
+    
+    // 5. Opponent Strength Factor (10% weight) - Quality of competition
+    // For now, base this on average placement of opponents (teams placed below you)
+    const betterTeams = allResults.filter(r => r.placement < teamResult.placement).length;
+    const opponentStrengthFactor = betterTeams / (this.BR_TEAMS_COUNT - 1);
+    
+    // 6. Consistency Factor - Bonus for well-rounded performance
+    const factors = [placementFactor, combatFactor, damageFactor, supportFactor];
+    const avgFactor = factors.reduce((a, b) => a + b) / factors.length;
+    const variance = factors.reduce((sum, f) => sum + Math.pow(f - avgFactor, 2), 0) / factors.length;
+    const consistencyFactor = Math.max(0, 1 - variance); // Less variance = higher consistency
+    
+    return {
+      placementFactor,
+      combatFactor,
+      damageFactor,
+      supportFactor,
+      opponentStrengthFactor,
+      consistencyFactor
+    };
+  }
+
+  /**
+   * Calculate battle royale Elo change based on comprehensive performance
+   */
+  calculateBattleRoyaleEloChange(
+    currentRating: number,
+    performance: BattleRoyalePerformanceFactors,
+    gameAverageRating: number = this.ELO_BASE_RATING
+  ): number {
+    // Calculate overall performance score
+    const performanceScore = 
+      (performance.placementFactor * this.BR_PLACEMENT_WEIGHT) +
+      (performance.combatFactor * this.BR_COMBAT_WEIGHT) +
+      (performance.damageFactor * this.BR_DAMAGE_WEIGHT) +
+      (performance.supportFactor * this.BR_SUPPORT_WEIGHT) +
+      (performance.opponentStrengthFactor * this.BR_OPPONENT_WEIGHT);
+    
+    // Add consistency bonus (up to 10% bonus)
+    const finalScore = Math.min(1.0, performanceScore + (performance.consistencyFactor * 0.1));
+    
+    // Expected score based on current rating vs game average
+    const expectedScore = 1 / (1 + Math.pow(10, (gameAverageRating - currentRating) / 400));
+    
+    // K-factor adjustment based on game context (battle royale has more variance)
+    const brKFactor = this.ELO_K_FACTOR * 1.2; // 20% higher K-factor for BR
+    
+    return Math.round(brKFactor * (finalScore - expectedScore));
+  }
+
+  /**
    * Process match results and calculate new ratings for all participants
    */
   processMatchResults(gameResults: TeamGameResult[]): { playerRatings: PlayerRating[]; teamRatings: TeamRating[] } {
     const playerRatings: PlayerRating[] = [];
     const teamRatings: TeamRating[] = [];
     
-    // For now, return mock calculated ratings
-    // In a real implementation, this would process the actual game results
+    // Calculate game-wide statistics for normalization
+    const gameAverageRating = this.ELO_BASE_RATING; // In real implementation, use actual average
+    
     gameResults.forEach((result, index) => {
-      // Calculate team rating based on placement (better placement = win against lower-placed teams)
-      const placementScore = this.calculatePlacementScore(result.placement, gameResults.length);
-      const baseElo = this.ELO_BASE_RATING + (index * 50); // Stagger initial ratings for demo
+      // Calculate team performance metrics
+      const teamCombatScore = result.teamKills / Math.max(...gameResults.map(r => r.teamKills));
+      const teamPlacementScore = this.calculatePlacementScore(result.placement, this.BR_TEAMS_COUNT);
+      
+      // Team rating calculation
+      const teamEloChange = this.calculateBattleRoyaleEloChange(
+        this.ELO_BASE_RATING + (index * 25), // Staggered base ratings for demo
+        {
+          placementFactor: teamPlacementScore,
+          combatFactor: teamCombatScore,
+          damageFactor: teamCombatScore, // Use combat as proxy for team damage
+          supportFactor: 0.5, // Neutral team support score
+          opponentStrengthFactor: 0.5, // Neutral opponent strength
+          consistencyFactor: 0.7 // Good consistency
+        },
+        gameAverageRating
+      );
       
       const teamRating: TeamRating = {
         teamName: result.teamName,
-        eloRating: baseElo + this.calculateEloChange(baseElo, this.ELO_BASE_RATING, placementScore),
-        glickoRating: this.GLICKO_INITIAL_RATING + (placementScore * 100),
-        glickoDeviation: this.GLICKO_INITIAL_DEVIATION - (index * 10),
+        eloRating: this.ELO_BASE_RATING + teamEloChange,
+        glickoRating: this.GLICKO_INITIAL_RATING + Math.round(teamEloChange * 1.5),
+        glickoDeviation: Math.max(30, this.GLICKO_INITIAL_DEVIATION - (teamEloChange / 10)),
         gamesPlayed: 1,
         wins: result.placement <= 3 ? 1 : 0,
-        losses: result.placement > 10 ? 1 : 0,
+        losses: result.placement > 15 ? 1 : 0,
         avgPlacement: result.placement,
+        avgTeamKills: result.teamKills,
+        avgTotalPoints: result.totalPoints,
         lastUpdated: new Date()
       };
       
@@ -115,15 +230,26 @@ export class RatingService {
       
       // Calculate individual player ratings
       result.players.forEach(player => {
-        const performanceScore = this.calculatePlayerPerformanceScore(player, result);
+        const performance = this.calculateBattleRoyalePerformance(player, result, gameResults);
+        const playerEloChange = this.calculateBattleRoyaleEloChange(
+          this.ELO_BASE_RATING + (index * 20), // Staggered base ratings
+          performance,
+          gameAverageRating
+        );
+        
         const playerRating: PlayerRating = {
           playerName: player.playerName,
-          eloRating: baseElo + Math.round(performanceScore * 50),
-          glickoRating: this.GLICKO_INITIAL_RATING + Math.round(performanceScore * 75),
-          glickoDeviation: this.GLICKO_INITIAL_DEVIATION - Math.round(performanceScore * 20),
+          eloRating: this.ELO_BASE_RATING + playerEloChange,
+          glickoRating: this.GLICKO_INITIAL_RATING + Math.round(playerEloChange * 1.5),
+          glickoDeviation: Math.max(30, this.GLICKO_INITIAL_DEVIATION - (playerEloChange / 8)),
           gamesPlayed: 1,
           wins: result.placement <= 5 ? 1 : 0,
           losses: result.placement > 15 ? 1 : 0,
+          avgPlacement: result.placement,
+          avgKills: player.kills,
+          avgDamage: player.damage,
+          avgRevives: player.revives,
+          avgRespawns: player.respawns,
           lastUpdated: new Date()
         };
         
@@ -196,6 +322,11 @@ export class RatingService {
       gamesPlayed: 0,
       wins: 0,
       losses: 0,
+      avgPlacement: 0,
+      avgKills: 0,
+      avgDamage: 0,
+      avgRevives: 0,
+      avgRespawns: 0,
       lastUpdated: new Date()
     };
   }
@@ -213,7 +344,34 @@ export class RatingService {
       wins: 0,
       losses: 0,
       avgPlacement: 0,
+      avgTeamKills: 0,
+      avgTotalPoints: 0,
       lastUpdated: new Date()
+    };
+  }
+
+  /**
+   * Calculate detailed rating result with performance breakdown
+   */
+  calculateDetailedRating(
+    player: PlayerStats,
+    teamResult: TeamGameResult,
+    allResults: TeamGameResult[],
+    currentRating: number = this.ELO_BASE_RATING
+  ): RatingCalculationResult {
+    const performance = this.calculateBattleRoyalePerformance(player, teamResult, allResults);
+    const eloChange = this.calculateBattleRoyaleEloChange(currentRating, performance);
+    
+    // Simplified Glicko calculation for this example
+    const glickoChange = Math.round(eloChange * 1.2);
+    
+    return {
+      newEloRating: currentRating + eloChange,
+      newGlickoRating: this.GLICKO_INITIAL_RATING + glickoChange,
+      newGlickoDeviation: Math.max(30, this.GLICKO_INITIAL_DEVIATION - Math.abs(eloChange) / 10),
+      eloChange,
+      glickoChange,
+      performanceBreakdown: performance
     };
   }
 }
