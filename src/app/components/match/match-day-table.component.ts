@@ -93,6 +93,8 @@ const PLACEMENT_POINTS: { [key: number]: number } = {
           [standings]="getOverallStandings()"
           [gameNumbers]="getGameNumbers()"
           [teamPlacements]="getTeamPlacementsForIndicators()"
+          [teamScores]="getTeamScoresForIndicators()"
+          [teamKills]="getTeamKillsForIndicators()"
           (teamToggled)="onStandingToggled($event)">
         </app-overall-standings-table>
       </div>
@@ -335,21 +337,50 @@ export class MatchDayTableComponent {
     return teamPlacements;
   }
 
+  getTeamScoresForIndicators(): { [teamName: string]: { [gameNumber: number]: number } } {
+    const teamScores: { [teamName: string]: { [gameNumber: number]: number } } = {};
+    
+    this.getGameNumbers().forEach(gameNum => {
+      const gameResults = this.getGameResults(gameNum);
+      gameResults.forEach(result => {
+        if (!teamScores[result.teamName]) {
+          teamScores[result.teamName] = {};
+        }
+        teamScores[result.teamName][gameNum] = result.totalPoints;
+      });
+    });
+    
+    return teamScores;
+  }
+
+  getTeamKillsForIndicators(): { [teamName: string]: { [gameNumber: number]: number } } {
+    const teamKills: { [teamName: string]: { [gameNumber: number]: number } } = {};
+    
+    this.getGameNumbers().forEach(gameNum => {
+      const gameResults = this.getGameResults(gameNum);
+      gameResults.forEach(result => {
+        if (!teamKills[result.teamName]) {
+          teamKills[result.teamName] = {};
+        }
+        teamKills[result.teamName][gameNum] = result.teamKills;
+      });
+    });
+    
+    return teamKills;
+  }
+
   // Helper function to get color class for average placement
   getAvgPlacementColorClass(avgPlacement: number): string {
     // Scale from 1 (best - green) to 20 (worst - red)
-    // Clamp the value between 1 and 20
-    const clampedPlacement = Math.max(1, Math.min(20, avgPlacement));
-    
-    if (clampedPlacement <= 6.67) {
-      // Green range (1-6.67)
-      return 'placement-excellent';
-    } else if (clampedPlacement <= 13.33) {
-      // Yellow range (6.67-13.33)
-      return 'placement-good';
+    // Green: 1-5, Yellow: 5.1-10, Orange: 10.1-15, Red: 15.1-20
+    if (avgPlacement <= 5) {
+      return 'placement-excellent'; // Green
+    } else if (avgPlacement <= 10) {
+      return 'placement-good'; // Yellow
+    } else if (avgPlacement <= 15) {
+      return 'placement-fair'; // Orange
     } else {
-      // Red range (13.33-20)
-      return 'placement-poor';
+      return 'placement-poor'; // Red
     }
   }
 

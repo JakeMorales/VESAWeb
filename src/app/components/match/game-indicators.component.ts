@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
         [title]="getTooltipText(gameNum)">
         <span class="trophy-icon" 
               [ngClass]="getTrophyClass(gameNum)">
-          🏆
+          ●
         </span>
       </div>
     </div>
@@ -23,6 +23,8 @@ import { CommonModule } from '@angular/common';
 export class GameIndicatorsComponent {
   @Input() gameNumbers: number[] = [];
   @Input() teamPlacements: { [gameNumber: number]: number } = {};
+  @Input() teamScores: { [gameNumber: number]: number } = {};
+  @Input() teamKills: { [gameNumber: number]: number } = {};
 
   getTrophyClass(gameNumber: number): string {
     const placement = this.teamPlacements[gameNumber];
@@ -38,10 +40,13 @@ export class GameIndicatorsComponent {
 
   getTooltipText(gameNumber: number): string {
     const placement = this.teamPlacements[gameNumber];
+    const score = this.teamScores[gameNumber] || 0;
+    const kills = this.teamKills[gameNumber] || 0;
+    
     if (!placement) return `Game ${gameNumber}: No placement`;
     
     const suffix = this.getPlacementSuffix(placement);
-    return `Game ${gameNumber}: ${placement}${suffix} place`;
+    return `Game ${gameNumber}: ${placement}${suffix} place, ${score} pts, ${kills} kills`;
   }
 
   private getPlacementSuffix(placement: number): string {

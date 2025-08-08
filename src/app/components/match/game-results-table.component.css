@@ -148,9 +148,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 100%; /* Take full cell width */
+  height: 100%; /* Take full cell height */
   transition: all 0.3s ease;
+  margin: 0; /* Remove any default margins */
+  padding: 0; /* Remove any default padding */
 }
 
 .arrow-icon {

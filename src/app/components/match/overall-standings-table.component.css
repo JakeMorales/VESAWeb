@@ -31,10 +31,18 @@
   padding: 1rem 0.75rem;
   text-align: center;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-cell:last-child {
   border-right: none;
+}
+
+/* Specific header column adjustments */
+.header-cell.avg-placement-col {
+  padding: 1rem 0.5rem; /* Reduce horizontal padding for better fit */
 }
 
 /* Team Rows */
@@ -75,6 +83,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
+  padding-right: 0.5rem; /* Ensure some space from the column border */
+}
+
+.team-name {
+  font-weight: 600;
+  color: #f1f5f9;
+  flex-shrink: 0; /* Prevent team name from shrinking */
+}
+
+/* Game indicators container positioning */
+.team-col app-game-indicators {
+  margin-left: auto; /* Push to the right */
+  flex-shrink: 0; /* Prevent indicators from shrinking */
 }
 
 /* Rank-based styling for overall standings */
@@ -108,9 +130,10 @@
   border-right: none;
 }
 
-.team-col {
-  justify-content: flex-start;
+.cell.team-col {
+  justify-content: space-between; /* Override the flex-start */
   padding-left: 1.5rem;
+  padding-right: 0.75rem; /* Ensure proper right spacing */
 }
 
 /* Specific cell styling */
@@ -120,17 +143,21 @@
   color: #f1f5f9;
 }
 
-.team-name {
-  font-weight: 600;
-  color: #f1f5f9;
-}
-
 .total-points,
 .games-won,
 .total-kills,
 .avg-placement {
   font-weight: 600;
   color: #94a3b8;
+}
+
+/* Specific cell styling for avg placement */
+.cell .avg-placement {
+  text-align: center;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .total-points {
@@ -145,21 +172,27 @@
   text-shadow: 0 0 4px rgba(255, 215, 0, 0.8);
 }
 
-/* Color scale for average placement */
+/* Color scale for average placement - Green to Red gradient */
 .placement-excellent {
-  color: #10b981 !important; /* Green */
+  color: #10b981 !important; /* Green - 1-5 */
   font-weight: 600;
   text-shadow: 0 0 2px rgba(16, 185, 129, 0.6);
 }
 
 .placement-good {
-  color: #f59e0b !important; /* Yellow/Orange */
+  color: #eab308 !important; /* Yellow - 5.1-10 */
   font-weight: 600;
-  text-shadow: 0 0 2px rgba(245, 158, 11, 0.6);
+  text-shadow: 0 0 2px rgba(234, 179, 8, 0.6);
+}
+
+.placement-fair {
+  color: #f97316 !important; /* Orange - 10.1-15 */
+  font-weight: 600;
+  text-shadow: 0 0 2px rgba(249, 115, 22, 0.6);
 }
 
 .placement-poor {
-  color: #ef4444 !important; /* Red */
+  color: #ef4444 !important; /* Red - 15.1-20 */
   font-weight: 600;
   text-shadow: 0 0 2px rgba(239, 68, 68, 0.6);
 }
@@ -169,9 +202,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 100%; /* Take full cell width */
+  height: 100%; /* Take full cell height */
   transition: all 0.3s ease;
+  margin: 0; /* Remove any default margins */
+  padding: 0; /* Remove any default padding */
 }
 
 .arrow-icon {
@@ -203,11 +238,20 @@
     padding: 0.75rem 0.5rem;
     font-size: 0.8rem;
   }
+
+  .header-cell.avg-placement-col {
+    padding: 0.75rem 0.25rem; /* Even tighter padding on mobile */
+  }
 }
 
 @media (max-width: 480px) {
   .table-header,
   .table-row {
     grid-template-columns: 40px 1fr 80px 70px 70px 40px;
+  }
+
+  .header-cell.avg-placement-col {
+    padding: 0.75rem 0.125rem; /* Very tight padding on small screens */
+    font-size: 0.75rem;
   }
 }

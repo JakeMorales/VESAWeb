@@ -54,7 +54,9 @@ export interface OverallTeamStanding {
               <span class="team-name">{{ standing.teamName }}</span>
               <app-game-indicators 
                 [gameNumbers]="gameNumbers"
-                [teamPlacements]="getTeamPlacements(standing.teamName)">
+                [teamPlacements]="getTeamPlacements(standing.teamName)"
+                [teamScores]="getTeamScores(standing.teamName)"
+                [teamKills]="getTeamKills(standing.teamName)">
               </app-game-indicators>
             </div>
             <div class="cell total-points total-points-highlight">{{ standing.totalPoints }}</div>
@@ -82,6 +84,8 @@ export class OverallStandingsTableComponent {
   @Input() standings: OverallTeamStanding[] = [];
   @Input() gameNumbers: number[] = [];
   @Input() teamPlacements: { [teamName: string]: { [gameNumber: number]: number } } = {};
+  @Input() teamScores: { [teamName: string]: { [gameNumber: number]: number } } = {};
+  @Input() teamKills: { [teamName: string]: { [gameNumber: number]: number } } = {};
   @Output() teamToggled = new EventEmitter<OverallTeamStanding>();
 
   toggleExpand(standing: OverallTeamStanding): void {
@@ -94,12 +98,28 @@ export class OverallStandingsTableComponent {
   }
 
   getPlacementColorClass(avgPlacement: number): string {
-    if (avgPlacement <= 2.5) return 'placement-excellent';
-    if (avgPlacement <= 3.5) return 'placement-good';
-    return 'placement-poor';
+    // Scale from 1 (best - green) to 20 (worst - red)
+    // Green: 1-5, Yellow: 5.1-10, Orange: 10.1-15, Red: 15.1-20
+    if (avgPlacement <= 5) {
+      return 'placement-excellent'; // Green
+    } else if (avgPlacement <= 10) {
+      return 'placement-good'; // Yellow
+    } else if (avgPlacement <= 15) {
+      return 'placement-fair'; // Orange
+    } else {
+      return 'placement-poor'; // Red
+    }
   }
 
   getTeamPlacements(teamName: string): { [gameNumber: number]: number } {
     return this.teamPlacements[teamName] || {};
+  }
+
+  getTeamScores(teamName: string): { [gameNumber: number]: number } {
+    return this.teamScores[teamName] || {};
+  }
+
+  getTeamKills(teamName: string): { [gameNumber: number]: number } {
+    return this.teamKills[teamName] || {};
   }
 }
