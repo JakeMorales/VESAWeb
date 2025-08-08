@@ -56,10 +56,10 @@ export class RatingService {
   
   // Battle Royale specific constants (updated based on pro player analysis)
   private readonly BR_TEAMS_COUNT = 20;
-  private readonly BR_PLACEMENT_WEIGHT = 0.45;   // 45% from placement (increased)
-  private readonly BR_COMBAT_WEIGHT = 0.30;      // 30% from kills/combat (increased)
-  private readonly BR_DAMAGE_WEIGHT = 0.20;      // 20% from damage (increased)
-  private readonly BR_SUPPORT_WEIGHT = 0.05;     // 5% from team support (decreased)
+  private readonly BR_PLACEMENT_WEIGHT = 0.45;   // 45% from placement 
+  private readonly BR_COMBAT_WEIGHT = 0.325;     // 32.5% from kills/combat (increased)
+  private readonly BR_DAMAGE_WEIGHT = 0.175;     // 17.5% from damage (decreased)
+  private readonly BR_SUPPORT_WEIGHT = 0.05;     // 5% from team support
   
   // Elo constants
   private readonly ELO_K_FACTOR = 32;

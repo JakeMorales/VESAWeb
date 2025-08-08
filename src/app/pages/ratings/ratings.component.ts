@@ -22,8 +22,8 @@ export class RatingsComponent implements OnInit {
 
   // Fixed weights for battle royale rating (adjusted based on pro player analysis)
   private placementWeight = 45;  // Increased - placement is king in BR
-  private combatWeight = 30;     // Increased - kills matter more than originally thought
-  private damageWeight = 20;     // Increased - damage consistency is important
+  private combatWeight = 32.5;   // Increased - kills matter more than originally thought
+  private damageWeight = 17.5;   // Damage consistency is important but less than kills
   private supportWeight = 5;     // Decreased - revives are less common in reality
 
   constructor() { }
