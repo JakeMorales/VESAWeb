@@ -1,22 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GameFiltersComponent } from '../../components/games/game-filters.component';
+import { ScrimFiltersComponent } from '../../components/games/scrim-filters.component';
+import { ScrimSessionComponent, ScrimSession } from '../../components/games/scrim-session.component';
+import { ScoresArchiveComponent } from '../../components/league/scores-archive.component';
 import { GameStatsOverviewComponent, GameStats } from '../../components/games/game-stats-overview.component';
 import { GameCardComponent, GameMatch } from '../../components/games/game-card.component';
-import { ScoresArchiveComponent } from '../../components/league/scores-archive.component';
 import { Team } from '../../components/games/team-card.component';
 import { GamePlayer } from '../../components/games/player-item.component';
 
 @Component({
   selector: 'app-games',
   standalone: true,
-  imports: [CommonModule, GameFiltersComponent, GameStatsOverviewComponent, GameCardComponent, ScoresArchiveComponent],
+  imports: [CommonModule, ScrimFiltersComponent, ScrimSessionComponent, ScoresArchiveComponent],
   templateUrl: './games.component.html',
   styleUrl: './games.component.css'
 })
 export class GamesComponent implements OnInit {
   games: GameMatch[] = [];
   filteredGames: GameMatch[] = [];
+  scrimSessions: ScrimSession[] = [];
+  filteredScrimSessions: ScrimSession[] = [];
   filterMap = '';
   filterMode = '';
   searchTerm = '';
@@ -31,7 +34,9 @@ export class GamesComponent implements OnInit {
 
   ngOnInit() {
     this.generateMockData();
+    this.generateScrimData();
     this.filterGames();
+    this.filterScrimSessions();
     this.updateStats();
   }
 
@@ -201,12 +206,14 @@ export class GamesComponent implements OnInit {
   }
 
   onMapChange(map: string) {
+    // Not used for scrims view, kept for potential future use
     this.filterMap = map;
     this.filterGames();
     this.updateStats();
   }
 
   onModeChange(mode: string) {
+    // Not used for scrims view, kept for potential future use
     this.filterMode = mode;
     this.filterGames();
     this.updateStats();
@@ -215,14 +222,139 @@ export class GamesComponent implements OnInit {
   onSearchChange(search: string) {
     this.searchTerm = search;
     this.filterGames();
+    this.filterScrimSessions();
     this.updateStats();
   }
 
-  switchToCurrentGames() {
+  generateScrimData() {
+    const maps = ['World\'s Edge', 'Kings Canyon', 'Olympus', 'Storm Point'];
+    const teamNames = [
+      'Team Apex', 'Storm Runners', 'Void Walkers', 'Third Party Kings',
+      'Ring Runners', 'Hot Drop Squad', 'Gatekeepers', 'Zone Fighters',
+      'Chaos Squad', 'Elite Strikers', 'Phantom Force', 'Night Owls'
+    ];
+    const playerNames = [
+      'Wraith_Main_BTW', 'Octane_Speed', 'Lifeline_Healer', 'Pathfinder_Grapple',
+      'Bangalore_Smoke', 'Bloodhound_Hunter', 'Gibraltar_Tank', 'Caustic_Gas',
+      'Mirage_Bamboozle', 'Revenant_Shadow', 'Loba_Thief', 'Rampart_Builder',
+      'Wattson_Fence', 'Crypto_Drone', 'Horizon_Gravity', 'Fuse_Explosives',
+      'Valkyrie_Jets', 'Seer_Scan', 'Ash_Portal', 'Mad_Maggie_Drill'
+    ];
+
+    // Generate scrim sessions for the last few weeks
+    this.scrimSessions = Array.from({ length: 15 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (i * 3)); // Every 3 days
+      
+      const time = Math.random() > 0.5 ? '8:00 PM EST' : '11:00 PM EST';
+      const numMaps = 6; // Standard 6-game scrim set
+      const sessionMaps = this.getRandomMaps(maps, numMaps);
+      
+      const matches = sessionMaps.map((map, mapIndex) => {
+        const teams = this.generateScrimTeams(teamNames, playerNames, 6); // 6 teams per match
+        return {
+          id: i * 10 + mapIndex,
+          map: map,
+          teams: teams
+        };
+      });
+
+      return {
+        id: i,
+        date: date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+        time: time,
+        maps: sessionMaps,
+        matches: matches
+      };
+    });
+  }
+
+  private getRandomMaps(maps: string[], count: number): string[] {
+    // Allow for map repeats in 6-game sets since we only have 4 maps
+    const selectedMaps = [];
+    for (let i = 0; i < count; i++) {
+      const randomMap = maps[Math.floor(Math.random() * maps.length)];
+      selectedMaps.push(randomMap);
+    }
+    return selectedMaps;
+  }
+
+  private generateScrimTeams(teamNames: string[], playerNames: string[], teamCount: number) {
+    const teams = [];
+    const usedPlayers = new Set<string>();
+    
+    for (let i = 0; i < teamCount; i++) {
+      const teamPlayers = [];
+      
+      // Generate 3 players per team
+      for (let p = 0; p < 3; p++) {
+        let playerName;
+        do {
+          playerName = playerNames[Math.floor(Math.random() * playerNames.length)];
+        } while (usedPlayers.has(playerName));
+        
+        usedPlayers.add(playerName);
+        
+        const kills = Math.floor(Math.random() * 8);
+        const damage = Math.floor(Math.random() * 2000) + 200;
+        
+        teamPlayers.push({
+          username: playerName,
+          kills: kills,
+          damage: damage,
+          placement: i + 1
+        });
+      }
+      
+      const totalKills = teamPlayers.reduce((sum, p) => sum + p.kills, 0);
+      const totalDamage = teamPlayers.reduce((sum, p) => sum + p.damage, 0);
+      
+      teams.push({
+        name: teamNames[i] || `Team ${i + 1}`,
+        players: teamPlayers,
+        placement: i + 1,
+        totalKills: totalKills,
+        totalDamage: totalDamage
+      });
+    }
+    
+    // Randomize placements
+    teams.sort(() => 0.5 - Math.random());
+    teams.forEach((team, index) => {
+      team.placement = index + 1;
+      team.players.forEach(player => {
+        player.placement = index + 1;
+      });
+    });
+    
+    return teams;
+  }
+
+  filterScrimSessions() {
+    if (!this.searchTerm) {
+      this.filteredScrimSessions = [...this.scrimSessions];
+      return;
+    }
+
+    const searchLower = this.searchTerm.toLowerCase();
+    this.filteredScrimSessions = this.scrimSessions.filter(session => {
+      // Search in team names and player names across all matches
+      return session.matches.some(match => 
+        match.teams.some(team => 
+          team.name.toLowerCase().includes(searchLower) ||
+          team.players.some(player => 
+            player.username.toLowerCase().includes(searchLower)
+          )
+        )
+      );
+    });
+  }
+
+  switchToScrimsHistory() {
     this.viewMode = 'current';
   }
 
-  switchToArchive() {
+  switchToLeagueArchive() {
     this.viewMode = 'archive';
   }
 }

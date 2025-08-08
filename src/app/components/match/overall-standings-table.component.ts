@@ -42,6 +42,7 @@ export interface OverallTeamStanding {
           <div class="header-cell total-points-col">Total Points</div>
           <div class="header-cell games-won-col">Games Won</div>
           <div class="header-cell avg-placement-col">Avg Placement</div>
+          <div class="header-cell total-kills-col">Total Kills</div>
           <div class="header-cell expand-col"></div>
         </div>
         
@@ -64,6 +65,7 @@ export interface OverallTeamStanding {
             <div class="cell avg-placement" [ngClass]="getPlacementColorClass(standing.avgPlacement)">
               {{ standing.avgPlacement | number:'1.1-1' }}
             </div>
+            <div class="cell total-kills total-kills-highlight">{{ standing.totalKills }}</div>
             <div class="cell expand-arrow" [ngClass]="{ 'expanded': standing.isExpanded }">
               <span class="arrow-icon">▼</span>
             </div>

@@ -108,6 +108,25 @@
   gap: 2rem;
 }
 
+.scrims-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.no-results {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 2rem 0;
+}
+
 .load-more {
   text-align: center;
   margin-top: 3rem;

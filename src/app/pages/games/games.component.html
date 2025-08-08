@@ -1,50 +1,44 @@
 <div class="games-container">
   <div class="header-section">
-    <h1>Match History & Archives</h1>
-    <p>Complete record of all VESA league matches, scrimmages, and historical data</p>
+    <h1>VESA Scrimmages & League Archive</h1>
+    <p>Pick-up scrimmages and comprehensive league match history</p>
     
     <!-- View Mode Switcher -->
     <div class="view-switcher">
       <button 
         class="view-btn" 
         [class.active]="viewMode === 'current'"
-        (click)="switchToCurrentGames()">
-        Current Season
+        (click)="switchToScrimsHistory()">
+        Scrims History
       </button>
       <button 
         class="view-btn" 
         [class.active]="viewMode === 'archive'"
-        (click)="switchToArchive()">
-        Scores Archive
+        (click)="switchToLeagueArchive()">
+        League Archive
       </button>
     </div>
   </div>
 
-  <!-- Current Games View -->
+  <!-- Scrims History View -->
   <div *ngIf="viewMode === 'current'" class="current-games-view">
-    <app-game-filters 
-      (mapChange)="onMapChange($event)"
-      (modeChange)="onModeChange($event)"
+    <app-scrim-filters 
       (searchChange)="onSearchChange($event)">
-    </app-game-filters>
+    </app-scrim-filters>
 
-    <app-game-stats-overview [stats]="gameStats"></app-game-stats-overview>
-
-    <div class="games-list">
-      <app-game-card 
-        *ngFor="let game of filteredGames | slice:0:displayedCount" 
-        [game]="game">
-      </app-game-card>
+    <div class="scrims-list">
+      <app-scrim-session 
+        *ngFor="let session of filteredScrimSessions" 
+        [scrimSession]="session">
+      </app-scrim-session>
     </div>
 
-    <div class="load-more" *ngIf="displayedCount < filteredGames.length">
-      <button class="load-more-btn" (click)="loadMoreGames()">
-        Load More Games
-      </button>
+    <div class="no-results" *ngIf="filteredScrimSessions.length === 0 && searchTerm">
+      <p>No scrim sessions found matching your search.</p>
     </div>
   </div>
 
-  <!-- Scores Archive View -->
+  <!-- League Archive View -->
   <div *ngIf="viewMode === 'archive'" class="archive-view">
     <app-scores-archive></app-scores-archive>
   </div>
