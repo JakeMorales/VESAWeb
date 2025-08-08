@@ -5,7 +5,7 @@ import { ArchiveHeaderComponent } from './archive-header.component';
 import { ArchiveFiltersComponent, Season } from './archive-filters.component';
 import { SeasonChampionsComponent, SeasonChampions } from './season-champions.component';
 import { SeasonLeaderboardsComponent, SeasonLeaderboard, SeasonTeamResult } from './season-leaderboards.component';
-import { ArchiveMatchHistoryComponent, HistoricalMatch, MatchGameResult, GameTeamResult } from './archive-match-history.component';
+import { ArchiveMatchHistoryComponent, HistoricalMatch, MatchGameResult, GameTeamResult } from './archive-match-history-enhanced.component';
 
 @Component({
   selector: 'app-scores-archive',
@@ -432,6 +432,7 @@ export class ScoresArchiveComponent implements OnInit {
         results: [
           {
             gameNumber: 1,
+            mapName: 'Kings Canyon',
             results: [
               { teamName: 'Apex Legends Elite', placement: 1, kills: 12, points: 22 },
               { teamName: 'Fire Hawks X', placement: 2, kills: 8, points: 16 },
@@ -441,6 +442,7 @@ export class ScoresArchiveComponent implements OnInit {
           },
           {
             gameNumber: 2,
+            mapName: 'Worlds Edge',
             results: [
               { teamName: 'Storm Riders Pro', placement: 1, kills: 10, points: 20 },
               { teamName: 'Apex Legends Elite', placement: 2, kills: 9, points: 17 },
@@ -450,6 +452,7 @@ export class ScoresArchiveComponent implements OnInit {
           },
           {
             gameNumber: 3,
+            mapName: 'Olympus',
             results: [
               { teamName: 'Fire Hawks X', placement: 1, kills: 11, points: 21 },
               { teamName: 'Apex Legends Elite', placement: 2, kills: 7, points: 15 },
@@ -470,6 +473,7 @@ export class ScoresArchiveComponent implements OnInit {
         results: [
           {
             gameNumber: 1,
+            mapName: 'Storm Point',
             results: [
               { teamName: 'Lightning Legends', placement: 1, kills: 9, points: 19 },
               { teamName: 'Cyber Phoenixes', placement: 2, kills: 7, points: 15 },
@@ -479,6 +483,7 @@ export class ScoresArchiveComponent implements OnInit {
           },
           {
             gameNumber: 2,
+            mapName: 'Broken Moon',
             results: [
               { teamName: 'Cyber Phoenixes', placement: 1, kills: 8, points: 18 },
               { teamName: 'Lightning Legends', placement: 2, kills: 6, points: 14 },
@@ -488,6 +493,7 @@ export class ScoresArchiveComponent implements OnInit {
           },
           {
             gameNumber: 3,
+            mapName: 'Kings Canyon',
             results: [
               { teamName: 'Neon Guardians', placement: 1, kills: 10, points: 20 },
               { teamName: 'Lightning Legends', placement: 2, kills: 5, points: 13 },

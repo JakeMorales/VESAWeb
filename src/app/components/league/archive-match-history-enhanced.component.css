@@ -1,0 +1,188 @@
+/* Archive Match History Enhanced Styles */
+.matches-section h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: #00d4ff;
+  text-align: center;
+}
+
+.matches-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.match-card {
+  background: rgba(17, 25, 40, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 0;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.match-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.match-header {
+  background: linear-gradient(135deg, #1e293b, #334155);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.match-title h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: #f1f5f9;
+  background: linear-gradient(45deg, #00d4ff, #0ea5e9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.match-subtitle {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.match-number {
+  background: rgba(0, 212, 255, 0.15);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 6px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #00d4ff;
+}
+
+.match-date {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.participating-teams {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.teams-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.teams-list {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #e2e8f0;
+  text-align: right;
+  line-height: 1.4;
+}
+
+/* Match Day Table Container */
+.match-card app-match-day-table {
+  display: block;
+}
+
+/* Override match day table margins for archive context */
+.match-card app-match-day-table ::ng-deep .match-day-section {
+  margin: 0;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .match-header {
+    padding: 1.5rem;
+  }
+  
+  .match-title h3 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .matches-section h2 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .matches-list {
+    gap: 2rem;
+  }
+
+  .match-card {
+    border-radius: 16px;
+  }
+
+  .match-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+
+  .match-subtitle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .participating-teams {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .teams-list {
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .matches-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .match-header {
+    padding: 1rem;
+  }
+
+  .match-title h3 {
+    font-size: 1.125rem;
+  }
+
+  .match-number {
+    padding: 0.125rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .match-date {
+    font-size: 0.75rem;
+  }
+
+  .teams-label {
+    font-size: 0.75rem;
+  }
+
+  .teams-list {
+    font-size: 0.8rem;
+  }
+}
