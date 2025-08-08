@@ -6,6 +6,7 @@ import { LeagueComponent } from './pages/league/league.component';
 import { DivisionComponent } from './pages/league/division/division.component';
 import { MatchComponent } from './pages/match/match.component';
 import { ScrimsComponent } from './pages/scrims/scrims.component';
+import { RatingsComponent } from './pages/ratings/ratings.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -16,5 +17,6 @@ export const routes: Routes = [
   { path: 'league', component: LeagueComponent },
   { path: 'league/:id', component: DivisionComponent },
   { path: 'match/:id', component: MatchComponent },
+  { path: 'ratings', component: RatingsComponent },
   { path: '**', redirectTo: '' }
 ];

@@ -1,0 +1,139 @@
+.ratings-container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.ratings-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 10px;
+}
+
+.ratings-header h1 {
+  margin: 0 0 10px 0;
+  font-size: 2.5rem;
+}
+
+.header-description {
+  margin: 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.ratings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.rating-section {
+  background: white;
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.rating-section h2 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 1.8rem;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 10px;
+}
+
+.placeholder-content {
+  color: #555;
+  line-height: 1.6;
+}
+
+.placeholder-content p {
+  margin: 15px 0;
+  font-size: 16px;
+}
+
+.status-message {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  margin-top: 25px;
+}
+
+.status-message h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 1.4rem;
+}
+
+.status-message p {
+  margin: 10px 0;
+  color: #666;
+}
+
+.status-message ul {
+  margin: 15px 0;
+  padding-left: 20px;
+}
+
+.status-message li {
+  margin: 8px 0;
+  color: #555;
+}
+
+.mock-data-info {
+  color: #555;
+  line-height: 1.6;
+}
+
+.mock-data-info p {
+  margin: 15px 0;
+  font-size: 16px;
+}
+
+.mock-data-info ul {
+  margin: 15px 0;
+  padding-left: 20px;
+}
+
+.mock-data-info li {
+  margin: 10px 0;
+  font-size: 15px;
+}
+
+.mock-data-info .note {
+  background: #e3f2fd;
+  padding: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #2196f3;
+  font-style: italic;
+  margin-top: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ratings-container {
+    padding: 10px;
+  }
+  
+  .ratings-header h1 {
+    font-size: 2rem;
+  }
+  
+  .rating-section {
+    padding: 15px;
+  }
+  
+  .placeholder-content p,
+  .mock-data-info p {
+    font-size: 14px;
+  }
+  
+  .status-message {
+    padding: 15px;
+  }
+}

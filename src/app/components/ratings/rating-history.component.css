@@ -1,0 +1,267 @@
+.rating-history-container {
+  padding: 20px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.player-select {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.player-select label {
+  font-weight: 600;
+  color: #555;
+}
+
+.player-select-dropdown {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  min-width: 200px;
+}
+
+.generate-btn {
+  padding: 10px 20px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.generate-btn:hover:not(:disabled) {
+  background: #5a67d8;
+}
+
+.generate-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.history-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.current-stats h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.stat-card h4 {
+  margin: 0 0 10px 0;
+  color: #555;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rating-value {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.rating-change {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.rating-change.positive {
+  color: #28a745;
+}
+
+.rating-change.negative {
+  color: #dc3545;
+}
+
+.rating-change.neutral {
+  color: #6c757d;
+}
+
+.chart-container {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.chart-container h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.chart-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.chart {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 600px;
+}
+
+.chart-section h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.line-chart {
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 10px;
+  border: 1px solid #e9ecef;
+}
+
+.history-table-container {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.history-table-container h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.history-table th {
+  background: #f8f9fa;
+  padding: 12px 8px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.history-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.history-table tr:hover {
+  background: #f8f9fa;
+}
+
+.history-table .rating-value {
+  font-weight: 600;
+  color: #667eea;
+  font-size: 14px;
+}
+
+.history-table .rating-change {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.history-table .rating-change.positive {
+  color: #28a745;
+}
+
+.history-table .rating-change.negative {
+  color: #dc3545;
+}
+
+.history-table .rating-change.neutral {
+  color: #6c757d;
+}
+
+.no-data,
+.instructions {
+  background: #f8f9fa;
+  padding: 40px;
+  text-align: center;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  color: #666;
+  font-size: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .player-select {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .player-select-dropdown {
+    min-width: auto;
+  }
+  
+  .stat-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .chart {
+    min-width: 400px;
+  }
+  
+  .history-table {
+    font-size: 12px;
+  }
+  
+  .history-table th,
+  .history-table td {
+    padding: 8px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stat-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .chart {
+    min-width: 300px;
+  }
+}
