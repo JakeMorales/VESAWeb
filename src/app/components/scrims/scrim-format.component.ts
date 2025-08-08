@@ -24,7 +24,7 @@ import { CommonModule } from '@angular/common';
             <div class="format-icon">⏰</div>
             <h3>Schedule</h3>
             <ul>
-              <li>Daily sessions: 6PM - 10PM EST</li>
+              <li>Daily sessions at 8PM EST</li>
               <li>Weekend tournaments</li>
               <li>Special events monthly</li>
               <li>Open registration system</li>

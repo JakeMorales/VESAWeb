@@ -1,189 +1,44 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-
-export interface MatchDetail {
-  id: string;
-  weekNumber: number;
-  matchDay: string;
-  date: string;
-  time: string;
-  status: 'upcoming' | 'live' | 'completed';
-  division: string;
-  divisionTier: number;
-  teamsCount: number;
-  gamesPlayed?: number;
-  totalGames?: number;
-  winner?: string;
-  streamUrl?: string;
-  description: string;
-}
-
-export interface GameResult {
-  gameNumber: number;
-  placement: number;
-  teamName: string;
-  kills: number;
-  points: number;
-  isWinner: boolean;
-}
-
-export interface MatchResults {
-  [gameNumber: number]: GameResult[];
-}
+import { MatchHeaderComponent, MatchDetail } from '../../components/match/match-header.component';
+import { MatchResultsComponent, MatchResults, GameResult } from '../../components/match/match-results.component';
+import { MatchLiveSectionComponent } from '../../components/match/match-live-section.component';
+import { MatchUpcomingSectionComponent } from '../../components/match/match-upcoming-section.component';
 
 @Component({
   selector: 'app-match',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    MatchHeaderComponent, 
+    MatchResultsComponent, 
+    MatchLiveSectionComponent, 
+    MatchUpcomingSectionComponent
+  ],
   template: `
     <div class="match-container" *ngIf="match">
       <!-- Match Header -->
-      <section class="match-header">
-        <div class="header-content">
-          <div class="breadcrumb">
-            <a routerLink="/league">League</a> > 
-            <a [routerLink]="['/league', match.division.toLowerCase()]">{{ match.division }} ({{ getRomanNumeral(match.divisionTier) }})</a> > 
-            <span>{{ match.matchDay }}</span>
-          </div>
-          
-          <div class="match-title-section">
-            <div class="match-info">
-              <h1 class="match-title">{{ match.matchDay }}</h1>
-              <div class="match-meta">
-                <span class="match-date">{{ match.date }}</span>
-                <span class="match-time">{{ match.time }}</span>
-                <span class="match-division">{{ match.division }} Division</span>
-                <span class="match-status" [class]="getMatchStatusClass(match.status)">
-                  {{ getMatchStatusText(match.status) }}
-                </span>
-              </div>
-              <p class="match-description">{{ match.description }}</p>
-            </div>
-            
-            <div class="match-actions" *ngIf="match.status === 'live'">
-              <a [href]="match.streamUrl" target="_blank" class="watch-btn" *ngIf="match.streamUrl">
-                📺 Watch Live
-              </a>
-              <div class="live-indicator">🔴 LIVE</div>
-            </div>
-          </div>
-          
-          <div class="match-progress" *ngIf="match.gamesPlayed && match.totalGames">
-            <div class="progress-info">
-              <span>Progress: Game {{ match.gamesPlayed }} of {{ match.totalGames }}</span>
-              <span>{{ ((match.gamesPlayed / match.totalGames) * 100).toFixed(0) }}% Complete</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill" [style.width.%]="(match.gamesPlayed / match.totalGames) * 100"></div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <app-match-header [match]="match"></app-match-header>
 
       <!-- Match Results -->
-      <section class="results-section" *ngIf="match.status === 'completed' && getGameNumbers().length > 0">
-        <div class="results-content">
-          <h2>Match Results</h2>
-          
-          <div class="games-tabs">
-            <button 
-              *ngFor="let gameNum of getGameNumbers()" 
-              (click)="selectedGame = gameNum"
-              [class.active]="selectedGame === gameNum"
-              class="game-tab">
-              Game {{ gameNum }}
-            </button>
-            <button 
-              (click)="selectedGame = 0"
-              [class.active]="selectedGame === 0"
-              class="game-tab overall-tab">
-              Overall
-            </button>
-          </div>
-          
-          <div class="results-table" *ngIf="selectedGame > 0">
-            <div class="table-header">
-              <div class="placement-col">Place</div>
-              <div class="team-col">Team</div>
-              <div class="kills-col">Kills</div>
-              <div class="points-col">Points</div>
-            </div>
-            <div class="table-body">
-              <div class="result-row" *ngFor="let result of getGameResults(selectedGame); let i = index" [class.winner]="result.isWinner">
-                <div class="placement-col">
-                  <span class="placement-number" [class]="'place-' + result.placement">{{ result.placement }}</span>
-                </div>
-                <div class="team-col">
-                  <span class="team-name">{{ result.teamName }}</span>
-                  <span class="winner-badge" *ngIf="result.isWinner">👑</span>
-                </div>
-                <div class="kills-col">{{ result.kills }}</div>
-                <div class="points-col">
-                  <span class="points-value">{{ result.points }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="overall-standings" *ngIf="selectedGame === 0">
-            <div class="table-header">
-              <div class="rank-col">Rank</div>
-              <div class="team-col">Team</div>
-              <div class="total-points-col">Total Points</div>
-              <div class="wins-col">Wins</div>
-              <div class="avg-kills-col">Avg Kills</div>
-            </div>
-            <div class="table-body">
-              <div class="result-row" *ngFor="let standing of getOverallStandings(); let i = index">
-                <div class="rank-col">
-                  <span class="rank-number" [class]="'rank-' + (i + 1)">{{ i + 1 }}</span>
-                </div>
-                <div class="team-col">
-                  <span class="team-name">{{ standing.teamName }}</span>
-                </div>
-                <div class="total-points-col">
-                  <span class="points-value">{{ standing.totalPoints }}</span>
-                </div>
-                <div class="wins-col">{{ standing.wins }}</div>
-                <div class="avg-kills-col">{{ standing.avgKills.toFixed(1) }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <app-match-results 
+        *ngIf="match.status === 'completed' && gameResults" 
+        [gameResults]="gameResults">
+      </app-match-results>
 
       <!-- Live Updates -->
-      <section class="live-section" *ngIf="match.status === 'live'">
-        <div class="live-content">
-          <h2>Live Updates</h2>
-          <div class="live-game-info">
-            <p>Game {{ match.gamesPlayed }} of {{ match.totalGames }} is currently in progress.</p>
-            <p class="live-notice">Results will be updated as games complete.</p>
-          </div>
-        </div>
-      </section>
+      <app-match-live-section 
+        *ngIf="match.status === 'live'" 
+        [match]="match">
+      </app-match-live-section>
 
       <!-- Upcoming Match Info -->
-      <section class="upcoming-section" *ngIf="match.status === 'upcoming'">
-        <div class="upcoming-content">
-          <h2>Match Information</h2>
-          <div class="upcoming-info">
-            <div class="info-card">
-              <h3>Schedule</h3>
-              <p>{{ match.date }} at {{ match.time }}</p>
-              <p>{{ match.teamsCount }} teams competing</p>
-              <p>{{ match.totalGames }} games planned</p>
-            </div>
-            <div class="info-card">
-              <h3>Format</h3>
-              <p>ALGS scoring system</p>
-              <p>Points awarded for placement and eliminations</p>
-              <p>All games count towards season standings</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <app-match-upcoming-section 
+        *ngIf="match.status === 'upcoming'" 
+        [match]="match">
+      </app-match-upcoming-section>
     </div>
 
     <div class="error-container" *ngIf="!match">
@@ -196,7 +51,6 @@ export interface MatchResults {
 })
 export class MatchComponent implements OnInit {
   match: MatchDetail | null = null;
-  selectedGame = 1;
 
   // Sample match data - in a real app this would come from a service
   matches: MatchDetail[] = [
@@ -298,63 +152,5 @@ export class MatchComponent implements OnInit {
       const matchId = params['id'];
       this.match = this.matches.find(m => m.id === matchId) || null;
     });
-  }
-
-  getRomanNumeral(tier: number): string {
-    const numerals = ['', 'I', 'II', 'III', 'IV', 'V', 'VI'];
-    return numerals[tier] || tier.toString();
-  }
-
-  getMatchStatusClass(status: string): string {
-    switch (status) {
-      case 'live': return 'status-live';
-      case 'completed': return 'status-completed';
-      case 'upcoming': return 'status-upcoming';
-      default: return '';
-    }
-  }
-
-  getMatchStatusText(status: string): string {
-    switch (status) {
-      case 'live': return 'LIVE';
-      case 'completed': return 'Completed';
-      case 'upcoming': return 'Upcoming';
-      default: return '';
-    }
-  }
-
-  getGameNumbers(): number[] {
-    return Object.keys(this.gameResults).map(num => parseInt(num)).sort((a, b) => a - b);
-  }
-
-  getGameResults(gameNumber: number): GameResult[] {
-    return this.gameResults[gameNumber] || [];
-  }
-
-  getOverallStandings(): any[] {
-    const teamStandings: { [teamName: string]: { totalPoints: number, wins: number, totalKills: number, games: number } } = {};
-    
-    Object.values(this.gameResults).forEach((gameResults: GameResult[]) => {
-      gameResults.forEach((result: GameResult) => {
-        if (!teamStandings[result.teamName]) {
-          teamStandings[result.teamName] = { totalPoints: 0, wins: 0, totalKills: 0, games: 0 };
-        }
-        teamStandings[result.teamName].totalPoints += result.points;
-        teamStandings[result.teamName].totalKills += result.kills;
-        teamStandings[result.teamName].games += 1;
-        if (result.isWinner) {
-          teamStandings[result.teamName].wins += 1;
-        }
-      });
-    });
-
-    return Object.entries(teamStandings)
-      .map(([teamName, stats]) => ({
-        teamName,
-        totalPoints: stats.totalPoints,
-        wins: stats.wins,
-        avgKills: stats.totalKills / stats.games
-      }))
-      .sort((a, b) => b.totalPoints - a.totalPoints);
   }
 }

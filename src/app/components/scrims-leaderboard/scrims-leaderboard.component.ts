@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { BaseGridComponent, GridConfig } from '../base-grid/base-grid.component';
 
 export interface ScrimPlayer {
   rank: number;
@@ -20,89 +21,103 @@ export interface ScrimPlayer {
 @Component({
   selector: 'app-scrims-leaderboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BaseGridComponent],
   template: `
-    <div class="leaderboard-table">
-      <div class="table-header">
-        <div class="rank-col">Rank</div>
-        <div class="player-col">Player</div>
-        <div class="elo-col">ELO</div>
-        <div class="stats-col">Stats</div>
-        <div class="badges-col">Badges</div>
-      </div>
-      <div class="table-body">
-        <div class="player-row" *ngFor="let player of players">
-          <div class="rank-col">
-            <span class="rank-number">#{{ player.rank }}</span>
-          </div>
-          <div class="player-col">
+    <app-base-grid 
+      [data]="players" 
+      [config]="gridConfig" 
+      containerClass="scrims-leaderboard-grid">
+      
+      <ng-template #cellTemplate let-item let-column="column" let-value="value" let-index="index">
+        <ng-container [ngSwitch]="column.key">
+          <!-- Rank Column -->
+          <span *ngSwitchCase="'rank'" class="rank-number">#{{ value }}</span>
+          
+          <!-- Player Column -->
+          <div *ngSwitchCase="'name'" class="player-cell">
             <div class="player-info">
-              <span class="player-name">{{ player.name }}</span>
+              <span class="player-name">{{ value }}</span>
               <div class="player-details">
-                <span class="elo-tier" [style.color]="getEloTierColor(player.elo)">
-                  {{ getEloTier(player.elo) }}
+                <span class="elo-tier" [style.color]="getEloTierColor(item.elo)">
+                  {{ getEloTier(item.elo) }}
                 </span>
                 <span 
-                  *ngIf="player.isLeaguePlayer" 
+                  *ngIf="item.isLeaguePlayer" 
                   class="league-badge"
-                  [style.color]="getDivisionColor(player.division)"
+                  [style.color]="getDivisionColor(item.division)"
                 >
-                  {{ player.division }} {{ player.divisionRank ? '#' + player.divisionRank : '' }}
+                  {{ item.division }} {{ item.divisionRank ? '#' + item.divisionRank : '' }}
                 </span>
               </div>
             </div>
           </div>
-          <div class="elo-col">
-            <div class="elo-info">
-              <span class="elo-value">{{ player.elo }}</span>
-              <span 
-                class="elo-change"
-                [class.positive]="player.eloChange > 0"
-                [class.negative]="player.eloChange < 0"
-              >
-                {{ player.eloChange > 0 ? '+' : '' }}{{ player.eloChange }}
-              </span>
+          
+          <!-- ELO Column -->
+          <div *ngSwitchCase="'elo'" class="elo-cell">
+            <span class="elo-value">{{ value }}</span>
+            <span 
+              class="elo-change"
+              [class.positive]="item.eloChange > 0"
+              [class.negative]="item.eloChange < 0"
+            >
+              {{ item.eloChange > 0 ? '+' : '' }}{{ item.eloChange }}
+            </span>
+          </div>
+          
+          <!-- Stats Column -->
+          <div *ngSwitchCase="'stats'" class="stats-cell">
+            <div class="stat-item">
+              <span class="stat-label">Games:</span>
+              <span class="stat-value">{{ item.gamesPlayed }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Kills:</span>
+              <span class="stat-value">{{ item.totalKills }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Avg K/G:</span>
+              <span class="stat-value">{{ item.averageKills }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Win Rate:</span>
+              <span class="stat-value">{{ item.winRate }}%</span>
             </div>
           </div>
-          <div class="stats-col">
-            <div class="player-stats">
-              <div class="stat-item">
-                <span class="stat-label">Games:</span>
-                <span class="stat-value">{{ player.gamesPlayed }}</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-label">Kills:</span>
-                <span class="stat-value">{{ player.totalKills }}</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-label">Avg K/G:</span>
-                <span class="stat-value">{{ player.averageKills }}</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-label">Win Rate:</span>
-                <span class="stat-value">{{ player.winRate }}%</span>
-              </div>
-            </div>
+          
+          <!-- Badges Column -->
+          <div *ngSwitchCase="'badges'" class="badges-cell">
+            <span 
+              *ngFor="let badge of value" 
+              class="badge"
+              [class]="getBadgeClass(badge)"
+            >
+              {{ badge }}
+            </span>
           </div>
-          <div class="badges-col">
-            <div class="player-badges">
-              <span 
-                *ngFor="let badge of player.badges" 
-                class="badge"
-                [style.background-color]="getBadgeColor(badge)"
-              >
-                {{ badge }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          
+          <!-- Default -->
+          <span *ngSwitchDefault>{{ value }}</span>
+        </ng-container>
+      </ng-template>
+    </app-base-grid>
   `,
   styleUrl: './scrims-leaderboard.component.css'
 })
 export class ScrimsLeaderboardComponent {
   @Input() players: ScrimPlayer[] = [];
+
+  gridConfig: GridConfig = {
+    columns: [
+      { key: 'rank', label: 'Rank', width: '80px', class: 'rank-col' },
+      { key: 'name', label: 'Player', width: '1fr', class: 'player-col', sortable: true },
+      { key: 'elo', label: 'ELO', width: '120px', class: 'elo-col', sortable: true },
+      { key: 'stats', label: 'Stats', width: '2fr', class: 'stats-col' },
+      { key: 'badges', label: 'Badges', width: '1.5fr', class: 'badges-col' }
+    ],
+    hoverable: true,
+    showHeader: true,
+    showScrollbar: false
+  };
 
   getDivisionColor(division?: string): string {
     const colors: { [key: string]: string } = {
@@ -116,22 +131,25 @@ export class ScrimsLeaderboardComponent {
     return division ? colors[division] || '#888' : '#888';
   }
 
-  getBadgeColor(badge: string): string {
-    const colors: { [key: string]: string } = {
-      'Champion': '#FFD700',
-      'High Killer': '#FF4444',
-      'League Elite': '#FF2C5C',
-      'Veteran': '#2C9CFF',
-      'Rising Star': '#00D4FF',
-      'Consistent': '#32CD32',
-      'Team Player': '#9932CC',
-      'Aggressive': '#FF6347',
-      'Tactical': '#4169E1',
-      'Support': '#32CD32',
-      'Tank': '#8B4513',
-      'Scout': '#00CED1'
+  getBadgeClass(badge: string): string {
+    const badgeClasses: { [key: string]: string } = {
+      'Champion': 'badge badge-champion',
+      'High Killer': 'badge badge-high-killer',
+      'League Elite': 'badge badge-league-elite',
+      'Veteran': 'badge badge-veteran',
+      'Rising Star': 'badge badge-rising-star',
+      'Consistent': 'badge badge-consistent',
+      'Team Player': 'badge badge-team-player',
+      'Aggressive': 'badge badge-aggressive',
+      'Tactical': 'badge badge-tactical',
+      'Support': 'badge badge-support',
+      'Tank': 'badge badge-tank',
+      'Scout': 'badge badge-scout',
+      'Clutch Master': 'badge badge-clutch-master',
+      'Elite': 'badge badge-elite',
+      'Sharpshooter': 'badge badge-sharpshooter'
     };
-    return colors[badge] || '#888';
+    return badgeClasses[badge] || 'badge badge-default';
   }
 
   getEloTier(elo: number): string {

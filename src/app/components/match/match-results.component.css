@@ -1,0 +1,174 @@
+.results-section {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.results-content h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+.games-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.game-tab {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-text-secondary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.game-tab:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-primary);
+  transform: translateY(-1px);
+}
+
+.game-tab.active {
+  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+  color: white;
+  border-color: var(--color-accent-primary);
+  box-shadow: 0 4px 15px rgba(var(--color-accent-primary-rgb), 0.3);
+}
+
+.overall-tab.active {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  border-color: #10b981;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+/* Grid Customization */
+.game-results-grid,
+.overall-standings-grid {
+  margin-top: 1rem;
+}
+
+/* Custom cell styling */
+.placement-number {
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.place-1 {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+}
+
+.place-2 {
+  background: linear-gradient(135deg, #C0C0C0, #A8A8A8);
+  color: #000;
+  box-shadow: 0 0 10px rgba(192, 192, 192, 0.4);
+}
+
+.place-3 {
+  background: linear-gradient(135deg, #CD7F32, #B8860B);
+  color: white;
+  box-shadow: 0 0 10px rgba(205, 127, 50, 0.4);
+}
+
+.place-4,
+.place-5 {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-primary);
+}
+
+.rank-number {
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.rank-1 {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+}
+
+.rank-2 {
+  background: linear-gradient(135deg, #C0C0C0, #A8A8A8);
+  color: #000;
+  box-shadow: 0 0 10px rgba(192, 192, 192, 0.4);
+}
+
+.rank-3 {
+  background: linear-gradient(135deg, #CD7F32, #B8860B);
+  color: white;
+  box-shadow: 0 0 10px rgba(205, 127, 50, 0.4);
+}
+
+.team-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.team-name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.winner-badge {
+  font-size: 1.2rem;
+  animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+  to { text-shadow: 0 0 15px rgba(255, 215, 0, 0.8); }
+}
+
+.points-value {
+  font-weight: 600;
+  color: var(--color-accent-primary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .results-section {
+    padding: 1.5rem 1rem;
+  }
+
+  .games-tabs {
+    gap: 0.5rem;
+  }
+
+  .game-tab {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+  }
+
+  .results-content h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .games-tabs {
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .game-tab {
+    white-space: nowrap;
+    min-width: max-content;
+  }
+}
