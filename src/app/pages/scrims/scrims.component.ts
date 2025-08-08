@@ -161,6 +161,11 @@ export class ScrimsComponent {
     }
   ];
 
+  // Get top 10 players for scrims page leaderboard
+  get topLeaderboard(): ScrimPlayer[] {
+    return this.leaderboard.slice(0, 10);
+  }
+
   // Scrim statistics
   scrimStats = {
     totalPlayers: 3896,
