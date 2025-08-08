@@ -92,7 +92,7 @@ const PLACEMENT_POINTS: { [key: number]: number } = {
         <div *ngIf="selectedGame > 0" class="game-results-container">
           <div class="results-table">
             <div class="table-header">
-              <div class="header-cell placement-col">Place</div>
+              <div class="header-cell placement-col">#</div>
               <div class="header-cell team-col">Team</div>
               <div class="header-cell kills-col">Kills</div>
               <div class="header-cell placement-points-col">Placement Pts</div>
@@ -184,6 +184,19 @@ const PLACEMENT_POINTS: { [key: number]: number } = {
                 </div>
                 <div class="cell team-col">
                   <span class="team-name">{{ standing.teamName }}</span>
+                  <div class="game-indicators">
+                    <div class="game-indicator" 
+                         *ngFor="let gameResult of getTeamGameResults(standing.teamName)"
+                         [title]="'Game ' + gameResult.gameNumber + ': ' + gameResult.placement + getPlaceSuffix(gameResult.placement) + ' place, ' + gameResult.totalPoints + ' pts, ' + gameResult.teamKills + ' kills'">
+                      <span class="trophy-icon" 
+                            [ngClass]="{
+                              'gold': gameResult.placement === 1,
+                              'silver': gameResult.placement === 2,
+                              'bronze': gameResult.placement === 3,
+                              'default': gameResult.placement > 3
+                            }">●</span>
+                    </div>
+                  </div>
                 </div>
                 <div class="cell kills-col">
                   <span class="kills-value">{{ standing.totalPoints }}</span>
@@ -285,6 +298,28 @@ export class MatchDayTableComponent {
 
   toggleStandingExpanded(standing: OverallTeamStanding): void {
     standing.isExpanded = !standing.isExpanded;
+  }
+
+  getTeamGameResults(teamName: string): TeamGameResult[] {
+    const results: TeamGameResult[] = [];
+    Object.values(this.matchResults).forEach((gameResults: TeamGameResult[]) => {
+      const teamResult = gameResults.find(result => result.teamName === teamName);
+      if (teamResult) {
+        results.push(teamResult);
+      }
+    });
+    return results.sort((a, b) => a.gameNumber - b.gameNumber);
+  }
+
+  getPlaceSuffix(place: number): string {
+    if (place >= 11 && place <= 13) return 'th';
+    const lastDigit = place % 10;
+    switch (lastDigit) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
   }
 
   trackByTeam(index: number, item: TeamGameResult): string {
