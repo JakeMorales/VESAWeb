@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatchHeaderComponent, MatchDetail } from '../../components/match/match-header.component';
 import { MatchResultsComponent, MatchResults, GameResult } from '../../components/match/match-results.component';
+import { MatchDayTableComponent, MatchDayResults, TeamGameResult, PlayerStats } from '../../components/match/match-day-table.component';
 import { MatchLiveSectionComponent } from '../../components/match/match-live-section.component';
 import { MatchUpcomingSectionComponent } from '../../components/match/match-upcoming-section.component';
 
@@ -13,7 +14,8 @@ import { MatchUpcomingSectionComponent } from '../../components/match/match-upco
     CommonModule, 
     RouterModule, 
     MatchHeaderComponent, 
-    MatchResultsComponent, 
+    MatchResultsComponent,
+    MatchDayTableComponent,
     MatchLiveSectionComponent, 
     MatchUpcomingSectionComponent
   ],
@@ -22,9 +24,15 @@ import { MatchUpcomingSectionComponent } from '../../components/match/match-upco
       <!-- Match Header -->
       <app-match-header [match]="match"></app-match-header>
 
-      <!-- Match Results -->
+      <!-- Enhanced Match Day Results Table -->
+      <app-match-day-table 
+        *ngIf="match.status === 'completed' && matchDayResults" 
+        [matchResults]="matchDayResults">
+      </app-match-day-table>
+
+      <!-- Legacy Match Results (kept for compatibility) -->
       <app-match-results 
-        *ngIf="match.status === 'completed' && gameResults" 
+        *ngIf="match.status === 'completed' && gameResults && !matchDayResults" 
         [gameResults]="gameResults">
       </app-match-results>
 
@@ -51,6 +59,442 @@ import { MatchUpcomingSectionComponent } from '../../components/match/match-upco
 })
 export class MatchComponent implements OnInit {
   match: MatchDetail | null = null;
+  
+  // Sample match day results with detailed player stats
+  matchDayResults: MatchDayResults = {
+    1: [
+      {
+        gameNumber: 1,
+        teamName: 'Apex Predators',
+        placement: 1,
+        teamKills: 12,
+        placementPoints: 10,
+        totalPoints: 22,
+        mapName: 'World\'s Edge',
+        players: [
+          { playerName: 'Predator_Alpha', kills: 5, damage: 1850, downs: 7, revives: 2, respawns: 0 },
+          { playerName: 'Predator_Beta', kills: 4, damage: 1620, downs: 5, revives: 1, respawns: 1 },
+          { playerName: 'Predator_Gamma', kills: 3, damage: 1340, downs: 4, revives: 3, respawns: 0 }
+        ]
+      },
+      {
+        gameNumber: 1,
+        teamName: 'Storm Legends',
+        placement: 2,
+        teamKills: 8,
+        placementPoints: 6,
+        totalPoints: 14,
+        mapName: 'World\'s Edge',
+        players: [
+          { playerName: 'Storm_Thunder', kills: 3, damage: 1420, downs: 4, revives: 1, respawns: 0 },
+          { playerName: 'Storm_Lightning', kills: 3, damage: 1380, downs: 3, revives: 2, respawns: 1 },
+          { playerName: 'Storm_Tempest', kills: 2, damage: 1150, downs: 3, revives: 1, respawns: 0 }
+        ]
+      },
+      {
+        gameNumber: 1,
+        teamName: 'Shadow Squad',
+        placement: 3,
+        teamKills: 6,
+        placementPoints: 5,
+        totalPoints: 11,
+        mapName: 'World\'s Edge',
+        players: [
+          { playerName: 'Shadow_Wraith', kills: 3, damage: 1280, downs: 4, revives: 0, respawns: 1 },
+          { playerName: 'Shadow_Ghost', kills: 2, damage: 1090, downs: 2, revives: 2, respawns: 0 },
+          { playerName: 'Shadow_Phantom', kills: 1, damage: 950, downs: 2, revives: 1, respawns: 1 }
+        ]
+      },
+      {
+        gameNumber: 1,
+        teamName: 'Digital Legends',
+        placement: 4,
+        teamKills: 4,
+        placementPoints: 4,
+        totalPoints: 8,
+        mapName: 'World\'s Edge',
+        players: [
+          { playerName: 'Digital_One', kills: 2, damage: 1020, downs: 3, revives: 1, respawns: 0 },
+          { playerName: 'Digital_Two', kills: 1, damage: 890, downs: 1, revives: 0, respawns: 1 },
+          { playerName: 'Digital_Three', kills: 1, damage: 760, downs: 2, revives: 2, respawns: 0 }
+        ]
+      },
+      {
+        gameNumber: 1,
+        teamName: 'Void Runners',
+        placement: 5,
+        teamKills: 3,
+        placementPoints: 3,
+        totalPoints: 6,
+        mapName: 'World\'s Edge',
+        players: [
+          { playerName: 'Void_Runner1', kills: 2, damage: 920, downs: 2, revives: 0, respawns: 1 },
+          { playerName: 'Void_Runner2', kills: 1, damage: 680, downs: 1, revives: 1, respawns: 0 },
+          { playerName: 'Void_Runner3', kills: 0, damage: 540, downs: 1, revives: 0, respawns: 1 }
+        ]
+      }
+    ],
+    2: [
+      {
+        gameNumber: 2,
+        teamName: 'Storm Legends',
+        placement: 1,
+        teamKills: 10,
+        placementPoints: 10,
+        totalPoints: 20,
+        mapName: 'Kings Canyon',
+        players: [
+          { playerName: 'Storm_Thunder', kills: 4, damage: 1920, downs: 6, revives: 1, respawns: 0 },
+          { playerName: 'Storm_Lightning', kills: 4, damage: 1780, downs: 5, revives: 0, respawns: 0 },
+          { playerName: 'Storm_Tempest', kills: 2, damage: 1340, downs: 3, revives: 2, respawns: 1 }
+        ]
+      },
+      {
+        gameNumber: 2,
+        teamName: 'Shadow Squad',
+        placement: 2,
+        teamKills: 7,
+        placementPoints: 6,
+        totalPoints: 13,
+        mapName: 'Kings Canyon',
+        players: [
+          { playerName: 'Shadow_Wraith', kills: 3, damage: 1540, downs: 4, revives: 1, respawns: 0 },
+          { playerName: 'Shadow_Ghost', kills: 2, damage: 1320, downs: 3, revives: 1, respawns: 1 },
+          { playerName: 'Shadow_Phantom', kills: 2, damage: 1180, downs: 2, revives: 0, respawns: 0 }
+        ]
+      },
+      {
+        gameNumber: 2,
+        teamName: 'Apex Predators',
+        placement: 3,
+        teamKills: 5,
+        placementPoints: 5,
+        totalPoints: 10,
+        mapName: 'Kings Canyon',
+        players: [
+          { playerName: 'Predator_Alpha', kills: 2, damage: 1280, downs: 3, revives: 0, respawns: 1 },
+          { playerName: 'Predator_Beta', kills: 2, damage: 1150, downs: 2, revives: 2, respawns: 0 },
+          { playerName: 'Predator_Gamma', kills: 1, damage: 980, downs: 2, revives: 1, respawns: 0 }
+        ]
+      },
+      {
+        gameNumber: 2,
+        teamName: 'Void Runners',
+        placement: 4,
+        teamKills: 6,
+        placementPoints: 4,
+        totalPoints: 10,
+        mapName: 'Kings Canyon',
+        players: [
+          { playerName: 'Void_Runner1', kills: 3, damage: 1420, downs: 4, revives: 0, respawns: 0 },
+          { playerName: 'Void_Runner2', kills: 2, damage: 1180, downs: 2, revives: 1, respawns: 1 },
+          { playerName: 'Void_Runner3', kills: 1, damage: 890, downs: 1, revives: 1, respawns: 0 }
+        ]
+      },
+      {
+        gameNumber: 2,
+        teamName: 'Digital Legends',
+        placement: 5,
+        teamKills: 2,
+        placementPoints: 3,
+        totalPoints: 5,
+        mapName: 'Kings Canyon',
+        players: [
+          { playerName: 'Digital_One', kills: 1, damage: 820, downs: 2, revives: 0, respawns: 1 },
+          { playerName: 'Digital_Two', kills: 1, damage: 740, downs: 1, revives: 1, respawns: 0 },
+          { playerName: 'Digital_Three', kills: 0, damage: 590, downs: 1, revives: 0, respawns: 1 }
+        ]
+      }
+    ],
+    3: [
+      {
+        gameNumber: 3,
+        teamName: 'Digital Legends',
+        placement: 1,
+        teamKills: 9,
+        placementPoints: 10,
+        totalPoints: 19,
+        mapName: 'Olympus',
+        players: [
+          { playerName: 'Digital_One', kills: 4, damage: 1720, downs: 5, revives: 1, respawns: 0 },
+          { playerName: 'Digital_Two', kills: 3, damage: 1480, downs: 4, revives: 0, respawns: 0 },
+          { playerName: 'Digital_Three', kills: 2, damage: 1240, downs: 3, revives: 2, respawns: 1 }
+        ]
+      },
+      {
+        gameNumber: 3,
+        teamName: 'Apex Predators',
+        placement: 2,
+        teamKills: 8,
+        placementPoints: 6,
+        totalPoints: 14,
+        mapName: 'Olympus',
+        players: [
+          { playerName: 'Predator_Alpha', kills: 4, damage: 1680, downs: 5, revives: 0, respawns: 0 },
+          { playerName: 'Predator_Beta', kills: 2, damage: 1290, downs: 3, revives: 1, respawns: 1 },
+          { playerName: 'Predator_Gamma', kills: 2, damage: 1120, downs: 2, revives: 1, respawns: 0 }
+        ]
+      },
+      {
+        gameNumber: 3,
+        teamName: 'Storm Legends',
+        placement: 3,
+        teamKills: 6,
+        placementPoints: 5,
+        totalPoints: 11,
+        mapName: 'Olympus',
+        players: [
+          { playerName: 'Storm_Thunder', kills: 2, damage: 1180, downs: 3, revives: 1, respawns: 1 },
+          { playerName: 'Storm_Lightning', kills: 2, damage: 1090, downs: 2, revives: 0, respawns: 0 },
+          { playerName: 'Storm_Tempest', kills: 2, damage: 1020, downs: 2, revives: 2, respawns: 0 }
+        ]
+      },
+      {
+        gameNumber: 3,
+        teamName: 'Shadow Squad',
+        placement: 4,
+        teamKills: 4,
+        placementPoints: 4,
+        totalPoints: 8,
+        mapName: 'Olympus',
+        players: [
+          { playerName: 'Shadow_Wraith', kills: 2, damage: 1050, downs: 2, revives: 0, respawns: 1 },
+          { playerName: 'Shadow_Ghost', kills: 1, damage: 890, downs: 1, revives: 1, respawns: 0 },
+          { playerName: 'Shadow_Phantom', kills: 1, damage: 780, downs: 2, revives: 0, respawns: 1 }
+        ]
+      },
+      {
+        gameNumber: 3,
+        teamName: 'Void Runners',
+        placement: 5,
+        teamKills: 2,
+        placementPoints: 3,
+        totalPoints: 5,
+        mapName: 'Olympus',
+        players: [
+          { playerName: 'Void_Runner1', kills: 1, damage: 720, downs: 1, revives: 1, respawns: 0 },
+          { playerName: 'Void_Runner2', kills: 1, damage: 650, downs: 1, revives: 0, respawns: 1 },
+          { playerName: 'Void_Runner3', kills: 0, damage: 480, downs: 0, revives: 1, respawns: 1 }
+        ]
+      }
+    ],
+    4: [
+      {
+        gameNumber: 4,
+        teamName: 'Shadow Squad',
+        placement: 1,
+        teamKills: 11,
+        placementPoints: 10,
+        totalPoints: 21,
+        mapName: 'Storm Point',
+        players: [
+          { playerName: 'Shadow_Wraith', kills: 5, damage: 1920, downs: 6, revives: 1, respawns: 0 },
+          { playerName: 'Shadow_Ghost', kills: 4, damage: 1650, downs: 5, revives: 0, respawns: 0 },
+          { playerName: 'Shadow_Phantom', kills: 2, damage: 1280, downs: 3, revives: 2, respawns: 1 }
+        ]
+      },
+      {
+        gameNumber: 4,
+        teamName: 'Void Runners',
+        placement: 2,
+        teamKills: 7,
+        placementPoints: 6,
+        totalPoints: 13,
+        mapName: 'Storm Point',
+        players: [
+          { playerName: 'Void_Runner1', kills: 3, damage: 1480, downs: 4, revives: 1, respawns: 0 },
+          { playerName: 'Void_Runner2', kills: 2, damage: 1220, downs: 3, revives: 0, respawns: 1 },
+          { playerName: 'Void_Runner3', kills: 2, damage: 1040, downs: 2, revives: 1, respawns: 0 }
+        ]
+      },
+      {
+        gameNumber: 4,
+        teamName: 'Digital Legends',
+        placement: 3,
+        teamKills: 6,
+        placementPoints: 5,
+        totalPoints: 11,
+        mapName: 'Storm Point',
+        players: [
+          { playerName: 'Digital_One', kills: 3, damage: 1380, downs: 4, revives: 0, respawns: 1 },
+          { playerName: 'Digital_Two', kills: 2, damage: 1150, downs: 2, revives: 1, respawns: 0 },
+          { playerName: 'Digital_Three', kills: 1, damage: 920, downs: 2, revives: 1, respawns: 0 }
+        ]
+      },
+      {
+        gameNumber: 4,
+        teamName: 'Storm Legends',
+        placement: 4,
+        teamKills: 5,
+        placementPoints: 4,
+        totalPoints: 9,
+        mapName: 'Storm Point',
+        players: [
+          { playerName: 'Storm_Thunder', kills: 2, damage: 1120, downs: 3, revives: 0, respawns: 1 },
+          { playerName: 'Storm_Lightning', kills: 2, damage: 980, downs: 2, revives: 1, respawns: 0 },
+          { playerName: 'Storm_Tempest', kills: 1, damage: 840, downs: 1, revives: 2, respawns: 1 }
+        ]
+      },
+      {
+        gameNumber: 4,
+        teamName: 'Apex Predators',
+        placement: 5,
+        teamKills: 3,
+        placementPoints: 3,
+        totalPoints: 6,
+        mapName: 'Storm Point',
+        players: [
+          { playerName: 'Predator_Alpha', kills: 2, damage: 980, downs: 2, revives: 1, respawns: 1 },
+          { playerName: 'Predator_Beta', kills: 1, damage: 720, downs: 1, revives: 0, respawns: 1 },
+          { playerName: 'Predator_Gamma', kills: 0, damage: 590, downs: 1, revives: 1, respawns: 0 }
+        ]
+      }
+    ],
+    5: [
+      {
+        gameNumber: 5,
+        teamName: 'Void Runners',
+        placement: 1,
+        teamKills: 13,
+        placementPoints: 10,
+        totalPoints: 23,
+        mapName: 'Broken Moon',
+        players: [
+          { playerName: 'Void_Runner1', kills: 6, damage: 2120, downs: 7, revives: 1, respawns: 0 },
+          { playerName: 'Void_Runner2', kills: 4, damage: 1840, downs: 5, revives: 0, respawns: 0 },
+          { playerName: 'Void_Runner3', kills: 3, damage: 1520, downs: 4, revives: 2, respawns: 1 }
+        ]
+      },
+      {
+        gameNumber: 5,
+        teamName: 'Digital Legends',
+        placement: 2,
+        teamKills: 9,
+        placementPoints: 6,
+        totalPoints: 15,
+        mapName: 'Broken Moon',
+        players: [
+          { playerName: 'Digital_One', kills: 4, damage: 1680, downs: 5, revives: 1, respawns: 0 },
+          { playerName: 'Digital_Two', kills: 3, damage: 1420, downs: 4, revives: 0, respawns: 1 },
+          { playerName: 'Digital_Three', kills: 2, damage: 1180, downs: 3, revives: 1, respawns: 0 }
+        ]
+      },
+      {
+        gameNumber: 5,
+        teamName: 'Apex Predators',
+        placement: 3,
+        teamKills: 8,
+        placementPoints: 5,
+        totalPoints: 13,
+        mapName: 'Broken Moon',
+        players: [
+          { playerName: 'Predator_Alpha', kills: 3, damage: 1520, downs: 4, revives: 1, respawns: 0 },
+          { playerName: 'Predator_Beta', kills: 3, damage: 1380, downs: 3, revives: 0, respawns: 1 },
+          { playerName: 'Predator_Gamma', kills: 2, damage: 1120, downs: 2, revives: 2, respawns: 0 }
+        ]
+      },
+      {
+        gameNumber: 5,
+        teamName: 'Shadow Squad',
+        placement: 4,
+        teamKills: 6,
+        placementPoints: 4,
+        totalPoints: 10,
+        mapName: 'Broken Moon',
+        players: [
+          { playerName: 'Shadow_Wraith', kills: 3, damage: 1240, downs: 3, revives: 0, respawns: 1 },
+          { playerName: 'Shadow_Ghost', kills: 2, damage: 1050, downs: 2, revives: 1, respawns: 0 },
+          { playerName: 'Shadow_Phantom', kills: 1, damage: 890, downs: 2, revives: 1, respawns: 1 }
+        ]
+      },
+      {
+        gameNumber: 5,
+        teamName: 'Storm Legends',
+        placement: 5,
+        teamKills: 4,
+        placementPoints: 3,
+        totalPoints: 7,
+        mapName: 'Broken Moon',
+        players: [
+          { playerName: 'Storm_Thunder', kills: 2, damage: 1020, downs: 2, revives: 1, respawns: 1 },
+          { playerName: 'Storm_Lightning', kills: 1, damage: 820, downs: 1, revives: 0, respawns: 1 },
+          { playerName: 'Storm_Tempest', kills: 1, damage: 680, downs: 1, revives: 2, respawns: 0 }
+        ]
+      }
+    ],
+    6: [
+      {
+        gameNumber: 6,
+        teamName: 'Storm Legends',
+        placement: 1,
+        teamKills: 14,
+        placementPoints: 10,
+        totalPoints: 24,
+        mapName: 'World\'s Edge',
+        players: [
+          { playerName: 'Storm_Thunder', kills: 6, damage: 2280, downs: 8, revives: 1, respawns: 0 },
+          { playerName: 'Storm_Lightning', kills: 5, damage: 1960, downs: 6, revives: 0, respawns: 0 },
+          { playerName: 'Storm_Tempest', kills: 3, damage: 1640, downs: 4, revives: 2, respawns: 1 }
+        ]
+      },
+      {
+        gameNumber: 6,
+        teamName: 'Apex Predators',
+        placement: 2,
+        teamKills: 10,
+        placementPoints: 6,
+        totalPoints: 16,
+        mapName: 'World\'s Edge',
+        players: [
+          { playerName: 'Predator_Alpha', kills: 4, damage: 1720, downs: 5, revives: 1, respawns: 0 },
+          { playerName: 'Predator_Beta', kills: 4, damage: 1580, downs: 4, revives: 0, respawns: 1 },
+          { playerName: 'Predator_Gamma', kills: 2, damage: 1280, downs: 3, revives: 1, respawns: 0 }
+        ]
+      },
+      {
+        gameNumber: 6,
+        teamName: 'Shadow Squad',
+        placement: 3,
+        teamKills: 7,
+        placementPoints: 5,
+        totalPoints: 12,
+        mapName: 'World\'s Edge',
+        players: [
+          { playerName: 'Shadow_Wraith', kills: 3, damage: 1420, downs: 4, revives: 0, respawns: 1 },
+          { playerName: 'Shadow_Ghost', kills: 2, damage: 1180, downs: 3, revives: 1, respawns: 0 },
+          { playerName: 'Shadow_Phantom', kills: 2, damage: 1050, downs: 2, revives: 1, respawns: 1 }
+        ]
+      },
+      {
+        gameNumber: 6,
+        teamName: 'Void Runners',
+        placement: 4,
+        teamKills: 5,
+        placementPoints: 4,
+        totalPoints: 9,
+        mapName: 'World\'s Edge',
+        players: [
+          { playerName: 'Void_Runner1', kills: 2, damage: 1120, downs: 3, revives: 1, respawns: 1 },
+          { playerName: 'Void_Runner2', kills: 2, damage: 980, downs: 2, revives: 0, respawns: 1 },
+          { playerName: 'Void_Runner3', kills: 1, damage: 760, downs: 1, revives: 2, respawns: 0 }
+        ]
+      },
+      {
+        gameNumber: 6,
+        teamName: 'Digital Legends',
+        placement: 5,
+        teamKills: 3,
+        placementPoints: 3,
+        totalPoints: 6,
+        mapName: 'World\'s Edge',
+        players: [
+          { playerName: 'Digital_One', kills: 2, damage: 920, downs: 2, revives: 0, respawns: 1 },
+          { playerName: 'Digital_Two', kills: 1, damage: 680, downs: 1, revives: 1, respawns: 1 },
+          { playerName: 'Digital_Three', kills: 0, damage: 540, downs: 1, revives: 1, respawns: 0 }
+        ]
+      }
+    ]
+  };
 
   // Sample match data - in a real app this would come from a service
   matches: MatchDetail[] = [

@@ -1,0 +1,398 @@
+/* Match Day Table Styles */
+.match-day-section {
+  background: rgba(17, 25, 40, 0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.125);
+  border-radius: 16px;
+  padding: 2rem;
+  margin: 2rem 0;
+}
+
+.match-day-content h2 {
+  color: #00d4ff;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Games Tabs */
+.games-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.game-tab {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #e2e8f0;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.game-tab:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.game-tab.active {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #f1f5f9;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.overall-tab.active {
+  background: rgba(255, 165, 0, 0.15);
+  border-color: rgba(255, 165, 0, 0.4);
+  color: #ffa500;
+}
+
+/* Table Containers */
+.game-results-container,
+.overall-standings-container {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+.results-table,
+.standings-table {
+  width: 100%;
+  position: relative;
+  transform: translateZ(0); /* Creates a new stacking context */
+}
+
+/* Table Headers */
+.table-header {
+  display: grid;
+  background: linear-gradient(135deg, #1e293b, #334155);
+  border-bottom: 2px solid rgba(0, 212, 255, 0.3);
+  font-weight: 600;
+  color: #00d4ff;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.results-table .table-header {
+  grid-template-columns: 80px 1fr 80px 100px 120px 60px;
+}
+
+.standings-table .table-header {
+  grid-template-columns: 60px 1fr 120px 100px 100px 100px 60px;
+}
+
+.header-cell {
+  padding: 1rem 0.75rem;
+  text-align: center;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-cell:last-child {
+  border-right: none;
+}
+
+/* Team Rows */
+.table-row {
+  display: grid;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.results-table .table-row {
+  grid-template-columns: 80px 1fr 80px 100px 120px 60px;
+}
+
+.standings-table .table-row {
+  grid-template-columns: 60px 1fr 120px 100px 100px 100px 60px;
+}
+
+.team-row {
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  user-select: none;
+  pointer-events: auto;
+  position: relative;
+}
+
+.team-row .cell {
+  pointer-events: none;
+}
+
+.team-row .expand-arrow {
+  pointer-events: none;
+}
+
+.team-row:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(2px);
+}
+
+.team-row.expanded {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Placement-based styling */
+.place-1 {
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+  border-left: 4px solid #ffd700;
+}
+
+.place-2 {
+  background: linear-gradient(90deg, rgba(192, 192, 192, 0.15), rgba(192, 192, 192, 0.05));
+  border-left: 4px solid #c0c0c0;
+}
+
+.place-3 {
+  background: linear-gradient(90deg, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.05));
+  border-left: 4px solid #cd7f32;
+}
+
+.place-4,
+.place-5 {
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Rank-based styling for overall standings */
+.rank-1 {
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+  border-left: 4px solid #ffd700;
+}
+
+.rank-2 {
+  background: linear-gradient(90deg, rgba(192, 192, 192, 0.15), rgba(192, 192, 192, 0.05));
+  border-left: 4px solid #c0c0c0;
+}
+
+.rank-3 {
+  background: linear-gradient(90deg, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.05));
+  border-left: 4px solid #cd7f32;
+}
+
+/* Cells */
+.cell {
+  padding: 1rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e2e8f0;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  min-height: 60px;
+}
+
+.cell:last-child {
+  border-right: none;
+}
+
+.team-col {
+  justify-content: flex-start;
+  padding-left: 1.5rem;
+}
+
+/* Specific cell styling */
+.placement-number {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #f1f5f9;
+}
+
+.rank-number {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #f1f5f9;
+}
+
+.team-name {
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.kills-value,
+.total-points,
+.placement-points,
+.games-won,
+.total-kills,
+.avg-placement {
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.total-points {
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+/* Expand Arrow */
+.expand-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  transition: all 0.3s ease;
+}
+
+.arrow-icon {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  transition: transform 0.3s ease;
+  transform: rotate(0deg);
+}
+
+.expand-arrow.expanded .arrow-icon {
+  transform: rotate(180deg);
+  color: #f1f5f9;
+}
+
+/* Player Details */
+.player-details {
+  background: rgba(0, 0, 0, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.player-header {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Game player stats (kills, damage, downs, headshots, assists, shots, hits, respawns, revives) */
+.game-results-container .player-header,
+.game-results-container .player-row {
+  grid-template-columns: 1fr 80px 100px 80px 80px 80px 80px 80px 80px 80px;
+}
+
+/* Overall player stats (games, kills, damage, downs, headshots, assists, shots, hits, respawns, revives) */
+.overall-standings-container .player-header,
+.overall-standings-container .player-row {
+  grid-template-columns: 1fr 60px 80px 100px 80px 80px 80px 80px 80px 80px 80px;
+}
+
+.player-header-cell {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.player-name-col {
+  text-align: left;
+}
+
+.player-row {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.player-row:last-child {
+  border-bottom: none;
+}
+
+.player-cell {
+  color: #cbd5e1;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.player-cell.player-name-col {
+  text-align: left;
+  font-weight: 500;
+  color: #f1f5f9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .match-day-section {
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+
+  .games-tabs {
+    gap: 0.25rem;
+  }
+
+  .game-tab {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .results-table .table-header,
+  .results-table .table-row {
+    grid-template-columns: 60px 1fr 60px 80px 90px 50px;
+  }
+
+  .standings-table .table-header,
+  .standings-table .table-row {
+    grid-template-columns: 50px 1fr 90px 70px 80px 80px 50px;
+  }
+
+  .cell {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+    min-height: 50px;
+  }
+
+  .header-cell {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .game-results-container .player-header,
+  .game-results-container .player-row {
+    grid-template-columns: 1fr 60px 80px 60px 60px 60px 60px 60px 60px 60px;
+    gap: 0.25rem;
+  }
+
+  .overall-standings-container .player-header,
+  .overall-standings-container .player-row {
+    grid-template-columns: 1fr 50px 60px 80px 60px 60px 60px 60px 60px 60px 60px;
+    gap: 0.15rem;
+  }
+
+  .player-cell,
+  .player-header-cell {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .results-table .table-header,
+  .results-table .table-row {
+    grid-template-columns: 50px 1fr 50px 70px 80px 40px;
+  }
+
+  .standings-table .table-header,
+  .standings-table .table-row {
+    grid-template-columns: 40px 1fr 80px 60px 70px 70px 40px;
+  }
+
+  .game-results-container .player-header,
+  .game-results-container .player-row {
+    grid-template-columns: 1fr 50px 70px 50px 50px 50px 50px 50px 50px 50px;
+  }
+
+  .overall-standings-container .player-header,
+  .overall-standings-container .player-row {
+    grid-template-columns: 1fr 40px 50px 70px 50px 50px 50px 50px 50px 50px 50px;
+    gap: 0.1rem;
+  }
+}
