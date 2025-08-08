@@ -1,12 +1,25 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ScrimsLeaderboardComponent, ScrimPlayer } from '../../components/scrims-leaderboard/scrims-leaderboard.component';
+import { ScrimPlayer } from '../../components/scrims-leaderboard/scrims-leaderboard.component';
+import { ScrimsHeroComponent, ScrimStats } from '../../components/scrims/scrims-hero.component';
+import { EloSystemComponent } from '../../components/scrims/elo-system.component';
+import { ScrimFormatComponent } from '../../components/scrims/scrim-format.component';
+import { JoinScrimsComponent } from '../../components/scrims/join-scrims.component';
+import { ScrimsLeaderboardSectionComponent } from '../../components/scrims/scrims-leaderboard-section.component';
 
 @Component({
   selector: 'app-scrims',
   standalone: true,
-  imports: [CommonModule, RouterModule, ScrimsLeaderboardComponent],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    ScrimsHeroComponent,
+    EloSystemComponent,
+    ScrimFormatComponent,
+    JoinScrimsComponent,
+    ScrimsLeaderboardSectionComponent
+  ],
   templateUrl: './scrims.component.html',
   styleUrl: './scrims.component.css'
 })
@@ -167,7 +180,7 @@ export class ScrimsComponent {
   }
 
   // Scrim statistics
-  scrimStats = {
+  scrimStats: ScrimStats = {
     totalPlayers: 3896,
     activeThisWeek: 1247,
     totalGames: 5854,

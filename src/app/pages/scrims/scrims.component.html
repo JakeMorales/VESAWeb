@@ -1,142 +1,16 @@
 <div class="scrims-container">
   <!-- Hero Section -->
-  <section class="scrims-hero">
-    <div class="hero-content">
-      <h1 class="hero-title">VESA Scrims</h1>
-      <h2 class="hero-subtitle">Competitive Practice Arena</h2>
-      <p class="hero-description">
-        Join our advanced scrimmage system featuring custom ELO tracking, skill-based matchmaking, 
-        and comprehensive performance analytics. Practice with the best and climb the ranks!
-      </p>
-      <div class="hero-stats">
-        <div class="stat-item">
-          <span class="stat-number">{{ scrimStats.totalPlayers }}</span>
-          <span class="stat-label">Total Players</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number">{{ scrimStats.activeThisWeek }}</span>
-          <span class="stat-label">Active This Week</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number">{{ scrimStats.totalGames }}</span>
-          <span class="stat-label">Total Games</span>
-        </div>
-      </div>
-    </div>
-  </section>
+  <app-scrims-hero [stats]="scrimStats"></app-scrims-hero>
 
   <!-- ELO System Explanation -->
-  <section class="elo-system">
-    <div class="system-content">
-      <h2>Custom ELO Rating System</h2>
-      <div class="elo-grid">
-        <div class="elo-explanation">
-          <h3>How It Works</h3>
-          <p>
-            Our advanced ELO system tracks individual performance beyond just wins and losses. 
-            Your rating is influenced by kills, damage, placement, team performance, and opponent strength.
-          </p>
-          <ul class="elo-factors">
-            <li><strong>Placement:</strong> Higher placement = more ELO gain</li>
-            <li><strong>Kills & Assists:</strong> Combat performance matters</li>
-            <li><strong>Damage Dealt:</strong> Consistent damage output rewarded</li>
-            <li><strong>Opponent Strength:</strong> Beating higher-rated players gives more ELO</li>
-            <li><strong>Team Performance:</strong> Supporting your squad counts</li>
-          </ul>
-        </div>
-        <div class="elo-tiers">
-          <h3>ELO Tiers</h3>
-          <div class="tier-list">
-            <div class="tier-item elite">
-              <span class="tier-name">Elite</span>
-              <span class="tier-range">2700+</span>
-            </div>
-            <div class="tier-item expert">
-              <span class="tier-name">Expert</span>
-              <span class="tier-range">2400-2699</span>
-            </div>
-            <div class="tier-item veteran">
-              <span class="tier-name">Veteran</span>
-              <span class="tier-range">2100-2399</span>
-            </div>
-            <div class="tier-item skilled">
-              <span class="tier-name">Skilled</span>
-              <span class="tier-range">1800-2099</span>
-            </div>
-            <div class="tier-item novice">
-              <span class="tier-name">Novice</span>
-              <span class="tier-range">1500-1799</span>
-            </div>
-            <div class="tier-item rookie">
-              <span class="tier-name">Rookie</span>
-              <span class="tier-range">0-1499</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <app-elo-system></app-elo-system>
 
   <!-- Scrim Format -->
-  <section class="scrim-format">
-    <div class="format-content">
-      <h2>Scrim Format & Rules</h2>
-      <div class="format-grid">
-        <div class="format-card">
-          <div class="format-icon">🎯</div>
-          <h3>Match Structure</h3>
-          <ul>
-            <li>20 teams per lobby (60 players)</li>
-            <li>Best of 6 games per session</li>
-            <li>ALGS tournament settings</li>
-            <li>Skill-based matchmaking</li>
-          </ul>
-        </div>
-        <div class="format-card">
-          <div class="format-icon">⏰</div>
-          <h3>Schedule</h3>
-          <ul>
-            <li>Daily sessions: 6PM - 10PM EST</li>
-            <li>Weekend tournaments</li>
-            <li>Special events monthly</li>
-            <li>Open registration system</li>
-          </ul>
-        </div>
-        <div class="format-card">
-          <div class="format-icon">📊</div>
-          <h3>Tracking</h3>
-          <ul>
-            <li>Real-time ELO updates</li>
-            <li>Detailed match analytics</li>
-            <li>Performance trends</li>
-            <li>Leaderboard rankings</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
+  <app-scrim-format></app-scrim-format>
 
   <!-- Leaderboard -->
-  <section class="leaderboard">
-    <div class="leaderboard-content">
-      <h2>Scrims Leaderboard</h2>
-      <app-scrims-leaderboard [players]="topLeaderboard"></app-scrims-leaderboard>
-    </div>
-  </section>
+  <app-scrims-leaderboard-section [players]="topLeaderboard"></app-scrims-leaderboard-section>
 
   <!-- Join Section -->
-  <section class="join-scrims">
-    <div class="join-content">
-      <h2>Ready to Compete?</h2>
-      <p>Join thousands of players in the most competitive Apex Legends scrimmage environment.</p>
-      <div class="join-actions">
-        <a href="https://discord.gg/xsAH38Jazz" target="_blank" rel="noopener noreferrer" class="join-button primary">
-          Join Scrims Discord
-        </a>
-        <a routerLink="/players" class="join-button secondary">
-          View Full Leaderboard
-        </a>
-      </div>
-    </div>
-  </section>
+  <app-join-scrims></app-join-scrims>
 </div>
