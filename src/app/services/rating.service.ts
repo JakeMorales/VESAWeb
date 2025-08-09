@@ -56,9 +56,9 @@ export class RatingService {
   
   // Battle Royale specific constants (balanced weight distribution)
   private readonly BR_TEAMS_COUNT = 20;
-  private readonly BR_PLACEMENT_WEIGHT = 0.55;   // 55% from placement (primary factor)
-  private readonly BR_COMBAT_WEIGHT = 0.28;      // 28% from kills/combat
-  private readonly BR_DAMAGE_WEIGHT = 0.12;      // 12% from damage
+  private readonly BR_PLACEMENT_WEIGHT = 0.50;   // 50% from placement (primary factor)
+  private readonly BR_COMBAT_WEIGHT = 0.30;      // 30% from kills/combat
+  private readonly BR_DAMAGE_WEIGHT = 0.15;      // 15% from damage
   private readonly BR_SUPPORT_WEIGHT = 0.05;     // 5% from team support
   
   // Elo constants
@@ -125,7 +125,7 @@ export class RatingService {
     // Pro players average ~1.1 kills + 1.67 assists per game
     // Weight: kills = 1.0, assists = 1.0 (assists count the same as kills)
     const combatScore = player.kills + (player.assists || 0);
-    const realisticMaxCombat = 6; // Pro-level combined score ~2.8, so 6 is very good for typical players
+    const realisticMaxCombat = 8; // Pro-level combined score ~2.8, so 8 is very good for typical players
     const combatFactor = Math.min(1.0, combatScore / realisticMaxCombat);
     
     // 3. Damage Factor (20% weight) - Consistent damage output (more realistic expectations)

@@ -21,10 +21,10 @@ export class RatingsComponent implements OnInit {
   calculatedRatingChange = 0;
   calculatedPerformanceScore = 0;
 
-  // Fixed weights for battle royale rating (lowered placement weight by 5%)
-  private placementWeight = 55;  // Decreased from 60% to 55%
-  private combatWeight = 28;     // Increased from 25% to 28%
-  private damageWeight = 12;     // Increased from 10% to 12%
+  // Fixed weights for battle royale rating (placement reduced to 50%)
+  private placementWeight = 50;  // Decreased from 55% to 50%
+  private combatWeight = 30;     // Increased from 28% to 30%
+  private damageWeight = 15;     // Increased from 12% to 15%
   private supportWeight = 5;     // Unchanged - revives are less common in reality
 
   constructor() { }

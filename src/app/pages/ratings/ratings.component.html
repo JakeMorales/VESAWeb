@@ -58,21 +58,21 @@
       <div class="factor-breakdown">
         <h4>Factor Contributions:</h4>
         <div class="factor">
-          <span>Placement (55%):</span>
+          <span>Placement (50%):</span>
           <div class="factor-bar">
             <div class="factor-fill placement" [style.width.%]="getFactorContribution('placement')"></div>
           </div>
           <span>{{getFactorContribution('placement').toFixed(1)}}%</span>
         </div>
         <div class="factor">
-          <span>Combat (28%):</span>
+          <span>Combat (30%):</span>
           <div class="factor-bar">
             <div class="factor-fill combat" [style.width.%]="getFactorContribution('combat')"></div>
           </div>
           <span>{{getFactorContribution('combat').toFixed(1)}}%</span>
         </div>
         <div class="factor">
-          <span>Damage (12%):</span>
+          <span>Damage (15%):</span>
           <div class="factor-bar">
             <div class="factor-fill damage" [style.width.%]="getFactorContribution('damage')"></div>
           </div>
