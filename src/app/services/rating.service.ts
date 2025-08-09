@@ -179,10 +179,10 @@ export class RatingService {
     
     // Expected score based on current rating vs game average (adjusted for BR)
     const baseExpectedScore = 1 / (1 + Math.pow(10, (gameAverageRating - currentRating) / 400));
-    const adjustedExpectedScore = Math.max(0.283, baseExpectedScore); // Calibrated for zero inflation
-    
+    const adjustedExpectedScore = Math.max(0.2827, baseExpectedScore); // Recalibrated for zero inflation
+
     // K-factor adjustment based on game context (battle royale has more variance)
-    const brKFactor = this.ELO_K_FACTOR * 1.25; // 25% higher K-factor for BR
+    const brKFactor = this.ELO_K_FACTOR * 1.09; // 9% higher K-factor for BR (35 total)
     
     return Math.round(brKFactor * (finalScore - adjustedExpectedScore));
   }

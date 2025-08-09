@@ -82,8 +82,8 @@ export class RatingsComponent implements OnInit {
     );
 
     // Calculate rating change using Elo formula with adjustments for Battle Royale
-    const expectedScore = 0.283; // Calibrated for zero inflation - average players maintain rating
-    const kFactor = 40; // K-factor for rating change magnitude
+    const expectedScore = 0.2827; // Recalibrated for zero inflation with 20th place = 0%
+    const kFactor = 35; // Balanced K-factor for +25/-10 range with zero inflation
     this.calculatedRatingChange = Math.round(kFactor * (this.calculatedPerformanceScore - expectedScore));
   }
 
@@ -110,7 +110,7 @@ export class RatingsComponent implements OnInit {
       case 17: return 0.04;  // 4% - 50% weight = 2.0% contribution   
       case 18: return 0.03;  // 3% - 50% weight = 1.5% contribution - Less harsh
       case 19: return 0.02;  // 2% - 50% weight = 1.0% contribution - Less harsh
-      case 20: return 0.01;  // 1% - 50% weight = 0.5% contribution - Never zero
+      case 20: return 0.0;   // 0% - 50% weight = 0.0% contribution - Dead last punishment
       default: return 0.0;
     }
   }
