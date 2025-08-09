@@ -82,35 +82,35 @@ export class RatingsComponent implements OnInit {
     );
 
     // Calculate rating change using Elo formula with adjustments for Battle Royale
-    const expectedScore = 0.35; // Higher expectation to prevent Elo inflation - closer to neutral
+    const expectedScore = 0.283; // Calibrated for zero inflation - average players maintain rating
     const kFactor = 40; // K-factor for rating change magnitude
     this.calculatedRatingChange = Math.round(kFactor * (this.calculatedPerformanceScore - expectedScore));
   }
 
-  // Explicit placement scoring - no complex math, just clear values we can verify
+  // Explicit placement scoring - adjusted to be less harsh for top half
   private calculateTieredPlacementScore(placement: number): number {
-    // Explicit values to ensure we get the gaps we want
+    // Adjusted values to make 10th place = -10 Elo (less harsh for top half)
     switch (placement) {
-      case 1: return 1.00;   // 100% - 60% weight = 60.0% contribution
-      case 2: return 0.80;   // 80% - 60% weight = 48.0% contribution  (12% gap)
-      case 3: return 0.65;   // 65% - 60% weight = 39.0% contribution  (9% gap)
-      case 4: return 0.50;   // 50% - 60% weight = 30.0% contribution  (9% gap)
-      case 5: return 0.35;   // 35% - 60% weight = 21.0% contribution  (9% gap)
-      case 6: return 0.25;   // 25% - 60% weight = 15.0% contribution  (6% gap)
-      case 7: return 0.20;   // 20% - 60% weight = 12.0% contribution  (3% gap)
-      case 8: return 0.16;   // 16% - 60% weight = 9.6% contribution   (2.4% gap)
-      case 9: return 0.13;   // 13% - 60% weight = 7.8% contribution   (1.8% gap)
-      case 10: return 0.10;  // 10% - 60% weight = 6.0% contribution   (1.8% gap)
-      case 11: return 0.08;  // 8% - 60% weight = 4.8% contribution    (1.2% gap)
-      case 12: return 0.06;  // 6% - 60% weight = 3.6% contribution    (1.2% gap)
-      case 13: return 0.05;  // 5% - 60% weight = 3.0% contribution    (0.6% gap)
-      case 14: return 0.04;  // 4% - 60% weight = 2.4% contribution    (0.6% gap)
-      case 15: return 0.03;  // 3% - 60% weight = 1.8% contribution    (0.6% gap)
-      case 16: return 0.015; // 1.5% - 60% weight = 0.9% contribution   
-      case 17: return 0.01;  // 1% - 60% weight = 0.6% contribution   
-      case 18: return 0.002; // 0.2% - 60% weight = 0.12% contribution - MUCH HARSHER
-      case 19: return 0.001; // 0.1% - 60% weight = 0.06% contribution - MUCH HARSHER
-      case 20: return 0.0;   // 0% - 60% weight = 0.0% contribution    
+      case 1: return 1.00;   // 100% - 50% weight = 50.0% contribution
+      case 2: return 0.85;   // 85% - 50% weight = 42.5% contribution  
+      case 3: return 0.75;   // 75% - 50% weight = 37.5% contribution  
+      case 4: return 0.65;   // 65% - 50% weight = 32.5% contribution  
+      case 5: return 0.55;   // 55% - 50% weight = 27.5% contribution  
+      case 6: return 0.45;   // 45% - 50% weight = 22.5% contribution  
+      case 7: return 0.35;   // 35% - 50% weight = 17.5% contribution  
+      case 8: return 0.28;   // 28% - 50% weight = 14.0% contribution   
+      case 9: return 0.24;   // 24% - 50% weight = 12.0% contribution   
+      case 10: return 0.20;  // 20% - 50% weight = 10.0% contribution = -10 Elo
+      case 11: return 0.12;  // 12% - 50% weight = 6.0% contribution    
+      case 12: return 0.10;  // 10% - 50% weight = 5.0% contribution    
+      case 13: return 0.08;  // 8% - 50% weight = 4.0% contribution    
+      case 14: return 0.07;  // 7% - 50% weight = 3.5% contribution    
+      case 15: return 0.06;  // 6% - 50% weight = 3.0% contribution    
+      case 16: return 0.05;  // 5% - 50% weight = 2.5% contribution   
+      case 17: return 0.04;  // 4% - 50% weight = 2.0% contribution   
+      case 18: return 0.03;  // 3% - 50% weight = 1.5% contribution - Less harsh
+      case 19: return 0.02;  // 2% - 50% weight = 1.0% contribution - Less harsh
+      case 20: return 0.01;  // 1% - 50% weight = 0.5% contribution - Never zero
       default: return 0.0;
     }
   }
