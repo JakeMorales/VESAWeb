@@ -1,4 +1,4 @@
-import { MatchDayResults, TeamGameResult, PlayerStats } from '../components/match/match-day-table.component';
+import { MatchDayResults, TeamGameResult, PlayerStats } from '../models/match-day-results.model';
 import { MatchResults, GameResult } from '../components/match/match-results.component';
 
 export class MockMatchData {

@@ -8,13 +8,13 @@
       <button 
         class="view-btn" 
         [class.active]="viewMode === 'current'"
-        (click)="switchToScrimsHistory()">
+        (click)="viewMode = 'current'">
         Scrims History
       </button>
       <button 
         class="view-btn" 
         [class.active]="viewMode === 'archive'"
-        (click)="switchToLeagueArchive()">
+        (click)="viewMode = 'archive'">
         League Archive
       </button>
     </div>
@@ -22,19 +22,16 @@
 
   <!-- Scrims History View -->
   <div *ngIf="viewMode === 'current'" class="current-games-view">
-    <app-scrim-filters 
-      (searchChange)="onSearchChange($event)">
-    </app-scrim-filters>
-
-    <div class="scrims-list">
-      <app-scrim-session 
-        *ngFor="let session of filteredScrimSessions" 
-        [scrimSession]="session">
-      </app-scrim-session>
+    <div *ngIf="loading" class="loading">Loading scrim tables...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+    <div class="scrims-list" *ngIf="!loading && !error">
+      <ng-container *ngFor="let scrim of pagedScrims">
+        <app-scrim-collapsible [file]="scrim.file" [matchResults]="scrim.matchResults"></app-scrim-collapsible>
+      </ng-container>
+      <app-modern-pagination [page]="page" [totalPages]="totalPages" (pageChange)="setPage($event)"></app-modern-pagination>
     </div>
-
-    <div class="no-results" *ngIf="filteredScrimSessions.length === 0 && searchTerm">
-      <p>No scrim sessions found matching your search.</p>
+    <div class="no-results" *ngIf="!loading && !error && scrimsTables.length === 0">
+      <p>No scrim tables found.</p>
     </div>
   </div>
 

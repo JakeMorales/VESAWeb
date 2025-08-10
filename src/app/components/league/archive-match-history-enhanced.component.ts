@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatchDayTableComponent, MatchDayResults, TeamGameResult, PlayerStats } from '../match/match-day-table.component';
+import { MatchDayTableComponent } from '../match/match-day-table.component';
+import { MatchDayResults, TeamGameResult, PlayerStats } from '../../models/match-day-results.model';
 
 export interface HistoricalMatch {
   id: string;

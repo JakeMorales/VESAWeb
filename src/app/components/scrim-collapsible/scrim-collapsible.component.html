@@ -1,0 +1,9 @@
+<div class="scrim-collapsible modern">
+  <button class="collapsible-toggle modern" (click)="toggleExpand()">
+    <span class="arrow" [class.expanded]="expanded">&#9654;</span>
+    <span class="scrim-date">{{ getScrimDate(file) }}</span>
+  </button>
+  <div class="collapsible-content modern" *ngIf="expanded">
+    <app-match-day-table [matchResults]="matchResults"></app-match-day-table>
+  </div>
+</div>

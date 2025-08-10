@@ -1,3 +1,4 @@
+import { MatchDayResults, TeamGameResult, PlayerStats, OverallPlayerStats, OverallTeamStanding } from '../../models/match-day-results.model';
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -5,60 +6,7 @@ import { GameTabsComponent } from './game-tabs.component';
 import { GameResultsTableComponent } from './game-results-table.component';
 import { OverallStandingsTableComponent } from './overall-standings-table.component';
 
-export interface PlayerStats {
-  playerName: string;
-  kills: number;
-  damage: number;
-  downs: number;
-  headshots?: number;
-  assists?: number;
-  shots?: number;
-  hits?: number;
-  revives: number;
-  respawns: number;
-}
-
-export interface TeamGameResult {
-  gameNumber: number;
-  teamName: string;
-  placement: number;
-  teamKills: number;
-  placementPoints: number;
-  totalPoints: number;
-  mapName: string;
-  players: PlayerStats[];
-  isExpanded?: boolean;
-}
-
-export interface OverallPlayerStats {
-  playerName: string;
-  totalKills: number;
-  totalDamage: number;
-  totalDowns: number;
-  totalHeadshots?: number;
-  totalAssists?: number;
-  totalShots?: number;
-  totalHits?: number;
-  totalRevives: number;
-  totalRespawns: number;
-  gamesPlayed: number;
-  avgKills: number;
-  avgDamage: number;
-}
-
-export interface OverallTeamStanding {
-  teamName: string;
-  totalPoints: number;
-  gamesWon: number;
-  totalKills: number;
-  avgPlacement: number;
-  players: OverallPlayerStats[];
-  isExpanded?: boolean;
-}
-
-export interface MatchDayResults {
-  [gameNumber: number]: TeamGameResult[];
-}
+// interfaces moved to models/match-day-results.model.ts
 
 // Placement points based on standard BR scoring
 const PLACEMENT_POINTS: { [key: number]: number } = {

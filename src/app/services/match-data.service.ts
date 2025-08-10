@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { MatchDayResults } from '../components/match/match-day-table.component';
+import { MatchDayResults } from '../models/match-day-results.model';
 import { MatchResults } from '../components/match/match-results.component';
 import { MockMatchData } from './mock-data';
 

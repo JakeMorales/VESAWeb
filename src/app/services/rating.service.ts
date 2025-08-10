@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PlayerStats, TeamGameResult } from '../components/match/match-day-table.component';
+import { PlayerStats, TeamGameResult } from '../models/match-day-results.model';
 
 export interface PlayerRating {
   playerName: string;
