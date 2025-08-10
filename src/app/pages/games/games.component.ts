@@ -15,7 +15,7 @@ import { ScrimsTableLoaderService } from '../../services/scrims-table-loader.ser
   styleUrl: './games.component.css'
 })
 export class GamesComponent implements OnInit {
-
+  searchTerm = '';
   scrimFiles: string[] = [
     // Add all scrim files here. For brevity, we'll use a wildcard loader in a real app, but for now, list a sample or generate dynamically if possible.
     'scrim_2024_07_03_id_7058.json',
@@ -54,6 +54,7 @@ export class GamesComponent implements OnInit {
     // ...add more as needed or automate this in production
   ];
   scrimsTables: { file: string, matchResults: MatchDayResults }[] = [];
+  filteredScrims: { file: string, matchResults: MatchDayResults }[] = [];
   pagedScrims: { file: string, matchResults: MatchDayResults }[] = [];
   loading = true;
   error = '';
@@ -76,6 +77,7 @@ export class GamesComponent implements OnInit {
     this.scrimsTableLoader.loadAllScrimsFromBatch('assets/scrims_batch', this.scrimFiles).subscribe({
       next: (results) => {
         this.scrimsTables = results;
+        this.applyFilter();
         this.setPage(1);
         this.loading = false;
       },
@@ -90,7 +92,39 @@ export class GamesComponent implements OnInit {
     this.page = page;
     const start = (page - 1) * this.pageSize;
     const end = start + this.pageSize;
-    this.pagedScrims = this.scrimsTables.slice(start, end);
+    this.pagedScrims = this.filteredScrims.slice(start, end);
+  }
+
+  onSearchChange(term: string) {
+    this.searchTerm = term;
+    this.applyFilter();
+    this.setPage(1);
+  }
+
+  applyFilter() {
+    if (!this.searchTerm.trim()) {
+      this.filteredScrims = [...this.scrimsTables];
+      return;
+    }
+    const lower = this.searchTerm.toLowerCase();
+    this.filteredScrims = this.scrimsTables.filter(scrim => {
+      const matchResults = scrim.matchResults;
+      // matchResults is a dictionary: { [gameNumber: number]: TeamGameResult[] }
+      for (const gameKey in matchResults) {
+        const teams = matchResults[gameKey];
+        for (const team of teams) {
+          if (team.teamName?.toLowerCase().includes(lower)) {
+            return true;
+          }
+          for (const player of team.players || []) {
+            if (player.playerName?.toLowerCase().includes(lower)) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    });
   }
 
   // All mock data, filtering, and statistics logic has been removed. This component now only loads and displays real scrim tables.

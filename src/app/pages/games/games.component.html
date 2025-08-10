@@ -22,6 +22,7 @@
 
   <!-- Scrims History View -->
   <div *ngIf="viewMode === 'current'" class="current-games-view">
+    <app-scrim-filters (searchChange)="onSearchChange($event)"></app-scrim-filters>
     <div *ngIf="loading" class="loading">Loading scrim tables...</div>
     <div *ngIf="error" class="error">{{ error }}</div>
     <div class="scrims-list" *ngIf="!loading && !error">
@@ -30,7 +31,7 @@
       </ng-container>
       <app-modern-pagination [page]="page" [totalPages]="totalPages" (pageChange)="setPage($event)"></app-modern-pagination>
     </div>
-    <div class="no-results" *ngIf="!loading && !error && scrimsTables.length === 0">
+    <div class="no-results" *ngIf="!loading && !error && pagedScrims.length === 0">
       <p>No scrim tables found.</p>
     </div>
   </div>

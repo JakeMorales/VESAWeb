@@ -3,7 +3,7 @@ import { Observable, forkJoin, of } from 'rxjs';
 import { map, catchError, shareReplay } from 'rxjs/operators';
 import { NhostService, ScrimPlayerStats, Player, Scrim, ScrimSignup } from './nhost.service';
 import { ScrimPlayer } from '../components/scrims-leaderboard/scrims-leaderboard.component';
-import { ScrimSession } from '../components/games/scrim-session.component';
+// import { ScrimSession } from '../components/games/scrim-session.component';
 import { MatchDayResults, TeamGameResult, PlayerStats } from '../models/match-day-results.model';
 import { ScrimsTableLoaderService } from './scrims-table-loader.service';
 
@@ -288,18 +288,7 @@ export class ScrimsDataService {
 
   // ======== SCRIMS HISTORY METHODS (for Games Page) ========
 
-  /**
-   * Get all scrim sessions for the games page scrims history
-   */
-  getScrimSessions(): Observable<ScrimSession[]> {
-    return this.nhostService.getScrims().pipe(
-      map(scrims => this.transformToScrimSessions(scrims)),
-      catchError((error) => {
-        console.error('Error fetching scrim sessions:', error);
-        return of([]);
-      })
-    );
-  }
+
 
   /**
    * Get match day results for a specific scrim session
@@ -373,19 +362,7 @@ export class ScrimsDataService {
     };
   }
 
-  /**
-   * Transform Scrim objects to ScrimSession format
-   */
-  private transformToScrimSessions(scrims: Scrim[]): ScrimSession[] {
-    return scrims
-      .map((scrim, index) => ({
-        id: parseInt(scrim.id),
-        date: this.formatScrimDate(scrim.date_time_field || ''),
-        time: this.formatScrimTime(scrim.date_time_field || ''),
-        maps: this.extractMapsFromScrim(scrim)
-      }))
-      .sort((a, b) => parseInt(b.id.toString()) - parseInt(a.id.toString())); // Sort by ID descending as fallback
-  }
+
 
   /**
    * Transform ScrimPlayerStats to MatchDayResults format

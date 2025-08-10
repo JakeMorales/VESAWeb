@@ -154,11 +154,10 @@ export class NhostTestComponent implements OnInit {
 
   ngOnInit() {
     console.log('NhostTestComponent initialized');
-    this.testConnection();
-    this.testPlayers();
-    this.testScrims();
-    this.testScrimSessions();
-    this.testPlayerStats();
+  this.testConnection();
+  this.testPlayers();
+  this.testScrims();
+  this.testPlayerStats();
   }
 
   testConnection() {
@@ -222,21 +221,7 @@ export class NhostTestComponent implements OnInit {
     });
   }
 
-  testScrimSessions() {
-    this.loadingScrimSessions = true;
-    this.scrimsDataService.getScrimSessions().subscribe({
-      next: (sessions) => {
-        this.scrimSessions = sessions;
-        this.loadingScrimSessions = false;
-        console.log('Scrim sessions loaded:', sessions);
-      },
-      error: (error) => {
-        this.scrimSessionsError = error.message || 'Failed to load scrim sessions';
-        this.loadingScrimSessions = false;
-        console.error('Error loading scrim sessions:', error);
-      }
-    });
-  }
+
 
   testPlayerStats() {
     this.loadingPlayerStats = true;
