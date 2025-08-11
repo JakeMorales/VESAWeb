@@ -31,6 +31,11 @@ export class EloCalculatorService {
   private combatWeight = 30;
   private damageWeight = 15;
   private supportWeight = 5;
+
+  public getPlacementWeight(): number { return this.placementWeight; }
+  public getCombatWeight(): number { return this.combatWeight; }
+  public getDamageWeight(): number { return this.damageWeight; }
+  public getSupportWeight(): number { return this.supportWeight; }
   private kFactor = 35;
   private expectedScore = 0.2827;
 

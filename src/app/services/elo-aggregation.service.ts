@@ -1,3 +1,21 @@
+// Interface for performance factor stats
+export interface PerformanceFactorStats {
+  placement: StatSummary;
+  combat: StatSummary;
+  damage: StatSummary;
+  support: StatSummary;
+  performance: StatSummary;
+}
+
+export interface StatSummary {
+  mean: number;
+  min: number;
+  max: number;
+  std: number;
+}
+
+
+
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -15,6 +33,72 @@ export class EloAggregationService {
     private eloCalculator: EloCalculatorService,
     private scrimFileService: ScrimFileService
   ) {}
+
+    /**
+   * Returns stats for each performance score factor and the overall performance score.
+   */
+  getPerformanceFactorStats(loadScrimTableFromJsonObject: (json: any) => MatchDayResults): Observable<PerformanceFactorStats> {
+    return this.scrimFileService.loadAllScrimBatchFiles().pipe(
+      map((jsons: any[]) => {
+        const placementArr: number[] = [];
+        const combatArr: number[] = [];
+        const damageArr: number[] = [];
+        const supportArr: number[] = [];
+        const perfArr: number[] = [];
+        jsons.forEach(json => {
+          if (!json) return;
+          const matchDay: MatchDayResults = loadScrimTableFromJsonObject(json);
+          if (!matchDay) return;
+          Object.values(matchDay).forEach((teamGameResults: any) => {
+            if (!Array.isArray(teamGameResults)) return;
+            teamGameResults.forEach((team: any) => {
+              if (!team.players) return;
+              team.players.forEach((ps: any) => {
+                const placement = team.placement;
+                const kills = ps.kills || 0;
+                const assists = ps.assists || 0;
+                const damage = ps.damage || ps.damage_dealt || 0;
+                const revives = ps.revives || ps.revives_given || 0;
+                // Factor calculations (copied from EloCalculatorService)
+                const placementFactor = this.eloCalculator.calculateTieredPlacementScore(placement);
+                const combatScore = kills + assists;
+                const combatFactor = Math.min(1, combatScore / 6);
+                const damageFactor = Math.min(1, damage / 1200);
+                const supportFactor = Math.min(1, revives / 3);
+                const perf = (
+                  (placementFactor * this.eloCalculator.getPlacementWeight() / 100) +
+                  (combatFactor * this.eloCalculator.getCombatWeight() / 100) +
+                  (damageFactor * this.eloCalculator.getDamageWeight() / 100) +
+                  (supportFactor * this.eloCalculator.getSupportWeight() / 100)
+                );
+                placementArr.push(placementFactor);
+                combatArr.push(combatFactor);
+                damageArr.push(damageFactor);
+                supportArr.push(supportFactor);
+                perfArr.push(perf);
+              });
+            });
+          });
+        });
+        function stats(arr: number[]) {
+          const n = arr.length;
+          if (n === 0) return { mean: 0, min: 0, max: 0, std: 0 };
+          const mean = arr.reduce((a, b) => a + b, 0) / n;
+          const min = Math.min(...arr);
+          const max = Math.max(...arr);
+          const std = Math.sqrt(arr.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n);
+          return { mean, min, max, std };
+        }
+        return {
+          placement: stats(placementArr),
+          combat: stats(combatArr),
+          damage: stats(damageArr),
+          support: stats(supportArr),
+          performance: stats(perfArr)
+        };
+      })
+    );
+  }
 
   /**
    * Calculates the average ELO gain/loss per game across all players.
@@ -92,6 +176,8 @@ export class EloAggregationService {
         let totalLeakage = 0;
         let totalGames = 0;
         const INITIAL_ELO = EloCalculatorService.INITIAL_ELO || 1500;
+        // Track Elo and games played for each player across all games
+        const playerState = new Map<string, { elo: number; gamesPlayed: number }>();
         jsons.forEach((json) => {
           if (!json) return;
           const matchDay: MatchDayResults = loadScrimTableFromJsonObject(json);
@@ -105,15 +191,23 @@ export class EloAggregationService {
                 const rawName = ps.playerName || ps.name || '';
                 const id = rawName.trim().toLowerCase();
                 allPlayers.push({ id, name: rawName, team, ps });
+                // Initialize player state if not present
+                if (!playerState.has(id)) {
+                  playerState.set(id, { elo: INITIAL_ELO, gamesPlayed: 0 });
+                }
               });
             });
+            // Snapshot of player Elos before this game
             const playerElosBefore = new Map<string, number>();
             allPlayers.forEach(p => {
-              playerElosBefore.set(p.id, INITIAL_ELO);
+              playerElosBefore.set(p.id, playerState.get(p.id)?.elo ?? INITIAL_ELO);
             });
             let totalProvisionalChange = 0;
+            // Calculate Elo changes for each player
             allPlayers.forEach(p => {
-              const gamesPlayed = 0;
+              const state = playerState.get(p.id)!;
+              const gamesPlayed = state.gamesPlayed;
+              const playerElo = state.elo;
               const opponentElos = allPlayers.filter(x => x.id !== p.id).map(x => playerElosBefore.get(x.id) ?? INITIAL_ELO);
               const avgOpponentElo = opponentElos.length ? (opponentElos.reduce((a, b) => a + b, 0) / opponentElos.length) : INITIAL_ELO;
               const perf = this.eloCalculator.calculatePerformanceScore(
@@ -124,12 +218,17 @@ export class EloAggregationService {
                 p.ps.revives || p.ps.revives_given || 0
               );
               const eloChange = this.eloCalculator.calculateEloChangeWithOpponent(
-                INITIAL_ELO,
+                playerElo,
                 avgOpponentElo,
                 perf,
                 gamesPlayed
               );
               totalProvisionalChange += eloChange;
+              // Update player state for next game
+              playerState.set(p.id, {
+                elo: playerElo + eloChange,
+                gamesPlayed: gamesPlayed + 1
+              });
             });
             totalGames++;
             totalLeakage += totalProvisionalChange;
