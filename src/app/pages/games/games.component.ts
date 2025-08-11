@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { ScrimFiltersComponent } from '../../components/games/scrim-filters.component';
 import { ScoresArchiveComponent } from '../../components/league/scores-archive.component';
@@ -12,7 +13,18 @@ import { ScrimsTableLoaderService } from '../../services/scrims-table-loader.ser
   standalone: true,
   imports: [CommonModule, ScrimFiltersComponent, ScoresArchiveComponent, ScrimCollapsibleComponent, ModernPaginationComponent],
   templateUrl: './games.component.html',
-  styleUrl: './games.component.css'
+  styleUrl: './games.component.css',
+  animations: [
+    trigger('fadeSlide', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(24px)' }),
+        animate('350ms cubic-bezier(.4,0,.2,1)', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('250ms cubic-bezier(.4,0,.2,1)', style({ opacity: 0, transform: 'translateY(-24px)' }))
+      ])
+    ])
+  ]
 })
 export class GamesComponent implements OnInit {
   searchTerm = '';

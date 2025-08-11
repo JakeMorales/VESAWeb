@@ -5,6 +5,10 @@
     
     <!-- View Mode Switcher -->
     <div class="view-switcher">
+      <div 
+        class="sliding-selector" 
+        [style.transform]="viewMode === 'archive' ? 'translateX(100%)' : 'translateX(0)'">
+      </div>
       <button 
         class="view-btn" 
         [class.active]="viewMode === 'current'"
@@ -21,7 +25,7 @@
   </div>
 
   <!-- Scrims History View -->
-  <div *ngIf="viewMode === 'current'" class="current-games-view">
+  <div *ngIf="viewMode === 'current'" class="current-games-view" @fadeSlide>
     <app-scrim-filters (searchChange)="onSearchChange($event)"></app-scrim-filters>
     <div *ngIf="loading" class="loading">Loading scrim tables...</div>
     <div *ngIf="error" class="error">{{ error }}</div>
@@ -37,7 +41,7 @@
   </div>
 
   <!-- League Archive View -->
-  <div *ngIf="viewMode === 'archive'" class="archive-view">
+  <div *ngIf="viewMode === 'archive'" class="archive-view" @fadeSlide>
     <app-scores-archive></app-scores-archive>
   </div>
 </div>
