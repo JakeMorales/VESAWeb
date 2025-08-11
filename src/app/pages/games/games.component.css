@@ -1,3 +1,49 @@
+/* Reverse liquid swipe effect for selector */
+.view-switcher .sliding-selector.liquid-anim-reverse {
+  animation: liquid-swipe-reverse 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes liquid-swipe-reverse {
+  0% {
+    transform: scaleX(1) translateX(100%);
+    border-radius: 12px;
+  }
+  40% {
+    transform: scaleX(1.08) translateX(100%);
+    border-radius: 15px 18px 18px 15px;
+  }
+  60% {
+    transform: scaleX(1.08) translateX(0);
+    border-radius: 18px 15px 15px 18px;
+  }
+  100% {
+    transform: scaleX(1) translateX(0);
+    border-radius: 12px;
+  }
+}
+/* Liquid swipe effect for selector */
+.view-switcher .sliding-selector.liquid-anim {
+  animation: liquid-swipe 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes liquid-swipe {
+  0% {
+    transform: scaleX(1) translateX(0);
+    border-radius: 12px;
+  }
+  40% {
+    transform: scaleX(1.08) translateX(0);
+    border-radius: 15px 18px 18px 15px;
+  }
+  60% {
+    transform: scaleX(1.08) translateX(100%);
+    border-radius: 18px 15px 15px 18px;
+  }
+  100% {
+    transform: scaleX(1) translateX(100%);
+    border-radius: 12px;
+  }
+}
 /* Modern pagination styles */
 .pagination.modern {
   display: flex;
@@ -193,13 +239,37 @@
   left: 8px;
   width: calc(50% - 8px);
   height: calc(100% - 16px);
-  border-radius: 10px;
+  border-radius: 12px;
   background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
   box-shadow: 0 4px 15px rgba(44,156,255,0.10);
   z-index: 1;
-  transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-radius 0.3s, box-shadow 0.3s;
   will-change: transform;
+  overflow: hidden;
 }
+
+.view-switcher .sliding-selector::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.0) 100%);
+  pointer-events: none;
+  filter: blur(1.5px);
+  transition: left 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 2;
+}
+.view-switcher .sliding-selector.liquid-anim::after {
+  left: 100%;
+  transition: left 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.view-switcher .sliding-selector.liquid-anim-reverse::after {
+  left: -60%;
+  transition: left 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 
 .view-btn {
   flex: 1;

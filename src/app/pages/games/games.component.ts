@@ -27,6 +27,14 @@ import { ScrimsTableLoaderService } from '../../services/scrims-table-loader.ser
   ]
 })
 export class GamesComponent implements OnInit {
+  selectorAnimating: 'none' | 'forward' | 'reverse' = 'none';
+  set viewModeSetter(val: 'current' | 'archive') {
+    if (this.viewMode !== val) {
+      this.selectorAnimating = (val === 'archive') ? 'forward' : 'reverse';
+      setTimeout(() => this.selectorAnimating = 'none', 450);
+    }
+    this.viewMode = val;
+  }
   searchTerm = '';
   scrimFiles: string[] = [
     // Add all scrim files here. For brevity, we'll use a wildcard loader in a real app, but for now, list a sample or generate dynamically if possible.

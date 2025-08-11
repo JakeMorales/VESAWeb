@@ -6,19 +6,23 @@
     <!-- View Mode Switcher -->
     <div class="view-switcher">
       <div 
-        class="sliding-selector" 
+        class="sliding-selector"
+        [ngClass]="{
+          'liquid-anim': selectorAnimating === 'forward',
+          'liquid-anim-reverse': selectorAnimating === 'reverse'
+        }"
         [style.transform]="viewMode === 'archive' ? 'translateX(100%)' : 'translateX(0)'">
       </div>
       <button 
         class="view-btn" 
         [class.active]="viewMode === 'current'"
-        (click)="viewMode = 'current'">
+        (click)="viewModeSetter = 'current'">
         Scrims History
       </button>
       <button 
         class="view-btn" 
         [class.active]="viewMode === 'archive'"
-        (click)="viewMode = 'archive'">
+        (click)="viewModeSetter = 'archive'">
         League Archive
       </button>
     </div>
