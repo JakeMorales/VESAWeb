@@ -50,23 +50,35 @@ import { RouterModule } from '@angular/router';
   `,
   styles: [`
     .header {
-      background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+      background: transparent !important;
       color: white;
       position: sticky;
       top: 0;
       z-index: 1000;
-      box-shadow: 0 4px 20px rgba(255, 44, 92, 0.2), 0 4px 20px rgba(44, 156, 255, 0.2);
-      border-bottom: 1px solid rgba(255, 44, 92, 0.3);
-      width: 100%;
+      box-shadow: none !important;
+      border: none !important;
+      width: 100vw;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      pointer-events: none;
+      backdrop-filter: none;
     }
 
     .header-content {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      max-width: 1200px;
+      justify-content: center;
+      width: 100vw;
       margin: 0 auto;
-      padding: 1rem;
+      padding: 1.5rem 0 0.5rem 0;
+      flex-direction: column;
+      gap: 1.2rem;
+      background: transparent !important;
+      box-shadow: none !important;
+      pointer-events: auto;
     }
 
     .logo-section {
@@ -96,59 +108,82 @@ import { RouterModule } from '@angular/router';
 
     .nav {
       display: flex;
-      gap: 2rem;
+      flex-direction: row;
       align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1.5rem;
+      background: #000000ff;
+      border-radius: 2.5rem;
+      box-shadow: none;
+      border: none;
+      margin: 0 auto;
+      width: fit-content;
+      min-width: 320px;
+      max-width: 90vw;
+      position: relative;
+      z-index: 10;
     }
 
     .nav a {
-      color: rgba(255, 255, 255, 0.9);
+      color: #e3e6f3;
       text-decoration: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      transition: all 0.3s ease;
+      padding: 0.5rem 1.5rem;
+      border-radius: 2rem;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
       font-weight: 500;
-      border: 1px solid transparent;
+      font-size: 1.08rem;
+      letter-spacing: 0.04em;
+      border: none;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
+      background: linear-gradient(90deg, #3e4e6a 0%, #4a5d7a 100%);
+      box-shadow: 0 1px 6px 0 rgba(30,40,60,0.08);
+      text-transform: uppercase;
+      display: inline-block;
+      min-width: 90px;
+      margin: 0 0.1rem;
     }
 
-    .nav a::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 44, 92, 0.2), transparent);
-      transition: left 0.5s;
-    }
-
-    .nav a:hover::before,
-    .nav a.active::before {
-      left: 100%;
-    }
 
     /* General nav link hover styles - but not for dropdown containers */
-    .nav > a:hover,
-    .nav > a.active {
-      background: linear-gradient(135deg, rgba(255, 44, 92, 0.2), rgba(44, 156, 255, 0.2));
-      border-color: rgba(255, 44, 92, 0.4);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(255, 44, 92, 0.3);
+    .nav > a.active, .nav > a:focus {
+      background: linear-gradient(90deg, #5e6cff 0%, #b45cff 100%);
+      color: #fff;
+      box-shadow: 0 2px 12px 0 rgba(90,80,200,0.13);
     }
+
+    .nav > a:hover:not(.active) {
+      background: linear-gradient(90deg, #4a5d7a 0%, #5e6cff 100%);
+      color: #fff;
+    }
+
 
     .nav-dropdown {
       position: relative;
       display: flex;
       align-items: center;
+      margin: 0 0.1rem;
     }
 
     .nav-dropdown > a {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      min-width: 120px;
+      min-width: 90px;
       justify-content: center;
+      border-radius: 2rem;
+      font-weight: 500;
+      font-size: 1.08rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #3e4e6a 0%, #4a5d7a 100%);
+      box-shadow: 0 1px 6px 0 rgba(30,40,60,0.08);
+      border: none;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+      position: relative;
+      overflow: visible;
+      margin: 0 0.1rem;
     }
 
     .dropdown-arrow {
@@ -164,11 +199,15 @@ import { RouterModule } from '@angular/router';
     }
 
     /* Apply hover effects to the dropdown link */
-    .nav-dropdown > a:hover {
-      background: linear-gradient(135deg, rgba(255, 44, 92, 0.2), rgba(44, 156, 255, 0.2));
-      border-color: rgba(255, 44, 92, 0.4);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(255, 44, 92, 0.3);
+    .nav-dropdown > a.active, .nav-dropdown > a:focus {
+      background: linear-gradient(90deg, #5e6cff 0%, #b45cff 100%);
+      color: #fff;
+      box-shadow: 0 2px 12px 0 rgba(90,80,200,0.13);
+    }
+
+    .nav-dropdown > a:hover:not(.active) {
+      background: linear-gradient(90deg, #4a5d7a 0%, #5e6cff 100%);
+      color: #fff;
     }
 
     /* Also apply hover effects when hovering the dropdown container */
