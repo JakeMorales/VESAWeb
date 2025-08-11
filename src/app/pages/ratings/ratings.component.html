@@ -1,3 +1,4 @@
+<!-- ...existing code... -->
 <div class="ratings-container">
   <div class="ratings-header">
     <h1>🎯 Battle Royale Rating Calculator</h1>
@@ -46,13 +47,41 @@
                    class="test-slider" (input)="updateTestValue('revives', $event)">
             <span class="test-value">{{testRevives}}</span>
           </div>
+          <div class="input-group">
+            <label>Player Elo</label>
+            <input type="range" min="800" max="2200" [value]="scenarioPlayerElo" class="test-slider" (input)="updateScenarioValue('playerElo', $event)">
+            <span class="test-value">{{scenarioPlayerElo}}</span>
+          </div>
+          <div class="input-group">
+            <label>Avg Opponent Elo</label>
+            <input type="range" min="800" max="2200" [value]="scenarioAvgOpponentElo" class="test-slider" (input)="updateScenarioValue('avgOpponentElo', $event)">
+            <span class="test-value">{{scenarioAvgOpponentElo}}</span>
+          </div>
+          <div class="input-group">
+            <label>Games Played</label>
+            <input type="range" min="0" max="100" [value]="scenarioGamesPlayed" class="test-slider" (input)="updateScenarioValue('gamesPlayed', $event)">
+            <span class="test-value">{{scenarioGamesPlayed}}</span>
+          </div>
         </div>
       </div>
       
       <div class="rating-result">
         <h3>Rating Change: <span [class]="getRatingChangeClass()">{{calculatedRatingChange >= 0 ? '+' : ''}}{{calculatedRatingChange}}</span></h3>
-        <p>New Rating: <strong>{{1500 + calculatedRatingChange}}</strong></p>
+        <p>New Rating: <strong>{{scenarioPlayerElo + calculatedRatingChange}}</strong></p>
         <p class="performance-score">Performance Score: {{(calculatedPerformanceScore * 100).toFixed(1)}}%</p>
+        <p class="hint">Tip: For max rating change, set Player Elo low, Opponent Elo high, and Games Played to 0.</p>
+        <div class="theoretical-stats">
+          <h4>Theoretical Maximums</h4>
+          <ul>
+            <li><b>Max Theoretical Elo Gain:</b> {{ maxEloGain }}</li>
+            <li><b>Max Theoretical Elo Loss:</b> {{ maxEloLoss }}</li>
+            <li *ngIf="avgExpectedEloChange !== null"><b>Avg Expected Elo Gain/Loss (fair match):</b> {{ avgExpectedEloChange }}</li>
+            <li><b>Max Placement Elo Gain:</b> {{ maxPlacementEloGain }}</li>
+            <li><b>Max Combat Elo Gain:</b> {{ maxCombatEloGain }}</li>
+            <li><b>Max Damage Elo Gain:</b> {{ maxDamageEloGain }}</li>
+            <li><b>Max Support Elo Gain:</b> {{ maxSupportEloGain }}</li>
+          </ul>
+        </div>
       </div>
       
       <div class="factor-breakdown">
@@ -98,5 +127,48 @@
         <button (click)="loadScenario('poor')" class="preset-btn poor">💀 Poor</button>
       </div>
     </section>
+  </div>
+</div>
+
+<!-- ELO Leaderboard Section -->
+<div class="elo-leaderboard-container">
+  <h2>🏅 Player ELO Leaderboard (18+ Games)</h2>
+  <div class="elo-stats" *ngIf="!loadingLeaderboard && !leaderboardError && playerEloLeaderboard.length > 0">
+    <strong>ELO Stats:</strong>
+    <ul>
+        <li><span class="elo-stat-label">Min:</span> <span class="elo-stat-value">{{ eloMin | number:'1.0-0' }}</span></li>
+        <li><span class="elo-stat-label">Max:</span> <span class="elo-stat-value">{{ eloMax | number:'1.0-0' }}</span></li>
+        <li><span class="elo-stat-label">Mean:</span> <span class="elo-stat-value">{{ eloMean | number:'1.1-1' }}</span></li>
+        <li><span class="elo-stat-label">Std Dev:</span> <span class="elo-stat-value">{{ eloStdDev | number:'1.1-1' }}</span></li>
+        <li><span class="elo-stat-label">Avg % Unrated Opponents:</span> <span class="elo-stat-value">{{ avgUnratedOpponentPct | number:'1.1-1' }}%</span></li>
+  <li><span class="elo-stat-label">Performance Score Min:</span> <span class="elo-stat-value">{{ perfScoreStats.min | number:'1.3-3' }}</span></li>
+  <li><span class="elo-stat-label">Performance Score Max:</span> <span class="elo-stat-value">{{ perfScoreStats.max | number:'1.3-3' }}</span></li>
+  <li><span class="elo-stat-label">Performance Score Mean:</span> <span class="elo-stat-value">{{ perfScoreStats.mean | number:'1.3-3' }}</span></li>
+  <li><span class="elo-stat-label">Performance Score Std Dev:</span> <span class="elo-stat-value">{{ perfScoreStats.stdDev | number:'1.3-3' }}</span></li>
+  <li><span class="elo-stat-label">Avg Elo Leakage Per Game:</span> <span class="elo-stat-value">{{ avgEloLeakagePerGame | number:'1.3-3' }}</span></li>
+    </ul>
+  </div>
+  <div *ngIf="loadingLeaderboard">Loading leaderboard...</div>
+  <div *ngIf="leaderboardError">{{leaderboardError}}</div>
+  <table *ngIf="!loadingLeaderboard && !leaderboardError && playerEloLeaderboard.length > 0" class="elo-leaderboard-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th>ELO</th>
+        <th>Games Played</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let player of playerEloLeaderboard; let i = index">
+        <td>{{i + 1}}</td>
+        <td>{{player.playerName}}</td>
+        <td>{{player.finalElo || player.estimatedElo}}</td>
+        <td>{{player.totalGames}}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="!loadingLeaderboard && !leaderboardError && playerEloLeaderboard.length === 0">
+    No players found with 18 or more games.
   </div>
 </div>

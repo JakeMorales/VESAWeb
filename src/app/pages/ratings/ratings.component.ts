@@ -1,14 +1,40 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ScrimsDataService, PlayerAggregatedStats } from '../../services/scrims-data.service';
+import { EloCalculatorService } from '../../services/elo-calculator.service';
 
 @Component({
   selector: 'app-ratings',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './ratings.component.html',
   styleUrl: './ratings.component.css'
 })
 export class RatingsComponent implements OnInit {
+  avgExpectedEloChange: number | null = null;
+  // Max theoretical stats for scenario
+  maxEloGain = 0;
+  maxEloLoss = 0;
+  maxPlacementEloGain = 0;
+  maxCombatEloGain = 0;
+  maxDamageEloGain = 0;
+  maxSupportEloGain = 0;
+  // Leaderboard data
+  playerEloLeaderboard: PlayerAggregatedStats[] = [];
+  loadingLeaderboard = true;
+  leaderboardError = '';
+
+  // Elo stats
+  eloMin: number | null = null;
+  eloMax: number | null = null;
+  eloMean: number | null = null;
+  eloStdDev: number | null = null;
+  avgUnratedOpponentPct: number | null = null;
+  perfScoreStats: { min: number | null, max: number | null, mean: number | null, stdDev: number | null } = { min: null, max: null, mean: null, stdDev: null };
+
+  // Elo leakage stat
+  avgEloLeakagePerGame: number | null = null;
 
   // Test Scenario Values (adjusted to realistic expectations based on pro data)
   testPlacement = 10;
@@ -20,17 +46,60 @@ export class RatingsComponent implements OnInit {
   // Calculated Results
   calculatedRatingChange = 0;
   calculatedPerformanceScore = 0;
+  // Scenario Elo parameters
+  scenarioPlayerElo = 1500;
+  scenarioAvgOpponentElo = 1500;
+  scenarioGamesPlayed = 20;
 
-  // Fixed weights for battle royale rating (placement reduced to 50%)
-  private placementWeight = 50;  // Decreased from 55% to 50%
-  private combatWeight = 30;     // Increased from 28% to 30%
-  private damageWeight = 15;     // Increased from 12% to 15%
-  private supportWeight = 5;     // Unchanged - revives are less common in reality
 
-  constructor() { }
+  constructor(
+    private scrimsDataService: ScrimsDataService,
+    public eloCalculator: EloCalculatorService
+  ) { }
 
   ngOnInit(): void {
     this.calculateRating();
+    this.loadLeaderboard();
+  }
+
+  loadLeaderboard(): void {
+    this.loadingLeaderboard = true;
+    this.leaderboardError = '';
+    this.scrimsDataService.getAggregatedPlayerElosFromScrimFiles().subscribe({
+      next: (data) => {
+        this.playerEloLeaderboard = data;
+        this.calculateEloStats();
+        // Subscribe to getAvgUnratedOpponentPct and set value when emitted
+        this.scrimsDataService.getAvgUnratedOpponentPct().subscribe(pct => {
+          this.avgUnratedOpponentPct = pct;
+        });
+        this.scrimsDataService.getPerfScoreStats().subscribe(stats => {
+          this.perfScoreStats = stats;
+        });
+        this.scrimsDataService.getAvgEloLeakagePerGame().subscribe(val => {
+          this.avgEloLeakagePerGame = val;
+        });
+        this.loadingLeaderboard = false;
+      },
+      error: (err) => {
+        this.leaderboardError = 'Failed to load leaderboard.';
+        this.loadingLeaderboard = false;
+      }
+    });
+  }
+
+  calculateEloStats(): void {
+    if (!this.playerEloLeaderboard.length) {
+      this.eloMin = this.eloMax = this.eloMean = this.eloStdDev = null;
+      return;
+    }
+    const elos = this.playerEloLeaderboard.map(p => p.finalElo ?? p.estimatedElo);
+    this.eloMin = Math.min(...elos);
+    this.eloMax = Math.max(...elos);
+    const sum = elos.reduce((a, b) => a + b, 0);
+    this.eloMean = sum / elos.length;
+    const variance = elos.reduce((acc, val) => acc + Math.pow(val - this.eloMean!, 2), 0) / elos.length;
+    this.eloStdDev = Math.sqrt(variance);
   }
 
   updateTestValue(type: string, event: any): void {
@@ -58,61 +127,64 @@ export class RatingsComponent implements OnInit {
   }
 
   calculateRating(): void {
-    // Calculate normalized factors (0-1) - adjusted based on pro player benchmarks
-    // Use tier-based placement scoring that matches actual tournament point distribution
-    const placementFactor = this.calculateTieredPlacementScore(this.testPlacement);
-    
-    // Pro average: 1.11 kills/game, 1.67 assists/game. Combine for combat score
-    // Count kills and assists equally (both = 1.0 value)
-    const combatScore = this.testKills + this.testAssists;
-    const combatFactor = Math.min(1, combatScore / 6); // Up to 6 combat score = 100% (more realistic)
-    
-    // Pro average: 510 damage/game. Scale so 800-1000 = very good for typical players  
-    const damageFactor = Math.min(1, this.testDamage / 1200); // Up to 1200 damage = 100% (more realistic)
-    
-    // Pro average: 0.22 revives/game. Most games will have 0-2 revives realistically
-    const supportFactor = Math.min(1, this.testRevives / 3); // Up to 3 revives = 100% (more realistic)
-
-    // Calculate weighted performance score with adjusted weights
-    this.calculatedPerformanceScore = (
-      (placementFactor * this.placementWeight / 100) +
-      (combatFactor * this.combatWeight / 100) +
-      (damageFactor * this.damageWeight / 100) +
-      (supportFactor * this.supportWeight / 100)
+    this.calculatedPerformanceScore = this.eloCalculator.calculatePerformanceScore(
+      this.testPlacement,
+      this.testKills,
+      this.testAssists,
+      this.testDamage,
+      this.testRevives
     );
+    // Use the real Elo calculation for scenarios
+    this.calculatedRatingChange = this.eloCalculator.calculateEloChangeWithOpponent(
+      this.scenarioPlayerElo,
+      this.scenarioAvgOpponentElo,
+      this.calculatedPerformanceScore,
+      this.scenarioGamesPlayed
+    );
+      // If max gain and loss are the same (in magnitude), show average expected Elo gain/loss for a fair match
+      if (Math.abs(this.maxEloGain) === Math.abs(this.maxEloLoss)) {
+        // For a fair match: player Elo = opponent Elo, performance = 0.5, k = 65 (new player)
+        const fairElo = 1500;
+        const fairK = 65;
+        const fairExpected = 1 / (1 + Math.pow(10, (fairElo - fairElo) / 400)); // = 0.5
+        this.avgExpectedEloChange = Math.round(fairK * (0.5 - fairExpected));
+      } else {
+        this.avgExpectedEloChange = null;
+      }
 
-    // Calculate rating change using Elo formula with adjustments for Battle Royale
-    const expectedScore = 0.2827; // Recalibrated for zero inflation with 20th place = 0%
-    const kFactor = 35; // Balanced K-factor for +25/-10 range with zero inflation
-    this.calculatedRatingChange = Math.round(kFactor * (this.calculatedPerformanceScore - expectedScore));
+  // Calculate max theoretical Elo gain (perfect performance, lowest player Elo, highest opponent Elo, lowest games played)
+  const minPlayerElo = 800;
+  const maxOpponentElo = 2200;
+  const minGamesPlayed = 0;
+  const maxPerformance = 1;
+  const k = minGamesPlayed < 18 ? 65 : 45;
+  const expectedScoreMax = 1 / (1 + Math.pow(10, (maxOpponentElo - minPlayerElo) / 400));
+  this.maxEloGain = Math.round(k * (maxPerformance - expectedScoreMax));
+
+  // Max theoretical Elo loss: worst performance, highest player Elo, lowest opponent Elo
+  const maxPlayerElo = 2200;
+  const minOpponentElo = 800;
+  const expectedScoreMin = 1 / (1 + Math.pow(10, (minOpponentElo - maxPlayerElo) / 400));
+  this.maxEloLoss = Math.round(k * (0 - expectedScoreMin));
+
+  // Max Elo gain for each weighting category (holding others at 0)
+  // Placement
+  const maxPlacementScore = this.eloCalculator.calculatePerformanceScore(1, 0, 0, 0, 0);
+  this.maxPlacementEloGain = Math.round(k * (maxPlacementScore - expectedScoreMax));
+  // Combat
+  const maxCombatScore = this.eloCalculator.calculatePerformanceScore(20, 6, 0, 0, 0);
+  this.maxCombatEloGain = Math.round(k * (maxCombatScore - expectedScoreMax));
+  // Damage
+  const maxDamageScore = this.eloCalculator.calculatePerformanceScore(20, 0, 0, 1200, 0);
+  this.maxDamageEloGain = Math.round(k * (maxDamageScore - expectedScoreMax));
+  // Support
+  const maxSupportScore = this.eloCalculator.calculatePerformanceScore(20, 0, 0, 0, 3);
+  this.maxSupportEloGain = Math.round(k * (maxSupportScore - expectedScoreMax));
   }
 
-  // Explicit placement scoring - adjusted to be less harsh for top half
+  // Use EloCalculatorService for placement score
   private calculateTieredPlacementScore(placement: number): number {
-    // Adjusted values to make 10th place = -10 Elo (less harsh for top half)
-    switch (placement) {
-      case 1: return 1.00;   // 100% - 50% weight = 50.0% contribution
-      case 2: return 0.85;   // 85% - 50% weight = 42.5% contribution  
-      case 3: return 0.75;   // 75% - 50% weight = 37.5% contribution  
-      case 4: return 0.65;   // 65% - 50% weight = 32.5% contribution  
-      case 5: return 0.55;   // 55% - 50% weight = 27.5% contribution  
-      case 6: return 0.45;   // 45% - 50% weight = 22.5% contribution  
-      case 7: return 0.35;   // 35% - 50% weight = 17.5% contribution  
-      case 8: return 0.28;   // 28% - 50% weight = 14.0% contribution   
-      case 9: return 0.24;   // 24% - 50% weight = 12.0% contribution   
-      case 10: return 0.20;  // 20% - 50% weight = 10.0% contribution = -10 Elo
-      case 11: return 0.12;  // 12% - 50% weight = 6.0% contribution    
-      case 12: return 0.10;  // 10% - 50% weight = 5.0% contribution    
-      case 13: return 0.08;  // 8% - 50% weight = 4.0% contribution    
-      case 14: return 0.07;  // 7% - 50% weight = 3.5% contribution    
-      case 15: return 0.06;  // 6% - 50% weight = 3.0% contribution    
-      case 16: return 0.05;  // 5% - 50% weight = 2.5% contribution   
-      case 17: return 0.04;  // 4% - 50% weight = 2.0% contribution   
-      case 18: return 0.03;  // 3% - 50% weight = 1.5% contribution - Less harsh
-      case 19: return 0.02;  // 2% - 50% weight = 1.0% contribution - Less harsh
-      case 20: return 0.0;   // 0% - 50% weight = 0.0% contribution - Dead last punishment
-      default: return 0.0;
-    }
+    return this.eloCalculator.calculateTieredPlacementScore(placement);
   }
 
   getRatingChangeClass(): string {
@@ -122,29 +194,27 @@ export class RatingsComponent implements OnInit {
   }
 
   getFactorContribution(factor: string): number {
+    // Use the same weights as EloCalculatorService
     let factorValue = 0;
     let weight = 0;
-    
     switch (factor) {
       case 'placement':
-        factorValue = this.calculateTieredPlacementScore(this.testPlacement);
-        weight = this.placementWeight;
+        factorValue = this.eloCalculator.calculateTieredPlacementScore(this.testPlacement);
+        weight = 50;
         break;
       case 'combat':
         const combatScore = this.testKills + this.testAssists;
-        factorValue = Math.min(1, combatScore / 6); // Updated to match new calculation
-        weight = this.combatWeight;
+        factorValue = Math.min(1, combatScore / 6);
+        weight = 30;
         break;
       case 'damage':
-        factorValue = Math.min(1, this.testDamage / 1200); // Updated to match new calculation
-        weight = this.damageWeight;
+        factorValue = Math.min(1, this.testDamage / 1200);
+        weight = 15;
         break;
       case 'support':
-        factorValue = Math.min(1, this.testRevives / 3); // Updated to match new calculation
-        weight = this.supportWeight;
+        weight = 5;
         break;
     }
-    
     return factorValue * weight;
   }
 
@@ -177,6 +247,22 @@ export class RatingsComponent implements OnInit {
         this.testAssists = 0;   // No combat participation
         this.testDamage = 150;  // Minimal engagement
         this.testRevives = 0;
+        break;
+    }
+    this.calculateRating();
+  }
+
+  updateScenarioValue(type: string, event: any): void {
+    const value = parseInt(event.target.value);
+    switch (type) {
+      case 'playerElo':
+        this.scenarioPlayerElo = value;
+        break;
+      case 'avgOpponentElo':
+        this.scenarioAvgOpponentElo = value;
+        break;
+      case 'gamesPlayed':
+        this.scenarioGamesPlayed = value;
         break;
     }
     this.calculateRating();
