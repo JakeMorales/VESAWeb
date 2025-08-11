@@ -9,18 +9,14 @@ import { RouterModule } from '@angular/router';
   template: `
     <header class="header">
       <div class="header-content">
-        <div class="logo-section">
-          <a routerLink="/home" class="logo-link">
+        <nav class="nav" [class.nav-open]="isNavOpen">
+          <a routerLink="/home" class="nav-logo-link" aria-label="Home">
             <img 
-              src="vesa-logo.png" 
-              alt="VESA - Virtual Esports Association" 
-              class="logo-image"
+              src="WhiteVesaLogoTransparent.png" 
+              alt="VESA Logo Icon" 
+              class="nav-logo-img"
             />
           </a>
-        </div>
-        
-        <nav class="nav" [class.nav-open]="isNavOpen">
-          <a routerLink="/home" routerLinkActive="active" (click)="closeNav()">Home</a>
           <div class="nav-dropdown">
             <a routerLink="/league" routerLinkActive="active" (click)="closeNav()">
               League <span class="dropdown-arrow">▼</span>
@@ -49,6 +45,12 @@ import { RouterModule } from '@angular/router';
     </header>
   `,
   styles: [`
+    .nav-logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1.2rem;
+    }
     .header {
       background: transparent !important;
       color: white;
@@ -81,6 +83,60 @@ import { RouterModule } from '@angular/router';
       pointer-events: auto;
     }
 
+    @media (min-width: 700px) {
+      .header-content {
+        flex-direction: row;
+        gap: 2.5rem;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+
+
+    .nav-logo-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  width: 104px;
+  height: 104px;
+  min-width: 104px;
+  min-height: 104px;
+      border-radius: 50%;
+      background: transparent;
+      text-decoration: none;
+      margin: 0 0.18rem 0 0;
+      padding: 0;
+      border: none;
+      box-shadow: none;
+      transition: box-shadow 0.2s, background 0.2s;
+    }
+
+    .nav-logo-img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto;
+  background: transparent;
+  transition: transform 0.2s;
+    }
+
+    .nav-logo-link:hover .nav-logo-img {
+      transform: scale(1.08);
+      box-shadow: 0 0 12px rgba(44,156,255,0.18);
+    }
+
+    .nav > .nav-logo-link {
+      background: transparent !important;
+      box-shadow: none !important;
+      border: none !important;
+      min-width: unset;
+      margin-left: 0;
+      margin-right: 0.18rem;
+      padding: 0;
+    }
+
     .logo-section {
       display: flex;
       flex-direction: column;
@@ -107,22 +163,24 @@ import { RouterModule } from '@angular/router';
     }
 
     .nav {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1.5rem;
-      background: #000000ff;
-      border-radius: 2.5rem;
-      box-shadow: none;
-      border: none;
-      margin: 0 auto;
-      width: fit-content;
-      min-width: 320px;
-      max-width: 90vw;
-      position: relative;
-      z-index: 10;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem 2.2rem 0.5rem 1.2rem;
+  background: rgba(20, 20, 30, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 2.5rem;
+  box-shadow: none;
+  border: none;
+  margin: 0 auto;
+  width: fit-content;
+  min-width: 340px;
+  max-width: 95vw;
+  position: relative;
+  z-index: 10;
     }
 
     .nav a {
@@ -187,15 +245,14 @@ import { RouterModule } from '@angular/router';
     }
 
     .dropdown-arrow {
-      font-size: 0.7rem;
-      transition: all 0.3s ease;
-      opacity: 0;
-      transform: scale(0.8);
+  font-size: 0.7rem;
+  transition: all 0.3s ease;
+  opacity: 1;
+  transform: scale(1);
     }
 
     .nav-dropdown:hover .dropdown-arrow {
-      opacity: 1;
-      transform: scale(1) rotate(180deg);
+  transform: scale(1) rotate(180deg);
     }
 
     /* Apply hover effects to the dropdown link */

@@ -9,8 +9,10 @@ import { RouterModule } from '@angular/router';
   template: `
     <section class="hero">
       <div class="hero-content">
-        <h1 class="hero-title">Welcome to VESA</h1>
-        <h2 class="hero-subtitle">Virtual Esports Association</h2>
+        <h1 class="hero-title">Welcome to</h1>
+        <div class="hero-banner">
+          <img src="VesaBannerWhiteRedBlueTransparent.png" alt="VESA Banner" class="vesa-banner-img" />
+        </div>
         <p class="hero-description">
           The premier competitive Apex Legends league and scrim server. 
           Track your performance, climb the ranks, and dominate the arena.

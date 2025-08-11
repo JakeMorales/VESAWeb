@@ -1,36 +1,9 @@
 <div class="home-container">
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-content">
-      <h1 class="hero-title">Welcome to VESA</h1>
-      <h2 class="hero-subtitle">Virtual Esports Association</h2>
-      <p class="hero-description">
-        The premier competitive Apex Legends league and scrim server. 
-        Track your performance, climb the ranks, and dominate the arena.
-      </p>
-      <div class="hero-actions">
-        <a routerLink="/league" class="cta-button primary">View League</a>
-        <a routerLink="/players" class="cta-button secondary">Player Stats</a>
-        <a routerLink="/games" class="cta-button secondary">Latest Games</a>
-      </div>
-    </div>
-    <div class="hero-visual">
-      <div class="stats-preview">
-        <div class="stat-card">
-          <h3>{{ totalPlayers }}</h3>
-          <p>Total Players</p>
-        </div>
-        <div class="stat-card">
-          <h3>{{ totalGames }}</h3>
-          <p>Total Games</p>
-        </div>
-        <div class="stat-card">
-          <h3>{{ totalMatches }}</h3>
-          <p>Total Matches</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <app-home-hero
+    [totalPlayers]="totalPlayers"
+    [totalGames]="totalGames"
+    [totalMatches]="totalMatches">
+  </app-home-hero>
 
   <!-- Discord Community Section -->
   <section class="discord-community">

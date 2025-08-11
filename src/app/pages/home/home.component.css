@@ -1,3 +1,20 @@
+/* Banner styles */
+.hero-banner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5rem 0 2.2rem 0;
+}
+
+.vesa-banner-img {
+  width: 100%;
+  max-width: 700px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  filter: drop-shadow(0 4px 32px rgba(44,156,255,0.12));
+}
 .home-container {
   min-height: 100vh;
   width: 100vw;
