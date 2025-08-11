@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ScrimsDataService, PlayerAggregatedStats } from '../../services/scrims-data.service';
+import { PlayerAggregatedStats, ScrimsDataService } from '../../services/scrims-data.service';
 import { EloCalculatorService } from '../../services/elo-calculator.service';
+import { EloAggregationService } from '../../services/elo-aggregation.service';
 
 @Component({
   selector: 'app-ratings',
@@ -21,7 +22,7 @@ export class RatingsComponent implements OnInit {
   maxDamageEloGain = 0;
   maxSupportEloGain = 0;
   // Leaderboard data
-  playerEloLeaderboard: PlayerAggregatedStats[] = [];
+  playerEloLeaderboard: (PlayerAggregatedStats & { finalElo?: number })[] = [];
   loadingLeaderboard = true;
   leaderboardError = '';
 
@@ -35,6 +36,13 @@ export class RatingsComponent implements OnInit {
 
   // Elo leakage stat
   avgEloLeakagePerGame: number | null = null;
+
+  // Avg Elo gain/loss per game
+  avgEloGainPerGame: number | null = null;
+  avgEloLossPerGame: number | null = null;
+
+  // Avg net Elo change per game
+  avgNetEloChangePerGame: number | null = null;
 
   // Test Scenario Values (adjusted to realistic expectations based on pro data)
   testPlacement = 10;
@@ -53,6 +61,7 @@ export class RatingsComponent implements OnInit {
 
 
   constructor(
+    private eloAggregationService: EloAggregationService,
     private scrimsDataService: ScrimsDataService,
     public eloCalculator: EloCalculatorService
   ) { }
@@ -65,19 +74,48 @@ export class RatingsComponent implements OnInit {
   loadLeaderboard(): void {
     this.loadingLeaderboard = true;
     this.leaderboardError = '';
-    this.scrimsDataService.getAggregatedPlayerElosFromScrimFiles().subscribe({
+    this.eloAggregationService.getAggregatedPlayerElosFromScrimFiles(
+      (json: any) => this.scrimsDataService.loadScrimTableFromJsonObject(json)
+    ).subscribe({
       next: (data) => {
         this.playerEloLeaderboard = data;
         this.calculateEloStats();
         // Subscribe to getAvgUnratedOpponentPct and set value when emitted
-        this.scrimsDataService.getAvgUnratedOpponentPct().subscribe(pct => {
+        this.eloAggregationService.getAvgUnratedOpponentPct(
+          (json: any) => this.scrimsDataService.loadScrimTableFromJsonObject(json)
+        ).subscribe(pct => {
           this.avgUnratedOpponentPct = pct;
         });
-        this.scrimsDataService.getPerfScoreStats().subscribe(stats => {
-          this.perfScoreStats = stats;
+        this.eloAggregationService.getPerformanceFactorStats(
+          (json: any) => this.scrimsDataService.loadScrimTableFromJsonObject(json)
+        ).subscribe(stats => {
+          // If you want just the overall performance score stats:
+          if (stats && stats.performance) {
+            this.perfScoreStats = {
+              min: stats.performance.min,
+              max: stats.performance.max,
+              mean: stats.performance.mean,
+              stdDev: stats.performance.std // 'std' in StatSummary, not 'stdDev'
+            };
+          } else {
+            this.perfScoreStats = { min: null, max: null, mean: null, stdDev: null };
+          }
         });
-        this.scrimsDataService.getAvgEloLeakagePerGame().subscribe(val => {
+        this.eloAggregationService.getAvgEloLeakagePerGame(
+          (json: any) => this.scrimsDataService.loadScrimTableFromJsonObject(json)
+        ).subscribe(val => {
           this.avgEloLeakagePerGame = val;
+        });
+        this.eloAggregationService.getAvgEloGainLossPerGame(
+          (json: any) => this.scrimsDataService.loadScrimTableFromJsonObject(json)
+        ).subscribe(result => {
+          this.avgEloGainPerGame = result.avgGain;
+          this.avgEloLossPerGame = result.avgLoss;
+        });
+        this.eloAggregationService.getAvgNetEloChangePerGame(
+          (json: any) => this.scrimsDataService.loadScrimTableFromJsonObject(json)
+        ).subscribe(val => {
+          this.avgNetEloChangePerGame = val;
         });
         this.loadingLeaderboard = false;
       },
@@ -93,7 +131,7 @@ export class RatingsComponent implements OnInit {
       this.eloMin = this.eloMax = this.eloMean = this.eloStdDev = null;
       return;
     }
-    const elos = this.playerEloLeaderboard.map(p => p.finalElo ?? p.estimatedElo);
+  const elos = this.playerEloLeaderboard.map(p => (p.finalElo !== undefined ? p.finalElo : p.estimatedElo));
     this.eloMin = Math.min(...elos);
     this.eloMax = Math.max(...elos);
     const sum = elos.reduce((a, b) => a + b, 0);

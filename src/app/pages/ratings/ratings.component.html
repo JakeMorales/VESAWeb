@@ -146,6 +146,9 @@
   <li><span class="elo-stat-label">Performance Score Mean:</span> <span class="elo-stat-value">{{ perfScoreStats.mean | number:'1.3-3' }}</span></li>
   <li><span class="elo-stat-label">Performance Score Std Dev:</span> <span class="elo-stat-value">{{ perfScoreStats.stdDev | number:'1.3-3' }}</span></li>
   <li><span class="elo-stat-label">Avg Elo Leakage Per Game:</span> <span class="elo-stat-value">{{ avgEloLeakagePerGame | number:'1.3-3' }}</span></li>
+  <li><span class="elo-stat-label">Avg Elo Gain Per Game:</span> <span class="elo-stat-value">{{ avgEloGainPerGame | number:'1.3-3' }}</span></li>
+  <li><span class="elo-stat-label">Avg Elo Loss Per Game:</span> <span class="elo-stat-value">{{ avgEloLossPerGame | number:'1.3-3' }}</span></li>
+  <li><span class="elo-stat-label">Avg Net Elo Change Per Game:</span> <span class="elo-stat-value">{{ avgNetEloChangePerGame | number:'1.3-3' }}</span></li>
     </ul>
   </div>
   <div *ngIf="loadingLeaderboard">Loading leaderboard...</div>

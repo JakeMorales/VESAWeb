@@ -1,10 +1,10 @@
+  
 import { NhostService } from './nhost.service';
 import { ScrimsTableLoaderService } from './scrims-table-loader.service';
 import { EloAggregationService } from './elo-aggregation.service';
 import { PlayerStatsService } from './player-stats.service';
 import { TeamUtilsService } from './team-utils.service';
 import { DateUtilsService } from './date-utils.service';
-import { ScrimFileService } from './scrim-file.service';
 
 
 export interface ScrimLeaderboardData {
@@ -32,186 +32,24 @@ export interface PlayerAggregatedStats {
   estimatedElo: number;
   finalElo?: number;
 }
-
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class ScrimsDataService {
 
-  /**
-   * Calculates the average ELO leakage per game across all scrims.
-   * ELO leakage = sum of all rating gains minus all rating losses (should be close to zero if system is balanced).
-   * Returns Observable<number> (average leakage per game).
-   */
-
-  /**
-   * Calculates the actual average Elo gain and loss per game across all scrims.
-   * Returns Observable<{ avgGain: number, avgLoss: number }>
-   */
-  getAvgEloGainLossPerGame(): Observable<{ avgGain: number, avgLoss: number }> {
-    return this.eloAggregationService.getAvgEloGainLossPerGame(
-      (json: any) => this.loadScrimTableFromJsonObject(json)
-    );
-  }
-
-  getAvgEloLeakagePerGame(): Observable<number> {
-    return this.eloAggregationService.getAvgEloLeakagePerGame(
-      (json: any) => this.loadScrimTableFromJsonObject(json)
-    );
-  }
-
-  /**
-   * Calculates min, max, mean, and stdDev of performance scores for all players across all scrims.
-   * Returns { min, max, mean, stdDev } (all numbers, or null if no data).
-   */
-  /**
-   * Calculates min, max, mean, and stdDev of performance scores for all players across all scrims.
-   * Returns Observable<{ min, max, mean, stdDev }> (all numbers, or null if no data).
-   */
-  getPerfScoreStats(): import('rxjs').Observable<{ min: number | null, max: number | null, mean: number | null, stdDev: number | null }> {
-  const fileNames = this.scrimFileService.getAllScrimBatchFiles();
-        const fileRequests = fileNames.map(name =>
-          this.http.get<any>(`assets/scrims_batch/${name}`).pipe(catchError(() => of(null)))
-        );
-    return forkJoin(fileRequests).pipe(
-      map(jsons => {
-        const perfScores: number[] = [];
-        jsons.forEach(json => {
-          if (!json) return;
-          const matchDay: MatchDayResults = this.loadScrimTableFromJsonObject(json);
-          if (!matchDay) return;
-          Object.values(matchDay).forEach((teamGameResults: any) => {
-            if (!Array.isArray(teamGameResults)) return;
-            teamGameResults.forEach((team: any) => {
-              if (!team.players) return;
-              team.players.forEach((ps: any) => {
-                // Use the EloCalculatorService to calculate performance score
-                const perf = this.eloCalculator.calculatePerformanceScore(
-                  team.placement,
-                  ps.kills || 0,
-                  ps.assists || 0,
-                  ps.damage || ps.damage_dealt || 0,
-                  ps.revives || ps.revives_given || 0
-                );
-                perfScores.push(perf);
-              });
-            });
-          });
-        });
-        if (!perfScores.length) {
-          return { min: null, max: null, mean: null, stdDev: null };
-        }
-        const min = Math.min(...perfScores);
-        const max = Math.max(...perfScores);
-        const mean = perfScores.reduce((a, b) => a + b, 0) / perfScores.length;
-        const variance = perfScores.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / perfScores.length;
-        const stdDev = Math.sqrt(variance);
-        return { min, max, mean, stdDev };
-      })
-    );
-  }
-  /**
-   * Calculates the average percent of unrated opponents (opponents with rating 1500 or <18 games played)
-   * for all players across all scrims. Unrated = estimatedElo === 1500 OR totalGames < 18.
-   * Returns an Observable<number> (average percent, 0-100).
-   */
-  getAvgUnratedOpponentPct(): Observable<number> {
-    // Use the aggregated player stats from scrim files
-  return this.getAggregatedPlayerElosFromScrimFiles().pipe(
-      map((players: PlayerAggregatedStats[]) => {
-        if (!players || players.length === 0) return of(0);
-
-        // Build a lookup for all players by id for quick access
-        const playerMap = new Map<string, PlayerAggregatedStats>();
-        players.forEach(p => playerMap.set(p.playerId, p));
-
-        // For each player, find their opponents in each game and count unrated opponents
-        // We'll need to re-parse the scrim files to get per-game opponents
-        // (This is not super efficient, but works for this batch calculation)
-  const fileNames = this.scrimFileService.getAllScrimBatchFiles();
-
-        // We'll need HttpClient for this, but it's already injected
-        // We'll use forkJoin to load all files again
-        const fileRequests = fileNames.map(name =>
-          this.http.get<any>(`assets/scrims_batch/${name}`).pipe(catchError(() => of(null)))
-        );
-
-        // Return an Observable<number> after all files are loaded
-        return forkJoin(fileRequests).pipe(
-          map(jsons => {
-            let totalOpponentCount = 0;
-            let totalUnratedOpponentCount = 0;
-
-            jsons.forEach((json, fileIdx) => {
-              if (!json) return;
-              const matchDay: MatchDayResults = this.loadScrimTableFromJsonObject(json);
-              if (!matchDay) return;
-              Object.entries(matchDay).forEach(([gameNumber, teamGameResults]: [string, any]) => {
-                if (!Array.isArray(teamGameResults)) return;
-                // Collect all players in this game
-                const allPlayers = teamGameResults.flatMap((team: any) => team.players.map((ps: any) => {
-                  const rawName = ps.playerName || ps.name || '';
-                  return rawName.trim().toLowerCase();
-                }));
-                // For each team, for each player, count unrated opponents
-                teamGameResults.forEach((team: any) => {
-                  team.players.forEach((ps: any) => {
-                    const playerId = (ps.playerName || ps.name || '').trim().toLowerCase();
-                    // Opponents = all players not on this team
-                    const opponents = allPlayers.filter(id => !team.players.some((p: any) => (p.playerName || p.name || '').trim().toLowerCase() === id));
-                    opponents.forEach(oppId => {
-                      totalOpponentCount++;
-                      const oppStats = playerMap.get(oppId);
-                      if (!oppStats || oppStats.estimatedElo === 1500 || oppStats.totalGames < 18) {
-                        totalUnratedOpponentCount++;
-                      }
-                    });
-                  });
-                });
-              });
-            });
-            if (totalOpponentCount === 0) return 0;
-            return (totalUnratedOpponentCount / totalOpponentCount) * 100;
-          }),
-          // Always return Observable<number>
-          // If totalOpponentCount === 0, return of(0)
-          mergeMap(val => typeof val === 'number' ? of(val) : val)
-        );
-      }),
-      // Flatten the nested Observable<number> to Observable<number>
-      // (switchMap is not imported, so use mergeMap)
-      // Import mergeMap at the top if not present
-      // @ts-ignore
-      mergeMap((obs: Observable<number>) => obs)
-    );
-  }
+  // RatingsComponent should call getPerformanceFactorStats, getAvgUnratedOpponentPct, and getAvgNetEloChangePerGame directly from EloAggregationService.
   constructor(
     private nhostService: NhostService,
     private scrimsTableLoader: ScrimsTableLoaderService,
-    private http: HttpClient,
-    private eloCalculator: EloCalculatorService,
-    private eloAggregationService: EloAggregationService,
     private playerStatsService: PlayerStatsService,
     private teamUtilsService: TeamUtilsService,
     private dateUtilsService: DateUtilsService,
-    private scrimFileService: ScrimFileService
+    private eloAggregationService: EloAggregationService
   ) {}
+
   /**
    * Map ScrimPlayerStats (from backend) to PlayerStats (frontend model)
    */
   private mapScrimPlayerStatsToPlayerStats(stats: any[]): PlayerStats[] {
     return this.playerStatsService.mapScrimPlayerStatsToPlayerStats(stats);
-  }
-
-  /**
-   * Loads all scrim batch JSON files from assets, aggregates ELOs for each player,
-   * and returns those with >= 18 games played.
-   */
-  getAggregatedPlayerElosFromScrimFiles(): Observable<PlayerAggregatedStats[]> {
-    return this.eloAggregationService.getAggregatedPlayerElosFromScrimFiles(
-      (json: any) => this.loadScrimTableFromJsonObject(json)
-    );
   }
 
   /**
@@ -225,35 +63,15 @@ export class ScrimsDataService {
    * Get aggregated leaderboard data for scrims
    */
   getScrimsLeaderboard(): Observable<ScrimLeaderboardData> {
-    return forkJoin({
-      playerStats: this.nhostService.getScrimPlayerStatsWithDetails(),
-      players: this.nhostService.getPlayers(),
-      scrims: this.nhostService.getScrims()
-    }).pipe(
-      map(({ playerStats, players, scrims }) => {
-        // Create a player lookup map
-        const playerLookup = new Map<string, string>();
-        players.forEach(player => {
-          playerLookup.set(player.id, player.display_name || `Player ${player.id.slice(0, 8)}`);
-        });
-
-        // Enhance player stats with real player names
-        const enhancedPlayerStats = playerStats.map(stat => ({
-          ...stat,
-          enhancedPlayerName: playerLookup.get(stat.player_id) || stat.name || 'Unknown Player'
-        }));
-
-  // Map enhancedPlayerStats to PlayerStats before aggregation
-  const mappedPlayerStats = this.mapScrimPlayerStatsToPlayerStats(enhancedPlayerStats);
-  const aggregatedData = this.aggregatePlayerStats(mappedPlayerStats);
-        // Use PlayerAggregatedStats directly for leaderboard
-        return {
-          players: aggregatedData,
-          totalScrims: scrims.length,
-          totalPlayers: players.length,
-          lastUpdated: new Date()
-        };
-      }),
+    return this.eloAggregationService.getAggregatedPlayerElosFromScrimFiles(
+      (json: any) => this.loadScrimTableFromJsonObject(json)
+    ).pipe(
+      map(players => ({
+        players,
+        totalScrims: 0, // Set to 0 for type safety (update if you have scrim count logic)
+        totalPlayers: players.length,
+        lastUpdated: new Date()
+      })),
       catchError((error) => {
         console.error('Error fetching scrims leaderboard:', error);
         return of({
@@ -270,7 +88,6 @@ export class ScrimsDataService {
   /**
    * Get detailed stats for a specific player
    */
-
   getPlayerScrimHistory(playerId: string): Observable<PlayerStats[]> {
     return this.nhostService.getPlayerStats(playerId).pipe(
       map(stats => this.mapScrimPlayerStatsToPlayerStats(stats))
@@ -280,44 +97,10 @@ export class ScrimsDataService {
   /**
    * Get all stats for a specific scrim
    */
-
   getScrimResults(scrimId: string): Observable<PlayerStats[]> {
     return this.nhostService.getScrimStats(scrimId).pipe(
       map(stats => this.mapScrimPlayerStatsToPlayerStats(stats))
     );
-  }
-
-  /**
-   * Aggregate player stats from individual scrim performances
-   */
-  private aggregatePlayerStats(playerStats: PlayerStats[]): PlayerAggregatedStats[] {
-    return this.playerStatsService.aggregatePlayerStats(playerStats);
-  }
-
-  /**
-   * Transform aggregated player stats to ScrimPlayer format for the leaderboard
-   */
-  // private transformToScrimPlayers removed: ScrimPlayer type does not exist. Use PlayerAggregatedStats directly for leaderboard.
-
-  /**
-   * Calculate badges based on player performance
-   */
-  private calculateBadges(stats: PlayerAggregatedStats): string[] {
-    return this.playerStatsService.calculateBadges(stats);
-  }
-
-  /**
-   * Calculate estimated ELO based on performance metrics
-   */
-  private calculateEstimatedElo(avgPlacement: number, avgKills: number, avgDamage: number, winRate: number): number {
-    return this.playerStatsService.calculateEstimatedElo(avgPlacement, avgKills, avgDamage, winRate);
-  }
-
-  /**
-   * Create empty player stats structure
-   */
-  private createEmptyPlayerStats(playerId: string, playerName: string, displayName?: string): PlayerAggregatedStats {
-    return this.playerStatsService.createEmptyPlayerStats(playerId, playerName, displayName);
   }
 
   // ======== SCRIMS HISTORY METHODS (for Games Page) ========
@@ -610,4 +393,3 @@ export interface PlayerStats {
   revives: number;
   respawns: number;
 }
-

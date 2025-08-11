@@ -1,5 +1,3 @@
-
-
 import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
@@ -23,7 +21,7 @@ export class EloCalculatorService {
     // Dynamic K-factor: higher for new players, moderately high for experienced
     const k = gamesPlayed < 18 ? 65 : 45;
     const expectedScore = 1 / (1 + Math.pow(10, (opponentElo - playerElo) / 400));
-    return Math.round(k * (performanceScore - expectedScore));
+    return k * (performanceScore - expectedScore); // No rounding here!
   }
   static readonly INITIAL_ELO = 1500;
   // These weights and logic are from the RatingsComponent
@@ -65,6 +63,15 @@ export class EloCalculatorService {
   calculateEloChange(performanceScore: number): number {
     return Math.round(this.kFactor * (performanceScore - this.expectedScore));
   }
+
+    /**
+   * Normalizes an array of performance scores so the mean is 0.5.
+   */
+  static normalizePerformanceScores(scores: number[]): number[] {
+    const mean = scores.reduce((a, b) => a + b, 0) / (scores.length || 1);
+    return scores.map(s => 0.5 + (s - mean));
+  }
+
 
   calculateTieredPlacementScore(placement: number): number {
     switch (placement) {

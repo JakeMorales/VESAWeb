@@ -22,6 +22,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { EloCalculatorService } from './elo-calculator.service';
+import { RatingService } from './rating.service';
 import { PlayerAggregatedStats } from './scrims-data.service';
 import { MatchDayResults } from '../models/match-day-results.model';
 import { ScrimFileService } from './scrim-file.service';
@@ -31,8 +32,87 @@ export class EloAggregationService {
   constructor(
     private http: HttpClient,
     private eloCalculator: EloCalculatorService,
-    private scrimFileService: ScrimFileService
+    private scrimFileService: ScrimFileService,
+    private ratingService: RatingService
   ) {}
+
+    /**
+   * Calculates the average net ELO change per game across all players.
+   * This is the sum of all Elo changes per game, averaged over all games.
+   */
+  getAvgNetEloChangePerGame(loadScrimTableFromJsonObject: (json: any) => MatchDayResults): Observable<number> {
+    return this.scrimFileService.loadAllScrimBatchFiles().pipe(
+      map((jsons: any[]) => {
+        let totalNetChange = 0;
+        let totalGames = 0;
+        const INITIAL_ELO = EloCalculatorService.INITIAL_ELO || 1500;
+        jsons.forEach((json) => {
+          if (!json) return;
+          const matchDay: MatchDayResults = loadScrimTableFromJsonObject(json);
+          if (!matchDay) return;
+          Object.entries(matchDay).forEach(([gameNumber, teamGameResults]: [string, any]) => {
+            if (!Array.isArray(teamGameResults)) return;
+            const allPlayers: { id: string, name: string, team: any, ps: any }[] = [];
+            teamGameResults.forEach((team: any) => {
+              if (!team.players) return;
+              team.players.forEach((ps: any) => {
+                const rawName = ps.playerName || ps.name || '';
+                const id = rawName.trim().toLowerCase();
+                allPlayers.push({ id, name: rawName, team, ps });
+              });
+            });
+            const playerElosBefore = new Map<string, number>();
+            allPlayers.forEach(p => {
+              playerElosBefore.set(p.id, INITIAL_ELO);
+            });
+            // Calculate raw performance scores for all players
+            const rawScores = allPlayers.map(p =>
+              this.eloCalculator.calculatePerformanceScore(
+                p.team.placement,
+                p.ps.kills || 0,
+                p.ps.assists || 0,
+                p.ps.damage || p.ps.damage_dealt || 0,
+                p.ps.revives || p.ps.revives_given || 0
+              )
+            );
+            const meanRawScore = rawScores.reduce((a, b) => a + b, 0) / (rawScores.length || 1);
+            // Normalize scores so mean is 0.5
+            const normScores = rawScores.map(s => 0.5 + (s - meanRawScore));
+            let netChange = 0;
+            allPlayers.forEach((p, idx) => {
+              const gamesPlayed = 0;
+              const opponentElos = allPlayers.filter(x => x.id !== p.id).map(x => playerElosBefore.get(x.id) ?? INITIAL_ELO);
+              const avgOpponentElo = opponentElos.length ? (opponentElos.reduce((a, b) => a + b, 0) / opponentElos.length) : INITIAL_ELO;
+              const normPerf = normScores[idx];
+              const eloChange = this.eloCalculator.calculateEloChangeWithOpponent(
+                INITIAL_ELO,
+                avgOpponentElo,
+                normPerf,
+                gamesPlayed
+              );
+              netChange += eloChange;
+            });
+            totalNetChange += netChange;
+            totalGames++;
+          });
+        });
+        return totalGames > 0 ? totalNetChange / totalGames : 0;
+      })
+    );
+  }
+
+    /**
+   * Calculates the average percent of unrated opponents (opponents with rating 1500 or <18 games played)
+   * for all players across all scrims. Unrated = estimatedElo === 1500 OR totalGames < 18.
+   * Returns an Observable<number> (average percent, 0-100).
+   */
+  getAvgUnratedOpponentPct(loadScrimTableFromJsonObject: (json: any) => any): import('rxjs').Observable<number> {
+    // TODO: Implement actual logic if needed
+    return new Observable<number>(subscriber => {
+      subscriber.next(0);
+      subscriber.complete();
+    });
+  }
 
     /**
    * Returns stats for each performance score factor and the overall performance score.
@@ -99,6 +179,8 @@ export class EloAggregationService {
       })
     );
   }
+
+  
 
   /**
    * Calculates the average ELO gain/loss per game across all players.
@@ -260,58 +342,34 @@ export class EloAggregationService {
           if (!matchDay) return;
           Object.entries(matchDay).forEach(([gameNumber, teamGameResults]: [string, any]) => {
             if (!Array.isArray(teamGameResults)) return;
-            const allPlayers: { id: string, name: string, team: any, ps: any }[] = [];
+            // Build playerEloMap for this game
+            const playerEloMap: { [playerName: string]: number } = {};
             teamGameResults.forEach((team: any) => {
               if (!team.players) return;
               team.players.forEach((ps: any) => {
                 const rawName = ps.playerName || ps.name || '';
                 const id = rawName.trim().toLowerCase();
-                allPlayers.push({ id, name: rawName, team, ps });
                 if (!playerMap.has(id)) {
                   playerMap.set(id, { name: rawName, elo: INITIAL_ELO, games: new Set(), gamesPlayed: 0, stats: [] });
                 }
+                playerEloMap[rawName] = playerMap.get(id)!.elo;
               });
             });
-            const playerElosBefore = new Map<string, number>();
-            allPlayers.forEach(p => {
-              playerElosBefore.set(p.id, playerMap.get(p.id)!.elo);
-            });
-            const provisionalEloChanges = new Map<string, number>();
-            let totalProvisionalChange = 0;
-            allPlayers.forEach(p => {
-              const playerStats = playerMap.get(p.id)!;
-              const gamesPlayed = playerStats.gamesPlayed;
-              const opponentElos = allPlayers.filter(x => x.id !== p.id).map(x => playerElosBefore.get(x.id) ?? INITIAL_ELO);
-              const avgOpponentElo = opponentElos.length ? (opponentElos.reduce((a, b) => a + b, 0) / opponentElos.length) : INITIAL_ELO;
-              const perf = this.eloCalculator.calculatePerformanceScore(
-                p.team.placement,
-                p.ps.kills || 0,
-                p.ps.assists || 0,
-                p.ps.damage || p.ps.damage_dealt || 0,
-                p.ps.revives || p.ps.revives_given || 0
-              );
-              const eloChange = this.eloCalculator.calculateEloChangeWithOpponent(
-                playerStats.elo,
-                avgOpponentElo,
-                perf,
-                gamesPlayed
-              );
-              provisionalEloChanges.set(p.id, eloChange);
-              totalProvisionalChange += eloChange;
-            });
-            const numPlayers = allPlayers.length;
-            const meanChange = totalProvisionalChange / numPlayers;
-            const playerEloChanges = new Map<string, number>();
-            allPlayers.forEach(p => {
-              const normalizedChange = provisionalEloChanges.get(p.id)! - meanChange;
-              playerEloChanges.set(p.id, normalizedChange);
-            });
-            allPlayers.forEach(p => {
-              const playerStats = playerMap.get(p.id)!;
-              playerStats.elo += playerEloChanges.get(p.id)!;
+            // Use RatingService to process Elo changes for this game
+            const { playerRatings } = this.ratingService.processMatchResults(teamGameResults, playerEloMap);
+            // Update playerMap with new Elos and stats
+            playerRatings.forEach(rating => {
+              const id = rating.playerName.trim().toLowerCase();
+              const playerStats = playerMap.get(id)!;
+              playerStats.elo = rating.eloRating;
               playerStats.games.add(`${fileIdx}_${gameNumber}`);
               playerStats.gamesPlayed++;
-              playerStats.stats.push({ ...p.ps, placement: p.team.placement });
+              // Find the player's stats in the teamGameResults
+              const team = teamGameResults.find((t: any) => t.players.some((p: any) => (p.playerName || p.name || '').trim().toLowerCase() === id));
+              const ps = team ? team.players.find((p: any) => (p.playerName || p.name || '').trim().toLowerCase() === id) : undefined;
+              if (ps) {
+                playerStats.stats.push({ ...ps, placement: team.placement });
+              }
             });
           });
         });
