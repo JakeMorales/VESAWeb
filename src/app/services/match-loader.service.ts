@@ -28,7 +28,6 @@ export class MatchLoaderService {
    */
   transformMatchJsonToMatchDayResults(data: any): any /* MatchDayResults */ {
     if (!data) {
-      console.warn('transformMatchJsonToMatchDayResults: No data provided (null or undefined).');
       return {};
     }
     const matchResults: any = {};
@@ -67,9 +66,9 @@ export class MatchLoaderService {
               revives: p.revives ?? 0,
               respawns: p.respawns ?? 0
             }));
-          if (players.length === 0) {
-            console.error(`Team '${cleanTeamName}' in game ${game.game_number} has no players!`, team);
-          }
+          // if (players.length === 0) {
+          //   // Team has no players, skip or handle as needed
+          // }
           return {
             gameNumber: game.game_number,
             teamName: cleanTeamName,

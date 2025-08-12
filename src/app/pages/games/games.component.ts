@@ -7,6 +7,7 @@ import { ScrimCollapsibleComponent } from '../../components/scrim-collapsible/sc
 import { ModernPaginationComponent } from '../../components/modern-pagination/modern-pagination.component';
 import { MatchDayResults } from '../../models/match-day-results.model';
 import { ScrimsDataService } from '../../services/scrims-data.service';
+import { ScrimFileService } from '../../services/scrim-file.service';
 import { forkJoin, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
@@ -38,43 +39,7 @@ export class GamesComponent implements OnInit {
     this.viewMode = val;
   }
   searchTerm = '';
-  scrimFiles: string[] = [
-    // Add all scrim files here. For brevity, we'll use a wildcard loader in a real app, but for now, list a sample or generate dynamically if possible.
-    'scrim_2024_07_03_id_7058.json',
-    'scrim_2024_07_03_id_7059.json',
-    'scrim_2024_07_04_id_7100.json',
-    'scrim_2024_07_08_id_7174.json',
-    'scrim_2024_07_10_id_7215.json',
-    'scrim_2024_08_09_id_7932.json',
-    'scrim_2024_08_16_id_8041.json',
-    'scrim_2024_08_23_id_8178.json',
-    'scrim_2024_09_03_id_8328.json',
-    'scrim_2024_09_05_id_8368.json',
-    'scrim_2024_09_05_id_8369.json',
-    'scrim_2024_09_19_id_8655.json',
-    'scrim_2024_09_19_id_8656.json',
-    'scrim_2024_09_20_id_8672.json',
-    'scrim_2024_09_21_id_8718.json',
-    'scrim_2024_09_23_id_8766.json',
-    'scrim_2024_09_25_id_8806.json',
-    'scrim_2024_09_29_id_8903.json',
-    'scrim_2024_09_30_id_8934.json',
-    'scrim_2024_10_01_id_8958.json',
-    'scrim_2024_10_01_id_8960.json',
-    'scrim_2024_10_04_id_9068.json',
-    'scrim_2024_10_14_id_9333.json',
-    'scrim_2024_10_24_id_9669.json',
-    'scrim_2024_10_26_id_9751.json',
-    'scrim_2024_10_30_id_9820.json',
-    'scrim_2024_10_30_id_9822.json',
-    'scrim_2024_10_31_id_9843.json',
-    'scrim_2024_10_31_id_9846.json',
-    'scrim_2024_10_31_id_9848.json',
-    'scrim_2024_11_01_id_9861.json',
-    'scrim_2024_11_04_id_9910.json',
-    'scrim_2024_11_05_id_9925.json',
-    // ...add more as needed or automate this in production
-  ];
+  scrimFiles: string[] = [];
   scrimsTables: { file: string, matchResults: MatchDayResults }[] = [];
   filteredScrims: { file: string, matchResults: MatchDayResults }[] = [];
   pagedScrims: { file: string, matchResults: MatchDayResults }[] = [];
@@ -87,7 +52,9 @@ export class GamesComponent implements OnInit {
     return Math.ceil(this.scrimsTables.length / this.pageSize);
   }
 
-  constructor(private scrimsDataService: ScrimsDataService) {}
+  constructor(private scrimsDataService: ScrimsDataService, private scrimFileService: ScrimFileService) {
+    this.scrimFiles = this.scrimFileService.getAllScrimBatchFiles();
+  }
 
   ngOnInit() {
     this.loadScrimsTables();
