@@ -42,7 +42,9 @@ export class RatingService {
    */
   processMatchResults(
     gameResults: TeamGameResult[],
-    playerEloMap: { [playerName: string]: number } = {}
+    playerEloMap: { [playerName: string]: number } = {},
+    playerEloHistory?: Map<string, { gameId: string, elo: number }[]>,
+    gameId?: string
   ): { playerRatings: PlayerRating[]; teamRatings: TeamRating[] } {
     const playerRatings: PlayerRating[] = [];
     // Flatten all players in all teams for this game
@@ -64,23 +66,21 @@ export class RatingService {
         player.revives
       )
     );
-    // Normalize scores so mean is 0.5
-    const normScores = EloCalculatorService.normalizePerformanceScores(rawScores);
 
-    // Assign Elo changes using normalized scores and the actual game average rating as opponent Elo
+  // Normalize scores so mean is 0.5 (classic Elo style, more variance)
+  const normScores = EloCalculatorService.normalizePerformanceScores(rawScores);
+
+    // Assign Elo changes using normalized scores and expected = 1/N for each player (zero-sum Elo)
+    const expected = 0.5;
     allPlayers.forEach(({ player, result }, idx) => {
       const playerElo = playerElos[idx];
       const normPerfScore = normScores[idx];
       const gamesPlayed = 0; // Could be tracked if needed
-      const eloChange = this.eloCalculator.calculateEloChangeWithOpponent(
-        playerElo,
-        gameAverageRating,
-        normPerfScore,
-        gamesPlayed
-      );
+      const eloChange = 60 * (normPerfScore - expected); // K=60, expected = 0.5
+      const newElo = playerElo + eloChange;
       const playerRating: PlayerRating = {
         playerName: player.playerName,
-        eloRating: playerElo + eloChange,
+        eloRating: newElo,
         gamesPlayed: 1,
         wins: result.placement <= 5 ? 1 : 0,
         losses: result.placement > 15 ? 1 : 0,
@@ -92,6 +92,12 @@ export class RatingService {
         lastUpdated: new Date()
       };
       playerRatings.push(playerRating);
+      // Track Elo history if requested
+      if (playerEloHistory && gameId) {
+        const id = player.playerName.trim().toLowerCase();
+        if (!playerEloHistory.has(id)) playerEloHistory.set(id, []);
+        playerEloHistory.get(id)!.push({ gameId, elo: newElo });
+      }
     });
 
     return { playerRatings, teamRatings: [] };

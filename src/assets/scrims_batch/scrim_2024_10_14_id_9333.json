@@ -5,7 +5,7 @@
     "organizer": "VESA Scrims",
     "display_name": "VESA Scrims",
     "source": "statscode",
-    "extracted_at": "2025-08-10T16:37:43.270832"
+    "extracted_at": "2025-08-12T15:34:46.835938"
   },
   "games": [
     {
@@ -3054,8 +3054,8 @@
       "total_headshots": 29,
       "total_knockdowns": 7,
       "characters_played": [
-        "newcastle",
-        "catalyst"
+        "catalyst",
+        "newcastle"
       ]
     },
     "Lastcall": {
@@ -3128,8 +3128,8 @@
       "total_headshots": 16,
       "total_knockdowns": 3,
       "characters_played": [
-        "pathfinder",
-        "valkyrie"
+        "valkyrie",
+        "pathfinder"
       ]
     },
     "オニケン": {
@@ -3202,8 +3202,8 @@
       "total_headshots": 12,
       "total_knockdowns": 2,
       "characters_played": [
-        "wattson",
-        "catalyst"
+        "catalyst",
+        "wattson"
       ]
     },
     "iRazeHell | twitch": {
@@ -3311,8 +3311,8 @@
       "total_headshots": 25,
       "total_knockdowns": 8,
       "characters_played": [
-        "newcastle",
         "bangalore",
+        "newcastle",
         "crypto"
       ]
     },
@@ -3373,9 +3373,9 @@
       "total_headshots": 14,
       "total_knockdowns": 9,
       "characters_played": [
-        "horizon",
+        "catalyst",
         "wattson",
-        "catalyst"
+        "horizon"
       ]
     },
     "rakkideeznutz": {
@@ -3448,8 +3448,8 @@
       "total_headshots": 9,
       "total_knockdowns": 2,
       "characters_played": [
-        "crypto",
-        "valkyrie"
+        "valkyrie",
+        "crypto"
       ]
     },
     "aimdead": {
@@ -3462,8 +3462,8 @@
       "total_knockdowns": 14,
       "characters_played": [
         "wattson",
-        "pathfinder",
-        "rampart"
+        "rampart",
+        "pathfinder"
       ]
     },
     "モンゴリアン": {
@@ -3476,8 +3476,8 @@
       "total_knockdowns": 1,
       "characters_played": [
         "loba",
-        "bangalore",
-        "wraith"
+        "wraith",
+        "bangalore"
       ]
     },
     "I_Lay_Caulk": {
@@ -3513,9 +3513,9 @@
       "total_headshots": 4,
       "total_knockdowns": 0,
       "characters_played": [
-        "conduit",
         "wattson",
-        "horizon"
+        "horizon",
+        "conduit"
       ]
     },
     "Breber": {
@@ -3539,8 +3539,8 @@
       "total_headshots": 6,
       "total_knockdowns": 4,
       "characters_played": [
-        "bangalore",
-        "catalyst"
+        "catalyst",
+        "bangalore"
       ]
     },
     "Phoenix.L8NT": {
@@ -3552,8 +3552,8 @@
       "total_headshots": 2,
       "total_knockdowns": 1,
       "characters_played": [
-        "fuse",
-        "wraith"
+        "wraith",
+        "fuse"
       ]
     },
     "moby": {

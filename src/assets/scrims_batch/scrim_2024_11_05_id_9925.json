@@ -5,7 +5,7 @@
     "organizer": "VESA Scrims",
     "display_name": "VESA Scrims",
     "source": "statscode",
-    "extracted_at": "2025-08-10T16:37:55.393947"
+    "extracted_at": "2025-08-12T15:34:59.788899"
   },
   "games": [
     {
@@ -2888,8 +2888,8 @@
       "total_headshots": 34,
       "total_knockdowns": 13,
       "characters_played": [
-        "pathfinder",
-        "catalyst"
+        "catalyst",
+        "pathfinder"
       ]
     },
     "F5 | Mysteryz": {
@@ -2913,8 +2913,8 @@
       "total_headshots": 26,
       "total_knockdowns": 13,
       "characters_played": [
-        "pathfinder",
-        "catalyst"
+        "catalyst",
+        "pathfinder"
       ]
     },
     "F5 | ferris66": {
@@ -3118,8 +3118,8 @@
       "total_headshots": 19,
       "total_knockdowns": 11,
       "characters_played": [
-        "madmaggie",
-        "bangalore"
+        "bangalore",
+        "madmaggie"
       ]
     },
     "spaceman": {
@@ -3168,8 +3168,8 @@
       "total_headshots": 21,
       "total_knockdowns": 7,
       "characters_played": [
-        "pathfinder",
-        "bangalore"
+        "bangalore",
+        "pathfinder"
       ]
     },
     "Nekotama": {
@@ -3181,9 +3181,9 @@
       "total_headshots": 23,
       "total_knockdowns": 12,
       "characters_played": [
-        "pathfinder",
+        "catalyst",
         "crypto",
-        "catalyst"
+        "pathfinder"
       ]
     },
     "@guychews": {
@@ -3255,8 +3255,8 @@
       "total_headshots": 50,
       "total_knockdowns": 7,
       "characters_played": [
-        "wattson",
-        "catalyst"
+        "catalyst",
+        "wattson"
       ]
     },
     "nishooo": {
@@ -3268,9 +3268,9 @@
       "total_headshots": 19,
       "total_knockdowns": 6,
       "characters_played": [
-        "madmaggie",
         "newcastle",
-        "fuse"
+        "fuse",
+        "madmaggie"
       ]
     },
     "ExecBreezyTV": {
@@ -3282,8 +3282,8 @@
       "total_headshots": 5,
       "total_knockdowns": 5,
       "characters_played": [
-        "ash",
-        "bangalore"
+        "bangalore",
+        "ash"
       ]
     },
     "Joy_Champion": {
@@ -3308,10 +3308,10 @@
       "total_headshots": 4,
       "total_knockdowns": 3,
       "characters_played": [
-        "madmaggie",
+        "catalyst",
         "vantage",
         "newcastle",
-        "catalyst"
+        "madmaggie"
       ]
     },
     "Hopper": {
@@ -3324,8 +3324,8 @@
       "total_knockdowns": 0,
       "characters_played": [
         "wattson",
-        "pathfinder",
-        "newcastle"
+        "newcastle",
+        "pathfinder"
       ]
     },
     "oalios": {
@@ -3337,8 +3337,8 @@
       "total_headshots": 20,
       "total_knockdowns": 2,
       "characters_played": [
-        "pathfinder",
-        "bangalore"
+        "bangalore",
+        "pathfinder"
       ]
     },
     "VTX Sparrow": {
@@ -3410,8 +3410,8 @@
       "total_headshots": 12,
       "total_knockdowns": 3,
       "characters_played": [
-        "newcastle",
-        "catalyst"
+        "catalyst",
+        "newcastle"
       ]
     },
     "Stinkerson": {
@@ -3436,8 +3436,8 @@
       "total_headshots": 8,
       "total_knockdowns": 3,
       "characters_played": [
-        "wattson",
-        "catalyst"
+        "catalyst",
+        "wattson"
       ]
     },
     "Exillade": {
@@ -3474,8 +3474,8 @@
       "total_headshots": 6,
       "total_knockdowns": 3,
       "characters_played": [
-        "pathfinder",
-        "bangalore"
+        "bangalore",
+        "pathfinder"
       ]
     },
     "Nemutoe": {
@@ -3500,8 +3500,8 @@
       "total_headshots": 14,
       "total_knockdowns": 6,
       "characters_played": [
-        "newcastle",
-        "wraith"
+        "wraith",
+        "newcastle"
       ]
     },
     "Evoke": {
@@ -3513,9 +3513,9 @@
       "total_headshots": 38,
       "total_knockdowns": 10,
       "characters_played": [
-        "pathfinder",
         "bangalore",
-        "newcastle"
+        "newcastle",
+        "pathfinder"
       ]
     },
     "QueenPenguin49 TTV": {
@@ -3527,8 +3527,8 @@
       "total_headshots": 11,
       "total_knockdowns": 2,
       "characters_played": [
-        "wattson",
         "bangalore",
+        "wattson",
         "crypto"
       ]
     },
@@ -3589,8 +3589,8 @@
       "total_headshots": 24,
       "total_knockdowns": 17,
       "characters_played": [
-        "pathfinder",
-        "bangalore"
+        "bangalore",
+        "pathfinder"
       ]
     }
   },

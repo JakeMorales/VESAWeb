@@ -31,7 +31,11 @@ export class RatingsComponent implements OnInit {
   eloMax: number | null = null;
   eloMean: number | null = null;
   eloStdDev: number | null = null;
-  avgUnratedOpponentPct: number | null = null;
+  unratedPercent: number | null = null;
+  percentOver12Games: number | null = null;
+  totalPlayers: number | null = null;
+  unratedPlayers: number | null = null;
+  over12GamesPlayers: number | null = null;
   perfScoreStats: { min: number | null, max: number | null, mean: number | null, stdDev: number | null } = { min: null, max: null, mean: null, stdDev: null };
 
   // Elo leakage stat
@@ -80,11 +84,15 @@ export class RatingsComponent implements OnInit {
       next: (data) => {
         this.playerEloLeaderboard = data;
         this.calculateEloStats();
-        // Subscribe to getAvgUnratedOpponentPct and set value when emitted
-        this.eloAggregationService.getAvgUnratedOpponentPct(
+        // Use new getEloStatsSummary for Elo stats
+        this.eloAggregationService.getEloStatsSummary(
           (json: any) => this.scrimsDataService.loadScrimTableFromJsonObject(json)
-        ).subscribe(pct => {
-          this.avgUnratedOpponentPct = pct;
+        ).subscribe(stats => {
+          this.unratedPercent = stats.unratedPercent;
+          this.percentOver12Games = stats.percentOver12Games;
+          this.totalPlayers = stats.totalPlayers;
+          this.unratedPlayers = stats.unratedPlayers;
+          this.over12GamesPlayers = stats.over12GamesPlayers;
         });
         this.eloAggregationService.getPerformanceFactorStats(
           (json: any) => this.scrimsDataService.loadScrimTableFromJsonObject(json)
@@ -100,11 +108,6 @@ export class RatingsComponent implements OnInit {
           } else {
             this.perfScoreStats = { min: null, max: null, mean: null, stdDev: null };
           }
-        });
-        this.eloAggregationService.getAvgEloLeakagePerGame(
-          (json: any) => this.scrimsDataService.loadScrimTableFromJsonObject(json)
-        ).subscribe(val => {
-          this.avgEloLeakagePerGame = val;
         });
         this.eloAggregationService.getAvgEloGainLossPerGame(
           (json: any) => this.scrimsDataService.loadScrimTableFromJsonObject(json)

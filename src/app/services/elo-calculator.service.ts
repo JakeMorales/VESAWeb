@@ -3,12 +3,12 @@ import { Injectable } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class EloCalculatorService {
   /**
-   * Calculates Elo change using player Elo, opponent Elo, and performance score.
-   * @param playerElo The player's current Elo rating
-   * @param opponentElo The opponent's (or average opposing team) Elo rating
-   * @param performanceScore The player's performance score (0-1)
+   * Normalizes an array of performance scores so the mean is 0.5.
    */
-  // ...existing code...
+  static normalizePerformanceScores(scores: number[]): number[] {
+    const mean = scores.reduce((a, b) => a + b, 0) / (scores.length || 1);
+    return scores.map(s => 0.5 + (s - mean));
+  }
   
   /**
    * Calculates Elo change using a dynamic K-factor based on games played.
@@ -18,8 +18,8 @@ export class EloCalculatorService {
    * @param gamesPlayed Number of games the player has played
    */
   calculateEloChangeWithOpponent(playerElo: number, opponentElo: number, performanceScore: number, gamesPlayed: number): number {
-    // Dynamic K-factor: higher for new players, moderately high for experienced
-    const k = gamesPlayed < 18 ? 65 : 45;
+    // Fixed K-factor for all players to ensure zero-sum Elo
+    const k = 60;
     const expectedScore = 1 / (1 + Math.pow(10, (opponentElo - playerElo) / 400));
     return k * (performanceScore - expectedScore); // No rounding here!
   }
@@ -67,9 +67,13 @@ export class EloCalculatorService {
     /**
    * Normalizes an array of performance scores so the mean is 0.5.
    */
-  static normalizePerformanceScores(scores: number[]): number[] {
-    const mean = scores.reduce((a, b) => a + b, 0) / (scores.length || 1);
-    return scores.map(s => 0.5 + (s - mean));
+
+  /**
+   * Normalizes an array of performance scores so the sum is 1 (probability distribution).
+   */
+  static sumNormalizePerformanceScores(scores: number[]): number[] {
+    const total = scores.reduce((a, b) => a + b, 0) || 1;
+    return scores.map(s => s / total);
   }
 
 

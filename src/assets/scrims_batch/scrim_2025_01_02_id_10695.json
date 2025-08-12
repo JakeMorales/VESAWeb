@@ -5,7 +5,7 @@
     "organizer": "VESA Scrims",
     "display_name": "VESA Scrims",
     "source": "statscode",
-    "extracted_at": "2025-08-10T16:37:47.949180"
+    "extracted_at": "2025-08-12T15:34:51.028575"
   },
   "games": [
     {
@@ -2862,8 +2862,8 @@
       "total_headshots": 22,
       "total_knockdowns": 27,
       "characters_played": [
-        "madmaggie",
-        "catalyst"
+        "catalyst",
+        "madmaggie"
       ]
     },
     "Jitty": {
@@ -2887,8 +2887,8 @@
       "total_headshots": 35,
       "total_knockdowns": 11,
       "characters_played": [
-        "pathfinder",
-        "gibraltar"
+        "gibraltar",
+        "pathfinder"
       ]
     },
     "Oshe": {
@@ -2900,8 +2900,8 @@
       "total_headshots": 34,
       "total_knockdowns": 16,
       "characters_played": [
-        "madmaggie",
-        "bangalore"
+        "bangalore",
+        "madmaggie"
       ]
     },
     "muchmixture9": {
@@ -2985,8 +2985,8 @@
       "total_headshots": 13,
       "total_knockdowns": 4,
       "characters_played": [
-        "madmaggie",
-        "newcastle"
+        "newcastle",
+        "madmaggie"
       ]
     },
     "WilliamShakemySpear": {
@@ -3022,9 +3022,9 @@
       "total_headshots": 23,
       "total_knockdowns": 24,
       "characters_played": [
+        "catalyst",
         "gibraltar",
-        "valkyrie",
-        "catalyst"
+        "valkyrie"
       ]
     },
     "Æ | Lando": {
@@ -3265,11 +3265,11 @@
       "total_headshots": 6,
       "total_knockdowns": 5,
       "characters_played": [
-        "mirage",
         "catalyst",
-        "pathfinder",
         "newcastle",
-        "rampart"
+        "mirage",
+        "rampart",
+        "pathfinder"
       ]
     },
     "Kitkat  >:)": {
@@ -3281,10 +3281,10 @@
       "total_headshots": 10,
       "total_knockdowns": 2,
       "characters_played": [
-        "conduit",
         "newcastle",
-        "pathfinder",
-        "gibraltar"
+        "gibraltar",
+        "conduit",
+        "pathfinder"
       ]
     },
     "Bolbi Stroganovsky": {
@@ -3296,8 +3296,8 @@
       "total_headshots": 8,
       "total_knockdowns": 2,
       "characters_played": [
-        "vantage",
-        "fuse"
+        "fuse",
+        "vantage"
       ]
     },
     "Enderphor": {
@@ -3370,8 +3370,8 @@
       "total_knockdowns": 1,
       "characters_played": [
         "bangalore",
-        "fuse",
-        "gibraltar"
+        "gibraltar",
+        "fuse"
       ]
     },
     "Brandon": {
@@ -3419,8 +3419,8 @@
       "total_headshots": 16,
       "total_knockdowns": 8,
       "characters_played": [
-        "madmaggie",
-        "valkyrie"
+        "valkyrie",
+        "madmaggie"
       ]
     },
     "Ultitakedown | Twitch": {
@@ -3432,8 +3432,8 @@
       "total_headshots": 12,
       "total_knockdowns": 5,
       "characters_played": [
-        "rampart",
-        "catalyst"
+        "catalyst",
+        "rampart"
       ]
     },
     "@StonyBolognaa": {

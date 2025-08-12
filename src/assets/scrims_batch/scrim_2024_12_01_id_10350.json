@@ -5,7 +5,7 @@
     "organizer": "VESA Scrims",
     "display_name": "VESA Scrims",
     "source": "statscode",
-    "extracted_at": "2025-08-10T16:37:52.039448"
+    "extracted_at": "2025-08-12T15:34:55.282801"
   },
   "games": [
     {
@@ -3045,8 +3045,8 @@
       "total_headshots": 26,
       "total_knockdowns": 15,
       "characters_played": [
-        "pathfinder",
-        "catalyst"
+        "catalyst",
+        "pathfinder"
       ]
     },
     "Crunch_Ken": {
@@ -3082,8 +3082,8 @@
       "total_headshots": 7,
       "total_knockdowns": 6,
       "characters_played": [
-        "conduit",
-        "newcastle"
+        "newcastle",
+        "conduit"
       ]
     },
     "Melon-thief2": {
@@ -3095,8 +3095,8 @@
       "total_headshots": 18,
       "total_knockdowns": 9,
       "characters_played": [
-        "pathfinder",
-        "gibraltar"
+        "gibraltar",
+        "pathfinder"
       ]
     },
     "gaspitzblesdTTV": {
@@ -3108,8 +3108,8 @@
       "total_headshots": 8,
       "total_knockdowns": 2,
       "characters_played": [
-        "valkyrie",
-        "catalyst"
+        "catalyst",
+        "valkyrie"
       ]
     },
     "winterdeadeye23": {
@@ -3193,10 +3193,10 @@
       "total_headshots": 8,
       "total_knockdowns": 2,
       "characters_played": [
-        "seer",
-        "pathfinder",
+        "catalyst",
         "valkyrie",
-        "catalyst"
+        "seer",
+        "pathfinder"
       ]
     },
     "AoA | Planting_kitchen": {
@@ -3209,8 +3209,8 @@
       "total_knockdowns": 6,
       "characters_played": [
         "wattson",
-        "lifeline",
-        "gibraltar"
+        "gibraltar",
+        "lifeline"
       ]
     },
     "xThinkSo not whatever you said": {
@@ -3270,8 +3270,8 @@
       "total_headshots": 15,
       "total_knockdowns": 4,
       "characters_played": [
-        "wattson",
         "caustic",
+        "wattson",
         "catalyst"
       ]
     },
@@ -3407,8 +3407,8 @@
       "total_headshots": 24,
       "total_knockdowns": 9,
       "characters_played": [
-        "wattson",
-        "catalyst"
+        "catalyst",
+        "wattson"
       ]
     },
     "HOBOJO": {
@@ -3456,8 +3456,8 @@
       "total_headshots": 1,
       "total_knockdowns": 1,
       "characters_played": [
-        "pathfinder",
-        "gibraltar"
+        "gibraltar",
+        "pathfinder"
       ]
     },
     "muchmixture9": {
@@ -3505,8 +3505,8 @@
       "total_headshots": 8,
       "total_knockdowns": 10,
       "characters_played": [
-        "gibraltar",
-        "catalyst"
+        "catalyst",
+        "gibraltar"
       ]
     },
     "Keosha": {
@@ -3518,9 +3518,9 @@
       "total_headshots": 0,
       "total_knockdowns": 0,
       "characters_played": [
-        "pathfinder",
+        "catalyst",
         "rampart",
-        "catalyst"
+        "pathfinder"
       ]
     },
     "Danikay": {
@@ -3532,8 +3532,8 @@
       "total_headshots": 0,
       "total_knockdowns": 0,
       "characters_played": [
-        "madmaggie",
-        "gibraltar"
+        "gibraltar",
+        "madmaggie"
       ]
     },
     "ProbablyyPiggy": {
