@@ -7,7 +7,8 @@ import { MatchDayTableComponent } from '../../components/match/match-day-table.c
 import { MatchDayResults } from '../../models/match-day-results.model';
 import { MatchLiveSectionComponent } from '../../components/match/match-live-section.component';
 import { MatchUpcomingSectionComponent } from '../../components/match/match-upcoming-section.component';
-import { MatchDataService, MatchDetail } from '../../services/match-data.service';
+import { LeagueMatchDataService } from '../../services/league-match-data.service';
+import { MatchDetail } from '../../services/match-data.service';
 
 @Component({
   selector: 'app-match',
@@ -66,7 +67,7 @@ export class MatchComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private matchDataService: MatchDataService
+  private leagueMatchDataService: LeagueMatchDataService
   ) {}
 
   ngOnInit() {
@@ -79,18 +80,27 @@ export class MatchComponent implements OnInit {
 
   private loadMatchData(matchId: string) {
     // Get match details
-    this.matchDataService.getMatchById(matchId).subscribe(match => {
-      this.match = match;
-    });
+    // Placeholder: keep using static meta-data for now
+    // TODO: Replace with real meta-data when available
+    this.match = {
+      id: matchId,
+      weekNumber: 1,
+      matchDay: 'Week 1 - Placeholder',
+      date: '2024-12-01',
+      time: '7:00 PM EST',
+      status: 'completed',
+      division: 'Pinnacle',
+      divisionTier: 1,
+      teamsCount: 20,
+      gamesPlayed: 6,
+      totalGames: 6,
+      winner: 'Placeholder Winner',
+      description: 'Placeholder match meta-data.'
+    };
 
     // Get match day results (detailed with player stats)
-    this.matchDataService.getMatchDayResults(matchId).subscribe(results => {
+    this.leagueMatchDataService.getLeagueMatchResults(matchId).subscribe(results => {
       this.matchDayResults = results;
-    });
-
-    // Get simplified game results (for legacy support)
-    this.matchDataService.getGameResults(matchId).subscribe(results => {
-      this.gameResults = results;
     });
   }
 }

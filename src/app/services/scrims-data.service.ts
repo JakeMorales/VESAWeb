@@ -1,6 +1,5 @@
   
-import { NhostService } from './nhost.service';
-import { ScrimsTableLoaderService } from './scrims-table-loader.service';
+import { MatchLoaderService } from './match-loader.service';
 import { EloAggregationService } from './elo-aggregation.service';
 import { PlayerStatsService } from './player-stats.service';
 import { TeamUtilsService } from './team-utils.service';
@@ -37,8 +36,7 @@ export class ScrimsDataService {
 
   // RatingsComponent should call getPerformanceFactorStats, getAvgUnratedOpponentPct, and getAvgNetEloChangePerGame directly from EloAggregationService.
   constructor(
-    private nhostService: NhostService,
-    private scrimsTableLoader: ScrimsTableLoaderService,
+    private matchLoaderService: MatchLoaderService,
     private playerStatsService: PlayerStatsService,
     private teamUtilsService: TeamUtilsService,
     private dateUtilsService: DateUtilsService,
@@ -56,7 +54,8 @@ export class ScrimsDataService {
    * Load a scrim table from a JSON object (from file, API, etc)
    */
   loadScrimTableFromJsonObject(json: any): MatchDayResults {
-    return this.scrimsTableLoader.transformScrimJson(json);
+    // Use the new generic transformation method from MatchLoaderService
+    return this.matchLoaderService.transformMatchJsonToMatchDayResults(json);
   }
 
   /**
@@ -88,18 +87,37 @@ export class ScrimsDataService {
   /**
    * Get detailed stats for a specific player
    */
+  /**
+   * Get detailed stats for a specific player (file-based stub for now)
+   */
   getPlayerScrimHistory(playerId: string): Observable<PlayerStats[]> {
-    return this.nhostService.getPlayerStats(playerId).pipe(
-      map(stats => this.mapScrimPlayerStatsToPlayerStats(stats))
-    );
+    // Not supported with file-only data; return empty array or implement file-based lookup if needed
+    return of([]);
   }
 
   /**
    * Get all stats for a specific scrim
    */
+  /**
+   * Get all stats for a specific scrim (file-based)
+   */
   getScrimResults(scrimId: string): Observable<PlayerStats[]> {
-    return this.nhostService.getScrimStats(scrimId).pipe(
-      map(stats => this.mapScrimPlayerStatsToPlayerStats(stats))
+    return this.matchLoaderService.loadMatch(scrimId).pipe(
+      map(json => {
+        const matchDayResults = this.loadScrimTableFromJsonObject(json);
+        if (!matchDayResults) return [];
+        // Flatten all player stats from all games and teams
+        const allPlayerStats: PlayerStats[] = [];
+        Object.values(matchDayResults).forEach((teamResults: any) => {
+          teamResults.forEach((team: any) => {
+            if (Array.isArray(team.players)) {
+              allPlayerStats.push(...team.players);
+            }
+          });
+        });
+        return allPlayerStats;
+      }),
+      catchError(() => of([]))
     );
   }
 
@@ -110,30 +128,15 @@ export class ScrimsDataService {
   /**
    * Get match day results for a specific scrim session
    */
-  getScrimMatchResults(scrimId: number): Observable<MatchDayResults> {
-    return forkJoin({
-      playerStats: this.nhostService.getScrimStats(scrimId.toString()),
-      players: this.nhostService.getPlayers(),
-      scrimSignups: this.nhostService.getScrimSignupsByScrimId(scrimId.toString())
-    }).pipe(
-      map(({ playerStats, players, scrimSignups }) => {
-        // Create a player lookup map
-        const playerLookup = new Map<string, string>();
-        players.forEach(player => {
-          playerLookup.set(player.id, player.display_name || `Player ${player.id.slice(0, 8)}`);
-        });
-
-        // Enhance player stats with real player names
-        const enhancedPlayerStats = playerStats.map(stat => ({
-          ...stat,
-          enhancedPlayerName: playerLookup.get(stat.player_id) || stat.name || 'Unknown Player'
-        }));
-
-  // Team transformation not supported for PlayerStats-only data
-  return {} as MatchDayResults;
-      }),
+  /**
+   * Loads scrim match data using MatchLoaderService (from file for now)
+   * @param matchId The filename of the scrim JSON file
+   */
+  getScrimMatchResults(matchId: string): Observable<MatchDayResults> {
+    return this.matchLoaderService.loadMatch(matchId).pipe(
+      map(json => this.loadScrimTableFromJsonObject(json)),
       catchError((error) => {
-        console.error('Error fetching scrim match results:', error);
+        console.error('Error loading scrim match data:', error);
         return of({} as MatchDayResults);
       })
     );
@@ -209,127 +212,42 @@ export class ScrimsDataService {
   /**
    * Get team information for a player in a specific scrim
    */
+  /**
+   * Get team information for a player in a specific scrim (not supported with file-only data)
+   */
   getPlayerTeamInScrim(playerId: string, scrimId: string): Observable<{
     teamName: string;
-  teammates: any[];
+    teammates: any[];
     role: 'player' | 'captain';
   } | null> {
-    return this.nhostService.getScrimSignupsByScrimId(scrimId).pipe(
-      map(signups => {
-        for (const signup of signups) {
-          // Check if player is on this team
-          const isPlayerOne = signup.player_one_id === playerId;
-          const isPlayerTwo = signup.player_two_id === playerId;
-          const isPlayerThree = signup.player_three_id === playerId;
-          const isCaptain = signup.signup_player_id === playerId;
-
-          if (isPlayerOne || isPlayerTwo || isPlayerThree || isCaptain) {
-            // This is the player's team - we need to get teammate details
-            // For now, return basic info (you'd need to join with players table for full details)
-            return {
-              teamName: signup.team_name,
-              teammates: [] as any[], // Would need additional query to populate
-              role: (isCaptain ? 'captain' : 'player') as 'player' | 'captain'
-            };
-          }
-        }
-        return null; // Player not found in this scrim
-      }),
-      catchError(() => of(null))
-    );
+    return of(null);
   }
 
   /**
    * Get all teams for a specific scrim with player details
    */
+  /**
+   * Get all teams for a specific scrim with player details (not supported with file-only data)
+   */
   getScrimTeams(scrimId: string): Observable<{
     teamName: string;
-  players: any[];
-  captain: any;
+    players: any[];
+    captain: any;
     combinedElo?: number;
   }[]> {
-    console.log('getScrimTeams called with scrimId:', scrimId, 'Type:', typeof scrimId);
-    
-    // First try the advanced method with populated players
-    return this.nhostService.getScrimTeamsWithPlayers(scrimId).pipe(
-      map(teams => {
-        console.log('getScrimTeamsWithPlayers returned:', teams);
-        if (teams && teams.length > 0) {
-          return teams.map(team => ({
-            teamName: team.team_name,
-            players: [team.player_one, team.player_two, team.player_three].filter(p => p),
-            captain: team.signup_player,
-            combinedElo: team.combined_elo
-          }));
-        }
-        throw new Error('No teams returned from getScrimTeamsWithPlayers');
-      }),
-      catchError(error => {
-        console.error('Error with getScrimTeamsWithPlayers, trying fallback:', error);
-        
-        // Fallback: Use the simpler method and manually populate player data
-        return this.getScrimTeamsFallback(scrimId);
-      })
-    );
+    return of([]);
   }
 
   /**
    * Fallback method to get scrim teams using basic signup data
    */
-  private getScrimTeamsFallback(scrimId: string): Observable<{
-    teamName: string;
-  players: any[];
-  captain: any;
-    combinedElo?: number;
-  }[]> {
-    console.log('Using fallback method for scrim teams:', scrimId);
-    
-    return forkJoin({
-      signups: this.nhostService.getScrimSignupsByScrimId(scrimId),
-      players: this.nhostService.getPlayers()
-    }).pipe(
-      map(({ signups, players }: { signups: any[]; players: any[] }) => {
-        console.log('Fallback data - signups:', signups.length, 'players:', players.length);
-        // Create player lookup map
-        const playerMap = new Map<string, any>();
-        players.forEach(player => {
-          playerMap.set(player.id, player);
-        });
-        // Convert signups to team format
-        return signups.map((signup: any) => {
-          const teamPlayers: any[] = [];
-          const captain = playerMap.get(signup.signup_player_id);
-          // Add team members
-          if (signup.player_one_id && playerMap.has(signup.player_one_id)) {
-            teamPlayers.push(playerMap.get(signup.player_one_id)!);
-          }
-          if (signup.player_two_id && playerMap.has(signup.player_two_id)) {
-            teamPlayers.push(playerMap.get(signup.player_two_id)!);
-          }
-          if (signup.player_three_id && playerMap.has(signup.player_three_id)) {
-            teamPlayers.push(playerMap.get(signup.player_three_id)!);
-          }
-          // Add captain if not already in team
-          if (captain && !teamPlayers.find(p => p.id === captain.id)) {
-            teamPlayers.push(captain);
-          }
-          return {
-            teamName: signup.team_name,
-            players: teamPlayers,
-            captain: captain || { id: '', display_name: 'Unknown Captain' } as any,
-            combinedElo: signup.combined_elo
-          };
-        });
-      }),
-      catchError(error => {
-        console.error('Error in fallback method:', error);
-        return of([]);
-      })
-    );
-  }
+
 
   /**
    * Get player's team history across all scrims
+   */
+  /**
+   * Get player's team history across all scrims (not supported with file-only data)
    */
   getPlayerTeamHistory(playerId: string): Observable<{
     scrimId: string;
@@ -337,40 +255,24 @@ export class ScrimsDataService {
     date: string;
     role: 'player' | 'captain';
   }[]> {
-    return this.nhostService.getPlayerTeams(playerId).pipe(
-      map(teams => teams.map(team => ({
-        scrimId: team.scrim_id,
-        teamName: team.team_name,
-        date: team.date_time || team.created_at || new Date().toISOString(),
-        role: (team.signup_player_id === playerId ? 'captain' : 'player') as 'player' | 'captain'
-      }))),
-      catchError(error => {
-        console.error('Error fetching player team history:', error);
-        return of([]);
-      })
-    );
+    return of([]);
   }
 
   /**
    * Enhanced player stats with team information
    */
+  /**
+   * Enhanced player stats with team information (not supported with file-only data)
+   */
   getPlayerStatsWithTeams(playerId: string): Observable<{
-  stats: PlayerStats[];
+    stats: PlayerStats[];
     teams: {
       scrimId: string;
       teamName: string;
       role: 'player' | 'captain';
     }[];
   }> {
-    return forkJoin({
-      stats: this.nhostService.getPlayerStats(playerId),
-      teams: this.getPlayerTeamHistory(playerId)
-    }).pipe(
-      map(({ stats, teams }) => ({
-        stats: this.mapScrimPlayerStatsToPlayerStats(stats),
-        teams
-      }))
-    );
+    return of({ stats: [], teams: [] });
   }
 }
 

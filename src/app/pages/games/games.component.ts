@@ -6,7 +6,9 @@ import { ScoresArchiveComponent } from '../../components/league/scores-archive.c
 import { ScrimCollapsibleComponent } from '../../components/scrim-collapsible/scrim-collapsible.component';
 import { ModernPaginationComponent } from '../../components/modern-pagination/modern-pagination.component';
 import { MatchDayResults } from '../../models/match-day-results.model';
-import { ScrimsTableLoaderService } from '../../services/scrims-table-loader.service';
+import { ScrimsDataService } from '../../services/scrims-data.service';
+import { forkJoin, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-games',
@@ -85,7 +87,7 @@ export class GamesComponent implements OnInit {
     return Math.ceil(this.scrimsTables.length / this.pageSize);
   }
 
-  constructor(private scrimsTableLoader: ScrimsTableLoaderService) {}
+  constructor(private scrimsDataService: ScrimsDataService) {}
 
   ngOnInit() {
     this.loadScrimsTables();
@@ -94,7 +96,14 @@ export class GamesComponent implements OnInit {
   loadScrimsTables() {
     this.loading = true;
     this.error = '';
-    this.scrimsTableLoader.loadAllScrimsFromBatch('assets/scrims_batch', this.scrimFiles).subscribe({
+    // Load all scrim files in parallel using ScrimsDataService
+    const scrimObservables = this.scrimFiles.map(file =>
+      this.scrimsDataService.getScrimMatchResults(file).pipe(
+        map(matchResults => ({ file, matchResults })),
+        catchError(() => of({ file, matchResults: {} as MatchDayResults }))
+      )
+    );
+    forkJoin(scrimObservables).subscribe({
       next: (results) => {
         this.scrimsTables = results;
         this.applyFilter();

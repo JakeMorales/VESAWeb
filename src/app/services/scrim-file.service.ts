@@ -218,4 +218,22 @@ export class ScrimFileService {
     );
     return forkJoin(fileRequests);
   }
+
+  /**
+   * Loads a single scrim file by filename (matchId)
+   * @param matchId The filename of the scrim JSON file (e.g., 'scrim_2024_07_01_id_6992.json')
+   */
+  loadScrimFile(matchId: string): Observable<any> {
+    console.log('[ScrimFileService] Attempting to load file:', matchId);
+    return this.http.get<any>(`assets/scrims_batch/${matchId}`).pipe(
+      catchError((err) => {
+        console.warn(`[ScrimFileService] Failed to load file: ${matchId}`, err);
+        return of(null);
+      }),
+      // Log the result (success or null)
+      // Use tap to log the result after the observable emits
+      // Import tap from 'rxjs/operators' if not already
+      // tap(result => console.log('[ScrimFileService] Loaded file:', matchId, result))
+    );
+  }
 }

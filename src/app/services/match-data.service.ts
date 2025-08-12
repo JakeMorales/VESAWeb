@@ -29,44 +29,6 @@ export class MatchDataService {
   constructor() { }
 
   /**
-   * Get match day results with detailed player statistics
-   * In the future, this will fetch from a real API
-   */
-  getMatchDayResults(matchId: string): Observable<MatchDayResults> {
-    // For now, return the same mock data for all matches
-    // In the future, this would use the matchId to fetch specific match data
-    return of(MockMatchData.getMatchDayResults());
-  }
-
-  /**
-   * Get simplified game results without player details
-   * In the future, this will fetch from a real API
-   */
-  getGameResults(matchId: string): Observable<MatchResults> {
-    // For now, return the same mock data for all matches
-    // In the future, this would use the matchId to fetch specific match data
-    return of(MockMatchData.getGameResults());
-  }
-
-  /**
-   * Get list of all matches
-   * In the future, this will fetch from a real API
-   */
-  getMatches(): Observable<MatchDetail[]> {
-    return of(this.getSampleMatches());
-  }
-
-  /**
-   * Get a specific match by ID
-   * In the future, this will fetch from a real API
-   */
-  getMatchById(matchId: string): Observable<MatchDetail | null> {
-    const matches = this.getSampleMatches();
-    const match = matches.find(m => m.id === matchId);
-    return of(match || null);
-  }
-
-  /**
    * Sample matches across different divisions
    * This simulates what would come from a real API
    */
