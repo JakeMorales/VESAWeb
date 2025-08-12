@@ -190,25 +190,6 @@ export class EloAggregationService {
                 gamesPlayed: gamesPlayed + 1
               });
             });
-            if (debugGames < 3) {
-              debugLogs.push({
-                gameNumber,
-                netChange,
-                players: allPlayers.map(p => p.name),
-                eloChanges
-              });
-              debugGames++;
-              if (debugGames === 3) {
-                // Download debug log as JSON file
-                const blob = new Blob([JSON.stringify(debugLogs, null, 2)], { type: 'application/json' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'elo-debug.json';
-                a.click();
-                window.URL.revokeObjectURL(url);
-              }
-            }
             totalNetChange += netChange;
             totalGames++;
           });
