@@ -1,43 +1,24 @@
+
 # VESAWeb - Virtual Esports Association
 
-A competitive Apex Legends league and scrim server website built with Angular 18. Track player statistics, match history, and league standings for the Virtual Esports Association.
+VESAWeb is a modern web platform for the Virtual Esports Association, a competitive Apex Legends league and scrim server. Built with Angular 18, it provides real-time player statistics, match history, league standings, and a robust ELO-based scrim system.
 
-## ✨ Recent Updates
+---
 
-- 🏗️ **Component Modularization** - Refactored monolithic components into focused, reusable modules
-- 🎛️ **Base Grid System** - Implemented configurable grid component for consistent data tables
-- 🎮 **Match Components** - Split match functionality into specialized header, results, live, and upcoming components  
-- 🎨 **Enhanced Scrim System** - Added ELO-based leaderboards and improved scrim management
-- 🔧 **Performance Optimizations** - Reduced bundle size through component splitting and lazy loading
-- 📱 **Improved Responsive Design** - Better mobile experience across all components
+## 🚀 Key Features
 
-## Features
+- **Battle Royale Rating System**: Multi-factor, ELO-based rating system tailored for 20-team battle royale games. Evaluates placement, combat, damage, support, and opponent strength, with a consistency bonus and BR-specific K-factor adjustments.
+- **Interactive Rating Configurator**: Live tool for admins to experiment with rating weights, K-factor, and normalization parameters. Instantly see how changes affect player ratings and scenario outcomes.
+- **Component Modularization**: All major features are split into focused, reusable Angular components for maintainability and performance.
+- **Base Grid System**: Custom, highly-configurable grid component for all data tables, supporting sorting, selection, responsive layouts, and custom cell templates.
+- **Comprehensive Player & Match Stats**: Track kills, deaths, damage, support actions, and more, with detailed breakdowns for every match and player.
+- **Live Match Tracking**: Real-time updates for ongoing matches, including live status, progress bars, and in-game events.
+- **ELO Scrim Leaderboards**: Practice matches use a skill-based ELO system with dynamic leaderboards and player analytics.
+- **Modern UI/UX**: Dark theme, glass morphism, CSS variables, and smooth animations for a professional, branded experience.
 
-- 🏆 **Player Statistics** - Comprehensive tracking of kills, deaths, damage, and performance metrics
-- 🎮 **Match History** - Detailed breakdowns of all league matches and scrimmages  
-- 📊 **League Standings** - Real-time rankings and leaderboards by division
-- 🏅 **Division System** - Multi-tier competitive divisions with detailed standings
-- 📱 **Responsive Design** - Optimized for desktop and mobile viewing with dark theme
-- ⚡ **Live Match Tracking** - Real-time match progress and live indicators
-- 🎨 **Modern UI/UX** - Custom VESA brand styling with CSS variables and animations
-- 🔍 **Match Details** - Individual match pages with comprehensive game results
-- 🎲 **Scrim System** - ELO-based ranking system for practice matches and leaderboards
+---
 
-## Development server
-
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
-
-## Available Pages
-
-- **Home** (`/`) - Landing page with hero section, stats preview, and recent activity
-- **Player Stats** (`/players`) - Comprehensive player statistics and rankings  
-- **Match History** (`/games`) - Complete record of all matches with filtering and stats
-- **League Overview** (`/league`) - Main league page with divisions grid and standings
-- **Division Details** (`/league/:id`) - Individual division standings and information
-- **Match Details** (`/match/:id`) - Detailed match results and live tracking
-- **Scrims** (`/scrims`) - ELO-based leaderboard and scrim management system
-
-## Project Structure
+## 🏗️ Architecture & Project Structure
 
 ```
 VESAWeb/
@@ -46,97 +27,113 @@ VESAWeb/
 │   ├── app/
 │   │   ├── components/               # Reusable UI components
 │   │   │   ├── base-grid/           # Configurable data grid component
-│   │   │   ├── header/              # Navigation header with VESA branding
-│   │   │   ├── games/               # Game-related components (cards, filters, stats)
-│   │   │   ├── league/              # League components (standings, divisions, matches)
-│   │   │   ├── match/               # Match components (header, results, live tracking)
-│   │   │   ├── scrims/              # Scrim system components (ELO, leaderboards)
+│   │   │   ├── header/              # Navigation header
+│   │   │   ├── games/               # Game-related components
+│   │   │   ├── league/              # League/standings components
+│   │   │   ├── match/               # Match header, results, live, upcoming
+│   │   │   ├── scrims/              # Scrim system, ELO, leaderboards
 │   │   │   └── scrims-leaderboard/  # Specialized scrim leaderboard displays
 │   │   ├── pages/                   # Route-based page components
-│   │   │   ├── home/                # Landing page with hero section
-│   │   │   ├── games/               # Match history and game details pages
-│   │   │   ├── league/              # League overview and division pages
-│   │   │   ├── match/               # Individual match detail pages
-│   │   │   ├── player-stats/        # Player statistics and leaderboard pages
-│   │   │   └── scrims/              # Scrim system and ELO leaderboard pages
-│   │   ├── app.routes.ts            # Angular routing configuration
-│   │   └── app.config.ts            # Application configuration
+│   │   │   ├── home/                # Landing page
+│   │   │   ├── games/               # Match history
+│   │   │   ├── league/              # League overview/divisions
+│   │   │   ├── match/               # Match details
+│   │   │   ├── player-stats/        # Player stats/leaderboards
+│   │   │   └── scrims/              # Scrim/ELO leaderboard pages
+│   │   ├── app.routes.ts            # Angular routing
+│   │   └── app.config.ts            # App configuration
 │   ├── assets/                      # App-specific assets
-│   ├── styles.css                   # Global VESA brand styling and CSS variables
+│   ├── styles.css                   # Global VESA brand styling
 │   └── index.html                   # Main HTML entry point
-├── angular.json                     # Angular CLI configuration
-├── package.json                     # Dependencies and scripts
-└── tsconfig.json                    # TypeScript configuration
+├── angular.json                     # Angular CLI config
+├── package.json                     # Dependencies/scripts
+└── tsconfig.json                    # TypeScript config
 ```
 
-## Architecture Highlights
+---
 
-- **Component-Based Design** - Modular components for maintainability and reusability
-- **Base Grid System** - Configurable grid component with sorting, selection, and responsive design
-- **Page-Component Separation** - Clear distinction between routable pages and reusable components  
-- **Standalone Components** - Modern Angular 18 architecture without NgModules
-- **Responsive CSS** - Mobile-first design with CSS Grid and Flexbox layouts
+## 🧩 Component & Grid System Highlights
 
-## Code scaffolding
+- **Base Grid Component**: Reusable, configurable grid for all tables. Supports column config, sorting, custom templates, selection, and responsive design.
+- **Match Modularization**: Match features split into header, results, live, and upcoming components for clarity and maintainability.
+- **Page-Component Separation**: Routable pages vs. reusable feature components.
+- **Standalone Components**: Modern Angular 18, no NgModules required.
+- **Responsive CSS**: Mobile-first, CSS Grid/Flexbox, dark theme, glass morphism.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+---
 
-## Build
+## 🏆 Battle Royale Rating System
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+VESAWeb uses a custom ELO-based rating system designed for battle royale games:
 
-## Running unit tests
+- **Multi-Factor Evaluation**: Placement (40%), Combat (25%), Damage (15%), Support (10%), Opponent Strength (10%)
+- **Consistency Bonus**: Rewards balanced performance across all factors
+- **BR-Specific K-Factor**: Higher volatility (K=38.4) for faster rating adjustment
+- **Continuous Results**: Non-binary, granular rating changes based on performance
+- **Team & Player Tracking**: Ratings tracked for both teams and individuals
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### Example Calculation Factors
 
-## Technology Stack
+- Placement: `(20 - placement + 1) / 20`
+- Combat: Kills + (Downs × 0.5), normalized
+- Damage: Player damage / Max damage in game
+- Support: Revives + Respawns (max 5)
+- Opponent Strength: Based on teams placed above
 
-- **Angular 18** - Latest Angular with standalone components and improved performance
-- **TypeScript 5.5** - Strict typing with latest language features  
-- **Modern CSS** - CSS Variables, Grid, Flexbox, and custom animations
-- **Component Architecture** - Modular, reusable components with clear separation of concerns
-- **Responsive Design** - Mobile-first approach with dark theme throughout
-- **Performance Optimized** - Lazy loading, OnPush change detection, and optimized bundles
+---
 
-## Design Features
+## 🛠️ Interactive Rating Configurator
 
-- **Dark Theme** - Consistent dark UI with VESA brand colors (#ff2c5c, #2c9cff, #00d4ff)
-- **CSS Variables** - Centralized color management and theming
-- **Modern Animations** - Smooth transitions, hover effects, and loading states
-- **Glass Morphism** - Backdrop blur effects and translucent cards
-- **Responsive Grid** - CSS Grid and Flexbox for layout management
-- **Custom Scrollbars** - Styled scrollbars matching the dark theme
+Admins can dynamically adjust rating weights, K-factor, and normalization parameters using a live configurator tool:
 
-## VESA League Info
+- **Sliders for Each Factor**: Placement, Combat, Damage, Support, Opponent Strength, Consistency
+- **Real-Time Validation**: Ensures weights total 100%, warns if not
+- **Preset Configurations**: Balanced, placement-focused, combat-focused, team-focused
+- **Scenario Testing**: Try different match outcomes and see instant rating changes
+- **AI Suggestions**: Recommends balanced weights and warns about extremes
 
-The Virtual Esports Association (VESA) is a competitive Apex Legends league featuring:
-- **Multiple Divisions** - Tiered competitive system (Pinnacle I, Vanguard II, etc.)
-- **Live Match Tracking** - Real-time match progress with live indicators and status updates
-- **Comprehensive Statistics** - Detailed player and team performance metrics with historical data
-- **Match History** - Complete archive of league matches, tournaments, and scrimmages
-- **Division Standings** - Real-time rankings with points, wins, and performance trend indicators
-- **ELO Scrim System** - Ranked practice matches with skill-based matchmaking and leaderboards
-- **Player Profiles** - Individual statistics, match history, and performance analytics
+---
 
-## Contributing
+## 📄 Pages & Features
+
+- **Home** (`/`) - Hero, stats preview, recent activity
+- **Player Stats** (`/players`) - Player stats, rankings
+- **Match History** (`/games`) - All matches, filters, stats
+- **League Overview** (`/league`) - Divisions grid, standings
+- **Division Details** (`/league/:id`) - Standings, info
+- **Match Details** (`/match/:id`) - Results, live tracking
+- **Scrims** (`/scrims`) - ELO leaderboard, scrim management
+
+---
+
+## 🧑‍💻 Development
+
+- `ng serve` - Start dev server at `http://localhost:4200/`
+- `ng build` - Build project to `dist/`
+- `ng test` - Run unit tests with Karma
+- `ng generate component <name>` - Scaffold new component
+
+---
+
+## 🛠️ Technology Stack
+
+- **Angular 18** (standalone components)
+- **TypeScript 5.5**
+- **Modern CSS** (variables, grid, flexbox, animations)
+- **Karma/Jasmine** (unit testing)
+
+---
+
+## 🤝 Contributing
 
 1. Follow Angular style guide and project conventions
-2. Use the base grid component for consistent data tables
-3. Maintain responsive design across all screen sizes
-4. Test components thoroughly before submitting PRs
-5. Keep the dark theme and VESA brand consistency
-- **Professional Presentation** - Tournament-style formatting and branding
+2. Use the base grid for all data tables
+3. Maintain responsive design and dark theme
+4. Test thoroughly before PRs
+5. Keep VESA branding consistent
 
-## Component Architecture
+---
 
-The application follows Angular best practices with a component-based architecture:
+## ℹ️ Further Help
 
-- **Pages** - Route-level components for main navigation
-- **Components** - Reusable UI components organized by feature
-- **Standalone Components** - Modern Angular approach without NgModules
-- **CSS Component Styling** - Scoped styles with global design system
-- **TypeScript Interfaces** - Strong typing for data structures
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+For Angular CLI help, run `ng help` or see the [Angular CLI Reference](https://angular.dev/tools/cli).
