@@ -67,8 +67,16 @@ export class RatingService {
       )
     );
 
-  // Normalize scores so mean is 0.5 (classic Elo style, more variance)
-  const normScores = EloCalculatorService.normalizePerformanceScores(rawScores);
+    // Quadratic rank-based normalization: top placements are more valuable, but not too harsh
+    const sorted = rawScores
+      .map((score, idx) => ({ idx, score }))
+      .sort((a, b) => b.score - a.score);
+    const N = rawScores.length;
+    const normScores = new Array(N);
+    sorted.forEach((entry, rank) => {
+  // 1st place: 1.0, last place: 0.0, linear in between (maximum spread)
+  normScores[entry.idx] = N === 1 ? 1 : ((N - 1 - rank) / (N - 1));
+    });
 
     // Assign Elo changes using normalized scores and expected = 1/N for each player (zero-sum Elo)
     const expected = 0.5;
@@ -77,6 +85,18 @@ export class RatingService {
       const normPerfScore = normScores[idx];
       const gamesPlayed = 0; // Could be tracked if needed
       const eloChange = 60 * (normPerfScore - expected); // K=60, expected = 0.5
+    // Assign Elo changes using EloCalculatorService for each player
+    allPlayers.forEach(({ player, result }, idx) => {
+      const playerElo = playerElos[idx];
+      const normPerfScore = normScores[idx];
+      const gamesPlayed = 0; // Could be tracked if needed
+      // Use EloCalculatorService for ELO change
+      const eloChange = this.eloCalculator.calculateEloChangeWithOpponent(
+        playerElo,
+        gameAverageRating,
+        normPerfScore,
+        gamesPlayed
+      );
       const newElo = playerElo + eloChange;
       const playerRating: PlayerRating = {
         playerName: player.playerName,
@@ -98,6 +118,7 @@ export class RatingService {
         if (!playerEloHistory.has(id)) playerEloHistory.set(id, []);
         playerEloHistory.get(id)!.push({ gameId, elo: newElo });
       }
+    });
     });
 
     return { playerRatings, teamRatings: [] };

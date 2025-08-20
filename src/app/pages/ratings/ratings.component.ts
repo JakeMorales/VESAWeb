@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PlayerAggregatedStats, ScrimsDataService } from '../../services/scrims-data.service';
 import { EloCalculatorService } from '../../services/elo-calculator.service';
-import { EloAggregationService } from '../../services/elo-aggregation.service';
+import { EloAggregationService, analyzeEloEngagement } from '../../services/elo-aggregation.service';
 
 @Component({
   selector: 'app-ratings',
@@ -84,6 +84,15 @@ export class RatingsComponent implements OnInit {
       next: (data) => {
         this.playerEloLeaderboard = data;
         this.calculateEloStats();
+          // Analyze ELO engagement (correlation and top-N analysis)
+          analyzeEloEngagement(
+            this.playerEloLeaderboard.map(p => ({
+              playerName: p.playerName,
+              estimatedElo: p.finalElo !== undefined ? p.finalElo : p.estimatedElo,
+              totalGames: p.totalGames
+            })),
+            50 // Top N
+          );
         // Use new getEloStatsSummary for Elo stats
         this.eloAggregationService.getEloStatsSummary(
           (json: any) => this.scrimsDataService.loadScrimTableFromJsonObject(json)
@@ -241,16 +250,16 @@ export class RatingsComponent implements OnInit {
     switch (factor) {
       case 'placement':
         factorValue = this.eloCalculator.calculateTieredPlacementScore(this.testPlacement);
-        weight = 50;
+  weight = 45;
         break;
       case 'combat':
         const combatScore = this.testKills + this.testAssists;
         factorValue = Math.min(1, combatScore / 6);
-        weight = 30;
+  weight = 30;
         break;
       case 'damage':
         factorValue = Math.min(1, this.testDamage / 1200);
-        weight = 15;
+  weight = 20;
         break;
       case 'support':
         weight = 5;

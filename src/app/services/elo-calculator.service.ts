@@ -19,14 +19,14 @@ export class EloCalculatorService {
    */
   calculateEloChangeWithOpponent(playerElo: number, opponentElo: number, performanceScore: number, gamesPlayed: number): number {
     // Fixed K-factor for all players to ensure zero-sum Elo
-    const k = 60;
+    const k = 90;
     const expectedScore = 1 / (1 + Math.pow(10, (opponentElo - playerElo) / 400));
     return k * (performanceScore - expectedScore); // No rounding here!
   }
   static readonly INITIAL_ELO = 1500;
   // These weights and logic are from the RatingsComponent
-  private placementWeight = 50;
-  private combatWeight = 30;
+  private placementWeight = 45;
+  private combatWeight = 35;
   private damageWeight = 15;
   private supportWeight = 5;
 

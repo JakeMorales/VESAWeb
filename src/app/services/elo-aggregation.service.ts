@@ -1,3 +1,45 @@
+// Utility: Analyze correlation between ELO and games played, and top-N analysis
+export function analyzeEloEngagement(playerStats: Array<{ playerName: string, estimatedElo: number, totalGames: number }>, topN: number = 50) {
+  if (!playerStats || playerStats.length === 0) {
+    console.log('No player stats to analyze.');
+    return;
+  }
+  // Filter out unrated players (e.g., < 5 games)
+  const filtered = playerStats.filter(p => p.totalGames >= 5);
+  const n = filtered.length;
+  if (n === 0) {
+    console.log('No rated players to analyze.');
+    return;
+  }
+  // Pearson correlation coefficient
+  const meanElo = filtered.reduce((sum, p) => sum + p.estimatedElo, 0) / n;
+  const meanGames = filtered.reduce((sum, p) => sum + p.totalGames, 0) / n;
+  const cov = filtered.reduce((sum, p) => sum + (p.estimatedElo - meanElo) * (p.totalGames - meanGames), 0) / n;
+  const stdElo = Math.sqrt(filtered.reduce((sum, p) => sum + Math.pow(p.estimatedElo - meanElo, 2), 0) / n);
+  const stdGames = Math.sqrt(filtered.reduce((sum, p) => sum + Math.pow(p.totalGames - meanGames, 2), 0) / n);
+  const corr = stdElo > 0 && stdGames > 0 ? cov / (stdElo * stdGames) : 0;
+  console.log(`ELO vs. Games Played correlation (Pearson r): ${corr.toFixed(3)}`);
+  // Top-N analysis
+  const sortedByElo = [...filtered].sort((a, b) => b.estimatedElo - a.estimatedElo);
+  const topNPlayers = sortedByElo.slice(0, topN);
+  const avgGamesTopN = topNPlayers.reduce((sum, p) => sum + p.totalGames, 0) / topNPlayers.length;
+  console.log(`Top ${topN} ELO players average games played: ${avgGamesTopN.toFixed(1)}`);
+  // Bottom-N analysis
+  const bottomNPlayers = sortedByElo.slice(-topN);
+  const avgGamesBottomN = bottomNPlayers.reduce((sum, p) => sum + p.totalGames, 0) / bottomNPlayers.length;
+  console.log(`Bottom ${topN} ELO players average games played: ${avgGamesBottomN.toFixed(1)}`);
+  // Median games played for top 10% vs. bottom 10%
+  const decile = Math.floor(n / 10);
+  const top10 = sortedByElo.slice(0, decile);
+  const bottom10 = sortedByElo.slice(-decile);
+  const median = (arr: number[]): number => {
+    const sorted = [...arr].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+  };
+  console.log(`Median games played (top 10% ELO): ${median(top10.map(p => p.totalGames))}`);
+  console.log(`Median games played (bottom 10% ELO): ${median(bottom10.map(p => p.totalGames))}`);
+}
 // Interface for performance factor stats
 export interface PerformanceFactorStats {
   placement: StatSummary;
@@ -146,9 +188,11 @@ export class EloAggregationService {
                 (supportFactor * this.eloCalculator.getSupportWeight() / 100)
               );
             });
-            const normPerfs = EloCalculatorService.sumNormalizePerformanceScores(perfs);
-            const N = allPlayers.length;
-            const expected = 1 / N;
+            // Calculate the average ELO for this game
+            const gameAverageElo = allPlayers.length > 0 ? allPlayers.reduce((sum, p) => sum + (playerState.get(p.id)?.elo ?? INITIAL_ELO), 0) / allPlayers.length : INITIAL_ELO;
+            // Use mean normalization for performance scores (mean = 0.5)
+            const normPerfs = EloCalculatorService.normalizePerformanceScores(perfs);
+            const expected = 0.5;
 
             // Calculate Elo changes for each player using normalized perf and expected = 1/N
             allPlayers.forEach((p, idx) => {
@@ -167,7 +211,13 @@ export class EloAggregationService {
               const damageFactor = Math.min(1, damage / 1200);
               const supportFactor = Math.min(1, revives / 3);
               const perf = perfs[idx];
-              const eloChange = 60 * (normPerf - expected); // K=60, expected = 1/N
+              // Use EloCalculatorService for ELO change
+              const eloChange = this.eloCalculator.calculateEloChangeWithOpponent(
+                playerElo,
+                gameAverageElo || playerElo, // Use lobby/game average as opponentElo if available
+                normPerf,
+                gamesPlayed
+              );
               netChange += eloChange;
               eloChanges.push({
                 id: p.id,
@@ -273,6 +323,18 @@ export class EloAggregationService {
             });
           });
           fileIdx++;
+        }
+        // --- ELO Pool Rebalancing ---
+        // After all games, if the total ELO is less than the initial pool, distribute the difference evenly to all players
+        const playerCount = playerMap.size;
+        const expectedTotalElo = playerCount * INITIAL_ELO;
+        const actualTotalElo = Array.from(playerMap.values()).reduce((sum, p) => sum + p.elo, 0);
+        const eloDiff = expectedTotalElo - actualTotalElo;
+        if (Math.abs(eloDiff) > 1e-6 && playerCount > 0) {
+          const correction = eloDiff / playerCount;
+          playerMap.forEach((val) => {
+            val.elo += correction;
+          });
         }
         const result: PlayerAggregatedStats[] = [];
         playerMap.forEach((val, id) => {
