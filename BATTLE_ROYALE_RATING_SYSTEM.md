@@ -2,75 +2,63 @@
 
 ## Overview
 
-This enhanced rating system is specifically designed for battle royale games with 20 teams of 3 players each. Unlike traditional 1v1 Elo systems, this accounts for the high variance and multiple performance factors inherent in battle royale gameplay.
+This rating system is designed for battle royale games with 20 teams of 3 players each. It uses a multi-factor performance evaluation and an Elo-based rating adjustment, tailored for the high variance and team dynamics of battle royale gameplay.
+
+---
+
+## Current Implementation
+
+- **Historical Data Source:**  
+  - Scrim blocks are loaded from JSON files using the `ScrimFileService`.
+  - Each file represents a scrim session with player results and metadata.
+
+- **ELO Calculation:**
+  - Players start with a default ELO (typically 1500).
+  - ELO is updated after each game using a weighted performance score (see below) and the standard Elo formula, accounting for the ELO difference between players/teams.
+  - Players with fewer than 18 games are considered "unrated" and retain the default ELO until they reach the threshold.
+  - ELO changes are applied regardless of rated/unrated status, but unrated players can skew results due to their default ELO.
+
+- **Lobby Sorting:**
+  - Historical lobbies were manually sorted by perceived skill, not ELO.
+  - This results in both lobbies having similar average ELOs (due to many unrated players), which can distort ELO changes for both high and low skill groups.
+
+- **Stats Tracked:**
+  - Min, Max, Mean, Std Dev of ELO
+  - Unrated percent, percent of players over 12 games
+  - Average ELO gain/loss per game
+  - Player counts and segmentation
+
+---
 
 ## Key Features
 
-### 1. **Multi-Factor Performance Evaluation**
+### 1. Multi-Factor Performance Evaluation
 
-The system evaluates performance across five key dimensions:
+Performance is evaluated across five key dimensions:
 
-#### Placement Factor (40% weight)
-- **Purpose**: Rewards survival and tactical positioning
-- **Calculation**: `(20 - placement + 1) / 20`
-- **Why Important**: In BR games, placement is the primary objective and heavily correlates with skill
+- **Placement Factor (40%)**: `(20 - placement + 1) / 20`
+- **Combat Factor (25%)**: `(kills + downs × 0.5) / maxCombatInGame`
+- **Damage Factor (15%)**: `playerDamage / maxDamageInGame`
+- **Support Factor (10%)**: `(revives + respawns) / 5` (max cap)
+- **Opponent Strength Factor (10%)**: Based on teams placed better than yours: `betterTeams / 19`
+- **Consistency Bonus (up to 10%)**: `1 - variance(allFactors)`
 
-#### Combat Factor (25% weight)
-- **Purpose**: Rewards aggressive play and mechanical skill
-- **Includes**: Kills + (Downs × 0.5)
-- **Normalization**: Against the highest combat performance in the match
-- **Why Important**: Combat effectiveness is crucial for securing eliminations and better positioning
+### 2. Battle Royale Specific Adjustments
 
-#### Damage Factor (15% weight)
-- **Purpose**: Rewards consistent damage output and engagement
-- **Calculation**: Player damage / Max damage in game
-- **Why Important**: Shows sustained performance even without eliminations
+- **Higher K-Factor**: 38.4 (20% higher than standard Elo)
+- **Non-Binary Results**: Performance score is a continuous value from 0.0 to 1.0, not just win/loss/draw.
 
-#### Support Factor (10% weight)
-- **Purpose**: Rewards team play and cooperation
-- **Includes**: Revives + Respawns
-- **Max Cap**: 5 support actions for normalization
-- **Why Important**: Team games require cooperation for optimal performance
+### 3. Enhanced Player & Team Tracking
 
-#### Opponent Strength Factor (10% weight)
-- **Purpose**: Adjusts for the quality of competition
-- **Calculation**: Based on teams placed better than yours
-- **Why Important**: Beating stronger opponents should yield more rating gain
+- **Player Stats**: Average placement, kills, damage, revives, respawns, win/loss record.
+- **Team Stats**: Average team kills, total points, placement history, collective metrics.
 
-### 2. **Consistency Bonus**
-
-- **Purpose**: Rewards well-rounded performance across all factors
-- **Calculation**: 1 - variance across performance factors
-- **Bonus**: Up to 10% additional performance score
-- **Why Important**: Encourages balanced gameplay rather than one-dimensional strategies
-
-### 3. **Battle Royale Specific Adjustments**
-
-#### Higher K-Factor
-- **Standard Elo K-Factor**: 32
-- **BR K-Factor**: 38.4 (20% increase)
-- **Reason**: BR games have higher variance, so ratings should adjust more quickly
-
-#### Non-Binary Results
-- **Traditional**: Win (1.0), Draw (0.5), Loss (0.0)
-- **BR System**: Continuous scale from 0.0 to 1.0 based on overall performance
-- **Advantage**: More granular rating adjustments reflect true performance
-
-### 4. **Enhanced Player & Team Tracking**
-
-#### Player Stats Include:
-- Average placement across games
-- Average kills, damage, revives, respawns
-- Win/loss record (top 5/bottom 5 placements)
-
-#### Team Stats Include:
-- Average team kills and total points
-- Team placement history
-- Collective performance metrics
+---
 
 ## Rating Calculation Process
 
 ### Step 1: Performance Factor Calculation
+
 ```typescript
 performance = {
   placement: (20 - placement + 1) / 20,
@@ -83,6 +71,7 @@ performance = {
 ```
 
 ### Step 2: Weighted Performance Score
+
 ```typescript
 performanceScore = 
   placement * 0.40 +
@@ -90,32 +79,59 @@ performanceScore =
   damage * 0.15 +
   support * 0.10 +
   opponentStrength * 0.10 +
-  consistency * 0.10 (bonus)
+  consistency * 0.10 // (bonus)
 ```
 
 ### Step 3: Rating Change Calculation
+
 ```typescript
 expectedScore = 1 / (1 + 10^((gameAvgRating - playerRating) / 400))
 ratingChange = K_FACTOR * (performanceScore - expectedScore)
 ```
 
-## Implementation Benefits
+---
 
-### 1. **Addresses BR-Specific Challenges**
-- **High Variance**: Larger K-factor and multi-factor evaluation
-- **Non-Binary Outcomes**: Continuous performance scoring
-- **Team Dynamics**: Support factor rewards cooperation
-- **RNG Mitigation**: Multiple performance vectors reduce luck impact
+## Known Issues
 
-### 2. **Encourages Balanced Play**
-- **Not Just Kills**: Damage and support matter
-- **Not Just Camping**: Combat and damage factors prevent passive play
-- **Team Focus**: Support actions contribute meaningfully
+- **High Unrated Player Percentage:**  
+  - ~70% of players are unrated, causing ELO averages to cluster around the default and reducing the accuracy of the rating system.
 
-### 3. **Provides Rich Feedback**
-- **Performance Breakdown**: Players see exactly where they excel/struggle
-- **Actionable Tips**: System suggests improvement areas
-- **Scenario Testing**: Pre-built scenarios show rating impacts
+- **Lobby Sorting Bias:**  
+  - Manual lobby sorting means ELO changes may not reflect true skill differences, especially early on.
+
+- **Player Identity:**  
+  - Players may appear under different names or Overstat IDs, leading to duplicate entries and inaccurate stats.
+
+- **Data Source:**  
+  - All data is loaded from static files, not a database, limiting scalability and query capabilities.
+
+---
+
+## TO DOs
+
+1. **Feed Scrim Blocks into a Database**
+   - Migrate from file-based loading to a proper database (e.g., PostgreSQL via Nhost).
+   - Enable querying, aggregation, and better data integrity.
+
+2. **De-duplicate Players**
+   - Implement logic to merge player records based on name and Overstat ID.
+   - Create a canonical player identity for accurate stats and ELO tracking.
+
+3. **Account for Lobby Sorting Bias**
+   - Seed initial ELOs based on historical lobby assignment (e.g., higher starting ELO for players consistently in top lobbies).
+   - Consider a provisional period where ELO changes for unrated players have reduced impact on rated players.
+   - Optionally, run multiple passes over the data to retroactively adjust ELOs.
+
+4. **Improve ELO Calculation**
+   - Tune K-factor and provisional rules for unrated players.
+   - Segment stats and leaderboards to show only rated players.
+   - Add transparency for provisional status.
+
+5. **Testing & Validation**
+   - Add unit/integration tests for ELO calculation logic.
+   - Validate ELO distribution and fairness after changes.
+
+---
 
 ## Usage Examples
 
@@ -140,6 +156,8 @@ ratingChange = K_FACTOR * (performanceScore - expectedScore)
 - Support Factor: 0% (no team support)
 - **Result**: Moderate gain, but placement penalty limits growth
 
+---
+
 ## Future Enhancements
 
 1. **Dynamic K-Factor**: Adjust based on player's games played and rating stability
@@ -148,4 +166,6 @@ ratingChange = K_FACTOR * (performanceScore - expectedScore)
 4. **Map-Specific Adjustments**: Different expectations per map
 5. **Tournament Mode**: Special handling for competitive events
 
-This system provides a comprehensive, fair, and engaging rating experience that accurately reflects player skill in the complex environment of battle royale gaming.
+---
+
+_Last updated: August 20, 2025_
