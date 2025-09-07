@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { ScrimFileService } from './scrim-file.service';
+import { ScrimBatchFile, ScrimGame, ScrimTeam, PlayerStats } from '../models/scrim-batch-file.model';
 
 @Injectable({ providedIn: 'root' })
 export class MatchLoaderService {
@@ -26,63 +27,42 @@ export class MatchLoaderService {
     /**
    * Transform a match JSON object (scrim or league) into MatchDayResults
    */
-  transformMatchJsonToMatchDayResults(data: any): any /* MatchDayResults */ {
-    if (!data) {
+  transformMatchJsonToMatchDayResults(data: ScrimBatchFile): any /* MatchDayResults */ {
+    if (!data || !data.stats || !Array.isArray(data.stats.games)) {
       return {};
     }
     const matchResults: any = {};
-    // Normalize team_name for all individualGames upfront (handle missing property)
-    const individualGames = Array.isArray(data.individual_games)
-      ? data.individual_games.map((p: any) => {
-          const normalized = this.normalizeTeamName(p.team_name);
-          return {
-            ...p,
-            team_name: normalized
-          };
-        })
-      : [];
-    if (Array.isArray(data.games)) {
-      data.games.forEach((game: any, i: number) => {
-        matchResults[i + 1] = Array.isArray(game.teams) ? game.teams.map((team: any) => {
-          const cleanTeamName = this.normalizeTeamName(team.team_name);
-          let players = individualGames
-            .filter((p: any) => {
-              // Normalize both sides: strip trailing '@#' and tabs
-              const normTeam = this.normalizeTeamName(team.team_name);
-              const normPlayer = this.normalizeTeamName(p.team_name);
-              const isSameGame = p.game_number === game.game_number;
-              const isSameTeam = normPlayer === normTeam;
-              return isSameGame && isSameTeam;
-            })
-            .map((p: any) => ({
-              playerName: p.player_name,
+    data.stats.games.forEach((game: ScrimGame, i: number) => {
+      matchResults[i + 1] = Array.isArray(game.teams) ? game.teams.map((team: ScrimTeam) => {
+        // Use player_stats from new model, ensure playerId is present
+        const players = Array.isArray(team.player_stats)
+          ? team.player_stats.map((p: PlayerStats) => ({
+              playerId: p.playerId,
+              playerName: p.name,
               kills: p.kills ?? 0,
-              damage: p.damage_dealt ?? 0,
+              damage: p.damageDealt ?? 0,
               downs: p.knockdowns ?? 0,
               headshots: p.headshots ?? 0,
               assists: p.assists ?? 0,
               shots: p.shots ?? 0,
               hits: p.hits ?? 0,
-              revives: p.revives ?? 0,
-              respawns: p.respawns ?? 0
-            }));
-          // if (players.length === 0) {
-          //   // Team has no players, skip or handle as needed
-          // }
-          return {
-            gameNumber: game.game_number,
-            teamName: cleanTeamName,
-            placement: team.placement,
-            teamKills: team.kills,
-            placementPoints: this.getPlacementPoints(team.placement),
-            totalPoints: team.score,
-            mapName: game.map_name,
-            players,
-            isExpanded: false
-          };
-        }) : [];
-      });
-    }
+              revives: p.revivesGiven ?? 0,
+              respawns: p.respawnsGiven ?? 0
+            }))
+          : [];
+        return {
+          teamId: team.teamId,
+          teamName: team.name,
+          placement: team.overall_stats.teamPlacement,
+          teamKills: team.overall_stats.kills,
+          placementPoints: this.getPlacementPoints(team.overall_stats.teamPlacement),
+          totalPoints: team.overall_stats.score,
+          mapName: game.map_name,
+          players,
+          isExpanded: false
+        };
+      }) : [];
+    });
     return matchResults;
   }
 

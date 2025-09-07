@@ -1,0 +1,1 @@
+This file has been marked for deletion. Rating logic is now handled by the backend server API. Remove this file from your project.

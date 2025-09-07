@@ -1,0 +1,339 @@
+{
+  "stats": {
+    "teams": [
+      {
+        "name": "Trial ",
+        "teamId": 2,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "Trial "
+        }
+      },
+      {
+        "name": "Unemployed ",
+        "teamId": 3,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "Unemployed "
+        }
+      },
+      {
+        "name": "silly boys ",
+        "teamId": 4,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "silly boys "
+        }
+      },
+      {
+        "name": "Ice Fishers",
+        "teamId": 5,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "Ice Fishers"
+        }
+      },
+      {
+        "name": "sls ",
+        "teamId": 6,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "sls "
+        }
+      },
+      {
+        "name": "Sakura ",
+        "teamId": 7,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "Sakura "
+        }
+      },
+      {
+        "name": "Protato Force ",
+        "teamId": 8,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "Protato Force "
+        }
+      },
+      {
+        "name": "404 skill not found",
+        "teamId": 9,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "404 skill not found"
+        }
+      },
+      {
+        "name": "Girlies ",
+        "teamId": 10,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "Girlies "
+        }
+      },
+      {
+        "name": "LOST IN THE LOOT ",
+        "teamId": 11,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "LOST IN THE LOOT "
+        }
+      },
+      {
+        "name": "eepy gang ",
+        "teamId": 12,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "eepy gang "
+        }
+      },
+      {
+        "name": "AHHHHHHHHHHH ",
+        "teamId": 13,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "AHHHHHHHHHHH "
+        }
+      },
+      {
+        "name": "Greasy.com ",
+        "teamId": 14,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "Greasy.com "
+        }
+      },
+      {
+        "name": "whereami",
+        "teamId": 15,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "whereami"
+        }
+      },
+      {
+        "name": "Brand New ",
+        "teamId": 16,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "Brand New "
+        }
+      },
+      {
+        "name": "Icarus ",
+        "teamId": 17,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "Icarus "
+        }
+      },
+      {
+        "name": "StinkEUrs ",
+        "teamId": 18,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "StinkEUrs "
+        }
+      },
+      {
+        "name": "the breakfast club ",
+        "teamId": 19,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "the breakfast club "
+        }
+      },
+      {
+        "name": "fenced ",
+        "teamId": 20,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "fenced "
+        }
+      },
+      {
+        "name": "WeDontPlayThisGame",
+        "teamId": 21,
+        "player_stats": [],
+        "overall_stats": {
+          "name": "WeDontPlayThisGame"
+        }
+      }
+    ]
+  },
+  "match": {
+    "hasLivedata": false,
+    "id": 15400,
+    "eventId": "VESA Scrim 8/22/2025",
+    "organizer": 141,
+    "username": "thevoidesports",
+    "displayName": "VESA Scrims",
+    "organizerName": "VESA Scrims"
+  },
+  "settings": {
+    "draft": {
+      "timeout": 30,
+      "startTime": "2025-06-22T23:34:41.685Z",
+      "autoAssign": "forfeit",
+      "roundOrderMode": "3_ROUND_BALANCED"
+    },
+    "drops": {
+      "maps": {
+        "draft-e-district": "draft_edistrict_v3",
+        "draft-storm-point": "draft_stormpoint_v2"
+      },
+      "pass": "vesa",
+      "drops": {
+        "draft_edistrict_v3": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20"
+        ],
+        "draft_stormpoint_v2": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "7",
+          "6",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23"
+        ]
+      },
+      "enabled": true,
+      "dropMode": "normal",
+      "allowClaiming": true,
+      "contestLimits": {
+        "map": 0,
+        "poi": 1,
+        "enabled": false
+      },
+      "forceTeamNames": true,
+      "forceTeamColors": true,
+      "disableMultiplePrimarys": false
+    },
+    "lobby": {
+      "lobbyMode": 20
+    },
+    "scoring": {
+      "killPoints": 1,
+      "useLegendBans": true,
+      "useMatchPoint": false,
+      "ringKillPoints": {
+        "ring0": {
+          "closing": 1,
+          "countdown": 1
+        },
+        "ring1": {
+          "closing": 1,
+          "countdown": 1
+        },
+        "ring2": {
+          "closing": 1,
+          "countdown": 1
+        },
+        "ring3": {
+          "closing": 1,
+          "countdown": 1
+        },
+        "ring4": {
+          "closing": 1,
+          "countdown": 1
+        },
+        "ring5": {
+          "closing": 1,
+          "countdown": 1
+        }
+      },
+      "placementPoints": [
+        12,
+        9,
+        7,
+        5,
+        4,
+        3,
+        3,
+        2,
+        2,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "useRingKillPoints": false,
+      "matchPointThreshold": 50
+    },
+    "hideDrops": false,
+    "matchType": "team",
+    "lobbySetup": {
+      "bans": [
+        "caustic",
+        "sparrow",
+        "bangalore",
+        "alter",
+        "wattson"
+      ],
+      "config": {
+        "anonMode": true,
+        "adminChat": false,
+        "aimAssist": true,
+        "selfAssign": true,
+        "teamRename": true,
+        "playlistName": "district_new_spawn_pm"
+      },
+      "dropMap": {
+        "map": "draft_edistrict_v3",
+        "game": 0
+      },
+      "setBans": true,
+      "autoBans": true,
+      "appendDrops": false,
+      "setTeamDrops": true,
+      "setTeamNames": true,
+      "setLobbyOptions": true
+    },
+    "hideReplays": false,
+    "hideStandings": false
+  }
+}

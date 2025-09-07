@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, forkJoin } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
 import { MatchLoaderService } from './match-loader.service';
-import { EloAggregationService } from './elo-aggregation.service';
+// Removed: import { EloAggregationService } from './elo-aggregation.service';
 import { PlayerStatsService } from './player-stats.service';
 import { TeamUtilsService } from './team-utils.service';
 import { DateUtilsService } from './date-utils.service';
@@ -21,7 +21,7 @@ export class LeagueMatchDataService {
     private playerStatsService: PlayerStatsService,
     private teamUtilsService: TeamUtilsService,
     private dateUtilsService: DateUtilsService,
-    private eloAggregationService: EloAggregationService
+  // Removed: private eloAggregationService: EloAggregationService
   ) {}
 
   /**

@@ -3,6 +3,7 @@ import { PlayerStats, TeamGameResult } from '../models/match-day-results.model';
 import { EloCalculatorService } from './elo-calculator.service';
 
 export interface PlayerRating {
+  playerId: string;
   playerName: string;
   eloRating: number;
   gamesPlayed: number;
@@ -99,7 +100,8 @@ export class RatingService {
       );
       const newElo = playerElo + eloChange;
       const playerRating: PlayerRating = {
-        playerName: player.playerName,
+  playerId: player.player_id ? player.player_id : player.playerName.trim().toLowerCase(),
+  playerName: player.playerName,
         eloRating: newElo,
         gamesPlayed: 1,
         wins: result.placement <= 5 ? 1 : 0,

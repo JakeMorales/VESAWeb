@@ -1,6 +1,6 @@
   
 import { MatchLoaderService } from './match-loader.service';
-import { EloAggregationService } from './elo-aggregation.service';
+// Removed: import { EloAggregationService } from './elo-aggregation.service';
 import { PlayerStatsService } from './player-stats.service';
 import { TeamUtilsService } from './team-utils.service';
 import { DateUtilsService } from './date-utils.service';
@@ -40,7 +40,7 @@ export class ScrimsDataService {
     private playerStatsService: PlayerStatsService,
     private teamUtilsService: TeamUtilsService,
     private dateUtilsService: DateUtilsService,
-    private eloAggregationService: EloAggregationService
+  // Removed: private eloAggregationService: EloAggregationService
   ) {}
 
   /**
@@ -62,7 +62,7 @@ export class ScrimsDataService {
    * Get aggregated leaderboard data for scrims
    */
   getScrimsLeaderboard(): Observable<ScrimLeaderboardData> {
-    return this.eloAggregationService.getAggregatedPlayerElosFromScrimFiles(
+  // Removed: return this.eloAggregationService.getAggregatedPlayerElosFromScrimFiles(
       (json: any) => this.loadScrimTableFromJsonObject(json)
     ).pipe(
       map(players => ({

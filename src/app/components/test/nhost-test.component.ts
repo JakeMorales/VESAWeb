@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ScrimsDataService } from '../../services/scrims-data.service';
 import { NhostService } from '../../services/nhost.service';
+import { getMostCommonPlayerNames } from '../../utils/player-utils';
 
 @Component({
   selector: 'app-nhost-test',
@@ -133,6 +134,7 @@ import { NhostService } from '../../services/nhost.service';
 })
 export class NhostTestComponent implements OnInit {
   players: any[] = [];
+  playerIdToName: Map<string, string> = new Map();
   scrims: any[] = [];
   scrimSessions: any[] = [];
   playerStats: any[] = [];
@@ -228,8 +230,10 @@ export class NhostTestComponent implements OnInit {
     this.nhostService.getScrimPlayerStatsWithDetails().subscribe({
       next: (stats) => {
         this.playerStats = stats;
+        this.playerIdToName = getMostCommonPlayerNames(stats);
         this.loadingPlayerStats = false;
         console.log('Player stats loaded:', stats);
+        console.log('PlayerId to most common name:', this.playerIdToName);
       },
       error: (error) => {
         this.playerStatsError = error.message || 'Failed to load player stats';
