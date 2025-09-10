@@ -1,27 +1,25 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { ScrimFileService } from './scrim-file.service';
+import { HttpClient } from '@angular/common/http';
 import { ScrimBatchFile, ScrimGame, ScrimTeam, PlayerStats } from '../models/scrim-batch-file.model';
 
 @Injectable({ providedIn: 'root' })
 export class MatchLoaderService {
-  constructor(private scrimFileService: ScrimFileService) {}
+  constructor(private http: HttpClient) {}
 
   /**
-   * Loads match data. For now, loads a scrim JSON file. In the future, will call the Nhost API.
-   * @param matchId The ID of the match to load
+   * Loads match data from backend server using scrim batch file name
+   * @param filename The scrim batch file name to load
    */
-  loadMatch(matchId: string): Observable<any> {
-    // For now, delegate to ScrimFileService
-    return this.scrimFileService.loadScrimFile(matchId);
+  loadMatch(filename: string): Observable<any> {
+    return this.http.get(`http://localhost:3001/scrims/${filename}`);
   }
 
   /**
-   * Placeholder for loading a match from Nhost (to be implemented when API is ready)
+   * Loads the list of available scrim batch files from backend server
    */
-  loadMatchFromNhost(matchId: string): Observable<any> {
-    // TODO: Implement actual API call to Nhost when available
-    return of(null);
+  loadScrimFileList(): Observable<string[]> {
+    return this.http.get<string[]>(`/scrims`);
   }
 
     /**

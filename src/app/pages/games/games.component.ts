@@ -7,7 +7,6 @@ import { ScrimCollapsibleComponent } from '../../components/scrim-collapsible/sc
 import { ModernPaginationComponent } from '../../components/modern-pagination/modern-pagination.component';
 import { MatchDayResults } from '../../models/match-day-results.model';
 import { ScrimsDataService } from '../../services/scrims-data.service';
-import { ScrimFileService } from '../../services/scrim-file.service';
 import { forkJoin, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
@@ -52,12 +51,23 @@ export class GamesComponent implements OnInit {
     return Math.ceil(this.scrimsTables.length / this.pageSize);
   }
 
-  constructor(private scrimsDataService: ScrimsDataService, private scrimFileService: ScrimFileService) {
-    this.scrimFiles = this.scrimFileService.getAllScrimBatchFiles();
+  constructor(private scrimsDataService: ScrimsDataService) {
+    // Fetch scrim files from backend via ScrimsDataService
+    this.scrimsDataService.getScrimFiles().subscribe({
+      next: files => {
+        console.log('Scrim files received:', files);
+        this.scrimFiles = files;
+        this.loadScrimsTables(); // <-- Now triggers match data requests after files are loaded
+      },
+      error: err => {
+        console.error('Error loading scrim files:', err);
+        this.error = 'Failed to load scrim files.';
+      }
+    });
   }
 
   ngOnInit() {
-    this.loadScrimsTables();
+    // No longer needed here; handled after scrimFiles are loaded
   }
 
   loadScrimsTables() {

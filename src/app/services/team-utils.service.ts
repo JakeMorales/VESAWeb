@@ -100,12 +100,12 @@ export class TeamUtilsService {
       totalPoints: this.getPlacementPoints(team.placement) + Math.floor(team.totalKills / 3),
       mapName: 'Scrim Map',
       players: team.players.map(player => ({
-        playerName: player.playerName || 'Unknown',
-        kills: player.kills || 0,
-        damage: player.damage || 0,
-        downs: player.downs || 0,
-        revives: player.revives || 0,
-        respawns: player.respawns || 0
+  playerName: player.playerName || 'Unknown',
+  kills: player.kills || 0,
+  damageDealt: player.damageDealt || 0,
+  downs: player.downs || 0,
+  revives: player.revives || 0,
+  respawns: player.respawns || 0
       })),
       isExpanded: false
     }));
@@ -126,12 +126,12 @@ export class TeamUtilsService {
       totalPoints: this.getPlacementPoints(team.placement) + Math.floor(team.totalKills / 3),
       mapName: 'Scrim Map',
       players: team.players.map(player => ({
-        playerName: player.playerName || 'Unknown',
-        kills: player.kills || 0,
-        damage: player.damage || 0,
-        downs: player.downs || 0,
-        revives: player.revives || 0,
-        respawns: player.respawns || 0
+  playerName: player.playerName || 'Unknown',
+  kills: player.kills || 0,
+  damageDealt: player.damageDealt || 0,
+  downs: player.downs || 0,
+  revives: player.revives || 0,
+  respawns: player.respawns || 0
       })),
       isExpanded: false
     }));

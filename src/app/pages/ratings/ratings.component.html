@@ -1,8 +1,56 @@
 <div class="elo-leaderboard-container">
   <h2>🏅 Player ELO Leaderboard</h2>
-  <div *ngIf="loadingLeaderboard">Loading leaderboard...</div>
+
+  <table *ngIf="stats && stats.elo" class="elo-stats-table" style="margin-bottom: 2rem;">
+    <thead>
+      <tr>
+        <th>Stat</th>
+        <th>Min</th>
+        <th>Max</th>
+        <th>Median</th>
+        <th>Avg</th>
+        <th>Std Dev</th>
+        <th>Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let key of ['elo','gamesPlayed','kills','winRate','topThreeRate','averagePlacement','averageKills']">
+        <td>{{ key }}</td>
+        <td>{{ stats[key]?.min }}</td>
+        <td>{{ stats[key]?.max }}</td>
+        <td>{{ stats[key]?.median }}</td>
+        <td>{{ stats[key]?.avg | number:'1.1-2' }}</td>
+        <td>{{ stats[key]?.std | number:'1.1-2' }}</td>
+        <td>{{ stats[key]?.count }}</td>
+      </tr>
+      <tr>
+        <td>damage</td>
+        <td>{{ stats.averageDamage?.min }}</td>
+        <td>{{ stats.averageDamage?.max }}</td>
+        <td>{{ stats.averageDamage?.median }}</td>
+        <td>{{ stats.averageDamage?.avg | number:'1.1-2' }}</td>
+        <td>{{ stats.averageDamage?.std | number:'1.1-2' }}</td>
+        <td>{{ stats.averageDamage?.count }}</td>
+      </tr>
+      <tr>
+        <td>performanceScore</td>
+        <td>{{ stats.performanceScore?.min }}</td>
+        <td>{{ stats.performanceScore?.max }}</td>
+        <td>{{ stats.performanceScore?.median }}</td>
+        <td>{{ stats.performanceScore?.avg | number:'1.1-2' }}</td>
+        <td>{{ stats.performanceScore?.std | number:'1.1-2' }}</td>
+        <td>{{ stats.performanceScore?.count }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <form (submit)="$event.preventDefault(); onSearchPlayerName();" style="margin-bottom: 1rem;">
+    <input type="text" [(ngModel)]="playerNameSearch" name="playerNameSearch" placeholder="Search player name..." style="width: 220px; margin-right: 8px;" />
+    <button type="submit">Search</button>
+    <button type="button" (click)="playerNameSearch=''; onSearchPlayerName();" [disabled]="!playerNameSearch">Clear</button>
+  </form>
+  <div *ngIf="isLoading">Loading leaderboard...</div>
   <div *ngIf="leaderboardError">{{leaderboardError}}</div>
-  <table *ngIf="!loadingLeaderboard && !leaderboardError && leaderboard.length > 0" class="elo-leaderboard-table">
+  <table *ngIf="!isLoading && !leaderboardError && leaderboard.length > 0" class="elo-leaderboard-table">
     <thead>
       <tr>
         <th>#</th>
@@ -13,14 +61,38 @@
     </thead>
     <tbody>
       <tr *ngFor="let player of leaderboard; let i = index">
-        <td>{{i + 1}}</td>
+        <td>{{i + 1 + currentPage * pageSize}}</td>
         <td>{{player.playerName}}</td>
         <td>{{player.finalElo || player.estimatedElo}}</td>
         <td>{{player.totalGames}}</td>
       </tr>
     </tbody>
   </table>
-  <div *ngIf="!loadingLeaderboard && !leaderboardError && leaderboard.length === 0">
+  <div *ngIf="!isLoading && !leaderboardError && leaderboard.length === 0">
     No players found.
+  </div>
+  <nav *ngIf="!isLoading && !leaderboardError && totalPlayers > pageSize" class="pagination-menu">
+    <button (click)="loadLeaderboardPage(0)" [disabled]="currentPage === 0">First</button>
+    <button (click)="loadLeaderboardPage(currentPage - 1)" [disabled]="currentPage === 0">Prev</button>
+    <span>Page {{currentPage + 1}} of {{totalPages()}}</span>
+    <button (click)="loadLeaderboardPage(currentPage + 1)" [disabled]="(currentPage + 1) * pageSize >= totalPlayers">Next</button>
+    <button (click)="loadLeaderboardPage(totalPages() - 1)" [disabled]="currentPage === totalPages() - 1">Last</button>
+  </nav>
+  <div *ngIf="stats && ratedStats">
+    <h3>Advanced Stats</h3>
+    <table class="elo-advanced-stats-table">
+      <tr>
+        <td>% Rated Opponents</td>
+        <td>{{ ratedStats.percentRated }}%</td>
+      </tr>
+      <tr>
+        <td>% Unrated Opponents</td>
+        <td>{{ ratedStats.percentUnrated }}%</td>
+      </tr>
+      <tr>
+        <td>Net ELO Change per Game</td>
+        <td>{{ ratedStats.netEloPerGame }}</td>
+      </tr>
+    </table>
   </div>
 </div>

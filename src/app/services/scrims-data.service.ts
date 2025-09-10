@@ -1,4 +1,3 @@
-  
 import { MatchLoaderService } from './match-loader.service';
 // Removed: import { EloAggregationService } from './elo-aggregation.service';
 import { PlayerStatsService } from './player-stats.service';
@@ -40,8 +39,21 @@ export class ScrimsDataService {
     private playerStatsService: PlayerStatsService,
     private teamUtilsService: TeamUtilsService,
     private dateUtilsService: DateUtilsService,
-  // Removed: private eloAggregationService: EloAggregationService
+    private http: HttpClient
   ) {}
+
+  /**
+   * Get list of available scrim batch files from backend
+   */
+  getScrimFiles(): Observable<string[]> {
+  return this.http.get<string[]>('http://localhost:3001/scrims').pipe(
+      catchError((error) => {
+        console.error('Error fetching scrim files:', error);
+        return of([]);
+      }),
+      shareReplay(1)
+    );
+  }
 
   /**
    * Map ScrimPlayerStats (from backend) to PlayerStats (frontend model)
@@ -59,18 +71,10 @@ export class ScrimsDataService {
   }
 
   /**
-   * Get aggregated leaderboard data for scrims
+   * Get aggregated leaderboard data for scrims from backend server
    */
   getScrimsLeaderboard(): Observable<ScrimLeaderboardData> {
-  // Removed: return this.eloAggregationService.getAggregatedPlayerElosFromScrimFiles(
-      (json: any) => this.loadScrimTableFromJsonObject(json)
-    ).pipe(
-      map(players => ({
-        players,
-        totalScrims: 0, // Set to 0 for type safety (update if you have scrim count logic)
-        totalPlayers: players.length,
-        lastUpdated: new Date()
-      })),
+    return this.http.get<ScrimLeaderboardData>('/leaderboard').pipe(
       catchError((error) => {
         console.error('Error fetching scrims leaderboard:', error);
         return of({
@@ -280,13 +284,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, of } from 'rxjs';
 import { catchError, map, mergeMap, shareReplay } from 'rxjs/operators';
-import { EloCalculatorService } from './elo-calculator.service';
+// Removed: import { EloCalculatorService } from './elo-calculator.service';
 import { MatchDayResults } from '../models/match-day-results.model';
 
 export interface PlayerStats {
   playerName: string;
   kills: number;
-  damage: number;
+  damageDealt: number;
   downs: number;
   headshots?: number;
   assists?: number;

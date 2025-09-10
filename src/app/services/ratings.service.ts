@@ -6,7 +6,12 @@ import { Observable } from 'rxjs';
 export class RatingsService {
   constructor(private http: HttpClient) {}
 
-  getLeaderboard(): Observable<any> {
-    return this.http.get('/leaderboard');
+  getLeaderboard(offset: number = 0, limit: number = 25, playerName?: string): Observable<any> {
+    const params: any = { offset: offset.toString(), limit: limit.toString() };
+    if (playerName && playerName.trim()) {
+      params.playerName = playerName.trim();
+    }
+    const query = new URLSearchParams(params).toString();
+    return this.http.get(`http://localhost:3001/leaderboard?${query}`);
   }
 }

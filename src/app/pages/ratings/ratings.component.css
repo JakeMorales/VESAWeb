@@ -1,3 +1,32 @@
+/* Stats Table Styles */
+.elo-stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto 18px auto;
+  background: #f6f6fa;
+  border-radius: 8px;
+  overflow-x: auto;
+  display: block;
+  box-shadow: 0 1px 4px rgba(102, 126, 234, 0.06);
+}
+.elo-stats-table th, .elo-stats-table td {
+  padding: 10px 14px;
+  text-align: center;
+  color: #222;
+}
+.elo-stats-table th {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border-bottom: 2px solid #e0e0e0;
+}
+.elo-stats-table tr:nth-child(even) {
+  background: #f4f6fb;
+}
+.elo-stats-table tr:nth-child(odd) {
+  background: #fff;
+}
 .elo-stats {
   color: #222;
   background: #f6f6fa;
@@ -43,7 +72,7 @@
 
 .elo-leaderboard-table th {
   background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  color: #222;
   font-size: 1.1rem;
   font-weight: 600;
   border-bottom: 2px solid #e0e0e0;
@@ -472,6 +501,59 @@
 }
 .theoretical-stats li {
   margin-bottom: 4px;
+}
+
+/* Pagination Menu Styles - improved for readability */
+.pagination-menu {
+  margin: 18px 0;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.pagination-menu button {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  color: #222;
+  border: none;
+  border-radius: 5px;
+  padding: 6px 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(102, 126, 234, 0.10);
+}
+.pagination-menu button:disabled {
+  background: #e0e0e0;
+  color: #aaa;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.pagination-menu span {
+  font-weight: 500;
+  font-size: 1.1em;
+  padding: 0 8px;
+  color: #222;
+}
+
+/* Advanced Stats Table - improved for readability */
+.elo-advanced-stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f6f6fa;
+  border-radius: 8px;
+  margin-top: 1rem;
+  box-shadow: 0 1px 4px rgba(102, 126, 234, 0.06);
+}
+.elo-advanced-stats-table td {
+  padding: 10px 14px;
+  color: #222;
+  font-size: 1rem;
+}
+.elo-advanced-stats-table tr:nth-child(even) {
+  background: #f4f6fb;
+}
+.elo-advanced-stats-table tr:nth-child(odd) {
+  background: #fff;
 }
 
 /* Responsive Design */

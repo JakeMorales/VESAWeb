@@ -12,7 +12,7 @@ export class PlayerStatsService {
     return stats.map(s => ({
       playerName: s.playerName || s.name || 'Unknown Player',
       kills: s.kills || 0,
-      damage: s.damage || s.damage_dealt || 0,
+      damageDealt: s.damageDealt || s.damage || s.damage_dealt || 0,
       downs: s.downs || s.knockdowns || 0,
       assists: s.assists || 0,
       revives: s.revives || s.revives_given || 0,
@@ -51,7 +51,7 @@ export class PlayerStatsService {
         return this.createEmptyPlayerStats(playerData.playerId, playerData.playerName, playerData.displayName);
       }
       const totalKills = games.reduce((sum, game) => sum + (game.kills || 0), 0);
-      const totalDamage = games.reduce((sum, game) => sum + (game.damage || 0), 0);
+  const totalDamage = games.reduce((sum, game) => sum + (game.damageDealt || 0), 0);
       const totalRevives = games.reduce((sum, game) => sum + (game.revives || 0), 0);
       const totalRespawns = games.reduce((sum, game) => sum + (game.respawns || 0), 0);
       const totalPoints = 0;
@@ -113,7 +113,7 @@ export class PlayerStatsService {
     elo += placementFactor;
     const killsFactor = avgKills * 25;
     elo += killsFactor;
-    const damageFactor = (avgDamage / 100) * 2;
+  const damageFactor = (avgDamage / 100) * 2;
     elo += damageFactor;
     const winRateFactor = winRate * 10;
     elo += winRateFactor;
