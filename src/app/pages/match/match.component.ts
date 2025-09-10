@@ -99,8 +99,16 @@ export class MatchComponent implements OnInit {
     };
 
     // Get match day results (detailed with player stats)
-    this.leagueMatchDataService.getLeagueMatchResults(matchId).subscribe(results => {
-      this.matchDayResults = results;
+    this.leagueMatchDataService.getLeagueMatchResults(matchId).subscribe({
+      next: (results: MatchDayResults | null) => {
+        this.matchDayResults = results;
+        if (!results) {
+          console.error('No match results found for:', matchId);
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading match results:', err);
+      }
     });
   }
 }

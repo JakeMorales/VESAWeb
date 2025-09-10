@@ -6,11 +6,14 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { EloAggregationService } from './elo-aggregation.service.js';
 import { ScrimFileService } from './scrim-file.service.js';
+import { LeagueMatchesService } from './league-matches.service.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const SCRIM_DIR = path.join(process.cwd(), 'server', 'scrims_batch');
 const PORT = process.env['PORT'] || 3001;
 const app = express();
+app.use(cors());
+app.use(express.json());
 // --- Precompute leaderboard and stats at startup ---
 let cachedLeaderboard = [];
 let cachedStats = {};
@@ -224,6 +227,54 @@ app.get('/scrims/:filename', (req, res) => {
         const errorMsg = err instanceof Error ? err.message : String(err);
         res.status(500).json({ error: errorMsg });
         return;
+    }
+});
+// League match endpoints
+app.get('/league/seasons', (req, res) => {
+    try {
+        const seasons = LeagueMatchesService.getSeasons();
+        res.json(seasons);
+    }
+    catch (err) {
+        const errorMsg = err instanceof Error ? err.message : String(err);
+        res.status(500).json({ error: errorMsg });
+    }
+});
+app.get('/league/seasons/:season/divisions', (req, res) => {
+    try {
+        const { season } = req.params;
+        const divisions = LeagueMatchesService.getDivisions(season);
+        res.json(divisions);
+    }
+    catch (err) {
+        const errorMsg = err instanceof Error ? err.message : String(err);
+        res.status(500).json({ error: errorMsg });
+    }
+});
+app.get('/league/seasons/:season/divisions/:division/matches', (req, res) => {
+    try {
+        const { season, division } = req.params;
+        const matches = LeagueMatchesService.getDivisionMatches(season, division);
+        res.json(matches);
+    }
+    catch (err) {
+        const errorMsg = err instanceof Error ? err.message : String(err);
+        res.status(500).json({ error: errorMsg });
+    }
+});
+app.get('/league/seasons/:season/divisions/:division/matches/:filename', (req, res) => {
+    try {
+        const { season, division, filename } = req.params;
+        const matchDay = LeagueMatchesService.getMatchDay(season, division, filename);
+        if (!matchDay) {
+            res.status(404).json({ error: 'Match day not found' });
+            return;
+        }
+        res.json(matchDay);
+    }
+    catch (err) {
+        const errorMsg = err instanceof Error ? err.message : String(err);
+        res.status(500).json({ error: errorMsg });
     }
 });
 app.listen(PORT, () => {

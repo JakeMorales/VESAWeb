@@ -2,56 +2,105 @@ import { Injectable } from '@angular/core';
 import { Observable, of, forkJoin } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
 import { MatchLoaderService } from './match-loader.service';
-// Removed: import { EloAggregationService } from './elo-aggregation.service';
 import { PlayerStatsService } from './player-stats.service';
 import { TeamUtilsService } from './team-utils.service';
 import { DateUtilsService } from './date-utils.service';
+import { LeagueService, LeagueMatchDay } from './league.service';
 // TODO: Create LeagueMatchTableLoaderService or reuse existing loader if possible
 // import { LeagueMatchTableLoaderService } from './league-match-table-loader.service';
 
-// Import or define interfaces as needed
-// import { MatchDayResults } from '../models/match-day-results.model';
-// import { PlayerStats } from '../models/player-stats.model';
+// Import required interfaces
+import { MatchDayResults } from '../models/match-day-results.model';
 
 @Injectable({ providedIn: 'root' })
 export class LeagueMatchDataService {
   constructor(
-  private matchLoaderService: MatchLoaderService,
-    // private leagueMatchTableLoader: LeagueMatchTableLoaderService, // TODO: implement or reuse
+    private matchLoaderService: MatchLoaderService,
     private playerStatsService: PlayerStatsService,
     private teamUtilsService: TeamUtilsService,
     private dateUtilsService: DateUtilsService,
-  // Removed: private eloAggregationService: EloAggregationService
+    private leagueService: LeagueService
   ) {}
 
   /**
    * Fetch league match data from API and transform to MatchDayResults
    */
   /**
-   * Loads league match data using MatchLoaderService (from file for now)
-   * @param matchId The filename of the match JSON file
+   * Gets all available seasons
    */
-  // For now, hardcode a list of available match files (in production, fetch from API or directory)
-  private availableMatchFiles: string[] = [
-    'scrim_2024_07_03_id_7058.json',
-    'scrim_2024_07_03_id_7059.json',
-    // ...add more as needed
-  ];
+  getAvailableSeasons(): Observable<string[]> {
+    return this.leagueService.getSeasons();
+  }
 
   /**
-   * Loads league match data using MatchLoaderService (from file for now)
-   * If no matchId is provided, picks the first available match file.
+   * Gets all divisions for a season
    */
-  getLeagueMatchResults(matchId?: string): Observable<any /* MatchDayResults */> {
-    // Only use matchId if it matches a real file name
-    const fileToLoad = matchId && this.availableMatchFiles.includes(matchId)
-      ? matchId
-      : this.availableMatchFiles[0];
-    return this.matchLoaderService.loadMatch(fileToLoad).pipe(
-      map(json => this.matchLoaderService.transformMatchJsonToMatchDayResults(json)),
-      catchError((error) => {
-        console.error('Error loading league match data:', error);
-        return of({});
+  getDivisions(season: string): Observable<string[]> {
+    return this.leagueService.getDivisions(season);
+  }
+
+  /**
+   * Gets all match days for a specific division
+   */
+  getDivisionMatches(season: string, division: string): Observable<LeagueMatchDay[]> {
+    return this.leagueService.getDivisionMatches(season, division);
+  }
+
+  /**
+   * Gets a specific match day result
+   */
+  getMatchDayResult(season: string, division: string, filename: string): Observable<LeagueMatchDay | null> {
+    return this.leagueService.getMatchDay(season, division, filename).pipe(
+      catchError(err => {
+        console.error('Error loading match day:', err);
+        return of(null);
+      })
+    );
+  }
+
+  /**
+   * Gets the match results for a specific league match
+   * @param matchId The ID of the match (format: [season]_[division]_[week])
+   */
+  getLeagueMatchResults(matchId: string): Observable<MatchDayResults | null> {
+    // Parse matchId to get season, division, and week
+    const [season, division, week] = matchId.split('_');
+    if (!season || !division || !week) {
+      console.error('Invalid match ID format:', matchId);
+      return of(null);
+    }
+
+    return this.leagueService.getMatchDay(season, division, week).pipe(
+      map(matchDay => {
+        if (!matchDay) return null;
+
+        // Convert LeagueMatchDay to MatchDayResults
+        return {
+          id: matchId,
+          season: matchDay.season,
+          division: matchDay.division,
+          week: matchDay.week,
+          isPlayoffs: matchDay.isPlayoffs,
+          date: new Date().toISOString(), // TODO: Add actual date to the model
+          games: matchDay.stats.games.map(game => ({
+            gameNumber: game.game,
+            teams: game.teams.map(team => ({
+              placement: team.overall_stats?.teamPlacement || 0,
+              name: `Team ${team.overall_stats?.teamPlacement || 'Unknown'}`,
+              players: team.player_stats.map(player => ({
+                name: player.playerName,
+                kills: player.kills || 0,
+                assists: player.assists || 0,
+                damage: player.damageDealt || 0,
+                revives: player.revivesGiven || player.revives || 0
+              }))
+            }))
+          }))
+        };
+      }),
+      catchError(err => {
+        console.error('Error loading match results:', err);
+        return of(null);
       })
     );
   }

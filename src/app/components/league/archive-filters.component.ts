@@ -1,14 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-export interface Season {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  status: 'completed' | 'active' | 'upcoming';
-}
+import { LeagueSeason } from '../../models/season.model';
+export type Season = LeagueSeason;
 
 @Component({
   selector: 'app-archive-filters',
@@ -24,20 +18,17 @@ export interface Season {
           </option>
         </select>
 
-        <select [(ngModel)]="selectedDivision" (ngModelChange)="onDivisionChange()" class="filter-select">
+        <select [(ngModel)]="selectedDivision" (ngModelChange)="onDivisionChange()" class="filter-select" [disabled]="!selectedSeason">
           <option value="">All Divisions</option>
-          <option value="Pinnacle">Pinnacle</option>
-          <option value="Vanguard">Vanguard</option>
-          <option value="Ascendant">Ascendant</option>
-          <option value="Emergent">Emergent</option>
-          <option value="Challengers">Challengers</option>
-          <option value="Contenders">Contenders</option>
+          <option *ngFor="let division of getSelectedSeasonDivisions()" [value]="division">
+            Division {{ division }}
+          </option>
         </select>
 
         <select [(ngModel)]="viewMode" (ngModelChange)="onViewModeChange()" class="filter-select">
+          <option value="matches">Match History</option>
           <option value="champions">Season Champions</option>
           <option value="leaderboards">Final Leaderboards</option>
-          <option value="matches">Match History</option>
         </select>
       </div>
     </div>
@@ -111,13 +102,20 @@ export class ArchiveFiltersComponent {
   @Input() seasons: Season[] = [];
   @Input() selectedSeason: string = '';
   @Input() selectedDivision: string = '';
-  @Input() viewMode: string = 'champions';
+  @Input() viewMode: string = 'matches'; // Default to match history view
 
   @Output() seasonChange = new EventEmitter<string>();
   @Output() divisionChange = new EventEmitter<string>();
   @Output() viewModeChange = new EventEmitter<string>();
 
+  getSelectedSeasonDivisions(): string[] {
+    if (!this.selectedSeason) return [];
+    const season = this.seasons.find(s => s.id === this.selectedSeason);
+    return season ? season.divisions : [];
+  }
+
   onSeasonChange() {
+    this.selectedDivision = ''; // Reset division when season changes
     this.seasonChange.emit(this.selectedSeason);
   }
 

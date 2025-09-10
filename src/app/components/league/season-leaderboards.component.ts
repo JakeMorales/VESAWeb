@@ -18,13 +18,8 @@ export interface SeasonTeamResult {
   avgPlacement: number;
 }
 
-export interface Season {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  status: 'completed' | 'active' | 'upcoming';
-}
+import { ArchiveSeason } from '../../models/season.model';
+export type Season = ArchiveSeason;
 
 @Component({
   selector: 'app-season-leaderboards',
