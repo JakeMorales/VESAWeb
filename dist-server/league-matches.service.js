@@ -79,6 +79,7 @@ export class LeagueMatchesService {
                         games: data.stats.games.map((game) => ({
                             game: game.game,
                             teams: game.teams.map((team) => ({
+                                name: team.name || team.overall_stats?.name || '',
                                 player_stats: (team.player_stats || team.players || []).map(player => ({
                                     playerId: player.playerId?.toString() || player.player_id?.toString(),
                                     playerName: player.name || player.playerName || player.player_name || '',
@@ -129,6 +130,7 @@ export class LeagueMatchesService {
                     games: data.stats.games.map((game) => ({
                         game: game.game,
                         teams: game.teams.map((team) => ({
+                            name: team.name || team.overall_stats?.name || '',
                             player_stats: (team.player_stats || team.players || []).map(player => ({
                                 playerId: player.playerId?.toString() || player.player_id?.toString(),
                                 playerName: player.name || player.playerName || player.player_name || '',
