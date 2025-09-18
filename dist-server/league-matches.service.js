@@ -129,29 +129,32 @@ export class LeagueMatchesService {
                 stats: {
                     games: data.stats.games.map((game) => ({
                         game: game.game,
-                        teams: game.teams.map((team) => ({
-                            name: team.name || team.overall_stats?.name || '',
-                            player_stats: (team.player_stats || team.players || []).map(player => ({
-                                playerId: player.playerId?.toString() || player.player_id?.toString(),
-                                playerName: player.name || player.playerName || player.player_name || '',
-                                teamName: player.teamName || team.name || team.overall_stats?.name || '',
-                                kills: player.kills || 0,
-                                assists: player.assists || 0,
-                                damageDealt: player.damageDealt || player.damage_dealt || 0,
-                                revivesGiven: player.revivesGiven || player.revives_given || 0,
-                                revives: player.revives
-                            })),
-                            overall_stats: {
-                                teamPlacement: team.overall_stats.teamPlacement,
-                                teamName: team.name || team.overall_stats?.name || null
-                            }
-                        }))
+                        teams: game.teams.map((team) => {
+                            const teamName = team.name || team.overall_stats?.name || '';
+                            return {
+                                name: teamName,
+                                player_stats: (team.player_stats || team.players || []).map(player => ({
+                                    playerId: player.playerId?.toString() || player.player_id?.toString(),
+                                    playerName: player.name || player.playerName || player.player_name || '',
+                                    teamName: teamName,
+                                    kills: player.kills || 0,
+                                    assists: player.assists || 0,
+                                    damageDealt: player.damageDealt || player.damage_dealt || 0,
+                                    revivesGiven: player.revivesGiven || player.revives_given || 0,
+                                    revives: player.revives
+                                })),
+                                overall_stats: {
+                                    teamPlacement: team.overall_stats.teamPlacement,
+                                    teamName: teamName
+                                }
+                            };
+                        })
                     }))
                 }
             };
         }
         catch (err) {
-            console.error(`Error reading match day ${file} for ${season} Division ${division}:`, err);
+            console.error(`Error reading match day for ${this.LEAGUE_DIR}:`, err);
             return null;
         }
     }
