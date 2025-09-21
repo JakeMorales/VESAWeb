@@ -15,35 +15,71 @@ export class EloCalculatorService {
      * @param gamesPlayed Number of games the player has played
      */
     calculateEloChangeWithOpponent(playerElo, opponentElo, performanceScore, gamesPlayed) {
-        // Fixed K-factor for all players to ensure zero-sum Elo
-        const k = 90;
-        const expectedScore = 1 / (1 + Math.pow(10, (opponentElo - playerElo) / 400));
-        return k * (performanceScore - expectedScore); // No rounding here!
+        // Adjust opponent Elo for unrated players (less than 18 games)
+        const isOpponentUnrated = gamesPlayed < 18;
+        const adjustedOpponentElo = isOpponentUnrated
+            ? Math.min(opponentElo, playerElo + 200) // Limit unrated opponent's effective rating
+            : opponentElo;
+        // Dynamic K-factor with progressive scaling
+        const baseK = 28; // Increased for better mobility
+        // Standard volatility factor based on rating difference from initial
+        const volatilityFactor = Math.max(0.8, Math.min(1.2, 1500 / playerElo));
+        // Experience factor with slower decay
+        const experienceFactor = Math.max(0.8, Math.min(1.2, 40 / Math.max(gamesPlayed, 20)));
+        // Unrated player bonus
+        const unratedBonus = isOpponentUnrated ? 1.2 : 1.0;
+        const k = Math.round(baseK * volatilityFactor * experienceFactor * unratedBonus);
+        // Standard expectation calculation
+        const ratingDiff = adjustedOpponentElo - playerElo;
+        const expectedScore = 1 / (1 + Math.pow(10, ratingDiff / 600));
+        // Calculate base change with performance scaling
+        const performanceDiff = performanceScore - expectedScore;
+        const performanceScale = performanceScore > 0.7 ? 1.15 : 1.0; // Bonus for exceptional performance
+        const adjustedDiff = Math.sign(performanceDiff) *
+            Math.pow(Math.abs(performanceDiff), 0.95) *
+            performanceScale;
+        let change = k * adjustedDiff;
+        // Standard maximum rating change
+        const maxChange = 75;
+        if (Math.abs(change) > maxChange) {
+            change = maxChange * Math.sign(change);
+        }
+        // Soft clamping with progressive boundaries
+        const targetElo = playerElo + change;
+        if (targetElo < EloCalculatorService.MIN_ELO) {
+            const diff = EloCalculatorService.MIN_ELO - targetElo;
+            change += diff * 0.85;
+        }
+        else if (targetElo > EloCalculatorService.MAX_ELO) {
+            const diff = targetElo - EloCalculatorService.MAX_ELO;
+            change -= diff * 0.85;
+        }
+        return change;
     }
     static getPlacementWeight() { return EloCalculatorService.placementWeight; }
     static getCombatWeight() { return EloCalculatorService.combatWeight; }
     static getDamageWeight() { return EloCalculatorService.damageWeight; }
     static getSupportWeight() { return EloCalculatorService.supportWeight; }
-    static calculatePerformanceScore(placement, kills, assists, damage, revives) {
+    static calculatePerformanceScore(placement, kills, assists, damage, revives, teamSize = 3) {
+        // Adjusted for 3-player team BR format based on actual statistics
         const placementFactor = EloCalculatorService.calculateTieredPlacementScore(placement);
-        const combatScore = kills + assists;
-        const combatFactor = Math.min(1, combatScore / 6);
-        const damageFactor = Math.min(1, damage / 1200);
-        const supportFactor = Math.min(1, revives / 3);
-        return ((placementFactor * EloCalculatorService.placementWeight / 100) +
+        // Combat score adjusted based on actual average of 0.97 kills per player
+        const combatScore = kills + (assists * 0.3); // Reduced assist weight
+        const averageExpectedKills = 1.5; // Slightly above average to reward good performance
+        const combatFactor = Math.min(1, combatScore / averageExpectedKills);
+        // Damage factor adjusted based on median (534) and average (600) damage
+        const expectedDamage = 650; // Set between median and average
+        const damageFactor = Math.min(1, damage / expectedDamage);
+        // Support factor with diminishing returns
+        const supportFactor = Math.min(1, Math.sqrt(revives / (teamSize - 1)));
+        // Calculate raw score
+        const rawScore = ((placementFactor * EloCalculatorService.placementWeight / 100) +
             (combatFactor * EloCalculatorService.combatWeight / 100) +
             (damageFactor * EloCalculatorService.damageWeight / 100) +
             (supportFactor * EloCalculatorService.supportWeight / 100));
+        // Apply slight sigmoid transformation to better distribute scores
+        return 1 / (1 + Math.exp(-5 * (rawScore - 0.5)));
     }
-    /**
-     * Legacy: Calculates Elo change using a fixed expected score (for backward compatibility)
-     */
-    static calculateEloChange(performanceScore) {
-        return Math.round(EloCalculatorService.kFactor * (performanceScore - EloCalculatorService.expectedScore));
-    }
-    /**
-   * Normalizes an array of performance scores so the mean is 0.5.
-   */
     /**
      * Normalizes an array of performance scores so the sum is 1 (probability distribution).
      */
@@ -51,37 +87,37 @@ export class EloCalculatorService {
         const total = scores.reduce((a, b) => a + b, 0) || 1;
         return scores.map(s => s / total);
     }
+    /**
+     * Calculate placement score specifically for 20-team format
+     */
     static calculateTieredPlacementScore(placement) {
-        switch (placement) {
-            case 1: return 1.00;
-            case 2: return 0.85;
-            case 3: return 0.75;
-            case 4: return 0.65;
-            case 5: return 0.55;
-            case 6: return 0.45;
-            case 7: return 0.35;
-            case 8: return 0.28;
-            case 9: return 0.24;
-            case 10: return 0.20;
-            case 11: return 0.12;
-            case 12: return 0.10;
-            case 13: return 0.08;
-            case 14: return 0.07;
-            case 15: return 0.06;
-            case 16: return 0.05;
-            case 17: return 0.04;
-            case 18: return 0.03;
-            case 19: return 0.02;
-            case 20: return 0.0;
-            default: return 0.0;
-        }
+        if (placement === 1)
+            return 1.0; // Winners
+        if (placement <= 3)
+            return 0.85; // Top 3 (15%)
+        if (placement <= 5)
+            return 0.70; // Top 5 (25%)
+        if (placement <= 10)
+            return 0.50; // Top 10 (50%)
+        if (placement <= 15)
+            return 0.30; // Top 15 (75%)
+        return Math.max(0.1, 0.3 - ((placement - 15) * 0.04)); // Bottom 5 teams
+    }
+    /**
+     * Calculate team performance score
+     */
+    static calculateTeamPerformanceScore(teamPlacement, teamKills, teamDamage) {
+        const placementScore = EloCalculatorService.calculateTieredPlacementScore(teamPlacement);
+        const killScore = Math.min(1, teamKills / 9); // Expecting average of 9 kills per team (3 per player)
+        const damageScore = Math.min(1, teamDamage / 2700); // Expecting average of 2700 damage per team
+        return (placementScore * 0.6) + (killScore * 0.25) + (damageScore * 0.15);
     }
 }
 EloCalculatorService.INITIAL_ELO = 1500;
-// These weights and logic are from the RatingsComponent
-EloCalculatorService.placementWeight = 45;
-EloCalculatorService.combatWeight = 35;
-EloCalculatorService.damageWeight = 15;
-EloCalculatorService.supportWeight = 5;
-EloCalculatorService.kFactor = 35;
-EloCalculatorService.expectedScore = 0.2827;
+EloCalculatorService.MIN_ELO = 500;
+EloCalculatorService.MAX_ELO = 3000;
+// These weights are optimized for 60-player, 20-team BR format
+EloCalculatorService.placementWeight = 50; // Increased because BR is placement-focused
+EloCalculatorService.combatWeight = 25; // Reduced but still significant
+EloCalculatorService.damageWeight = 20; // Increased because sustained damage is important
+EloCalculatorService.supportWeight = 5; // Kept same as team support is still valuable

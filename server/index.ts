@@ -179,13 +179,22 @@ app.get('/player/:playerId', (req: any, res: any) => {
   // Pagination: offset and limit from query params
   const offset = parseInt(req.query.offset) || 0;
   const limit = parseInt(req.query.limit) || 25;
-  let filteredLeaderboard = cachedLeaderboard;
+  
+  // Filter out players with less than 18 games and apply name search if provided
+  let filteredLeaderboard = cachedLeaderboard.filter(player => 
+    player.totalGames >= 18 // Only show players with 18+ games
+  );
+
   const playerNameQuery = typeof req.query.playerName === 'string' ? req.query.playerName.trim().toLowerCase() : '';
   if (playerNameQuery) {
-    filteredLeaderboard = cachedLeaderboard.filter(player =>
+    filteredLeaderboard = filteredLeaderboard.filter(player =>
       typeof player.playerName === 'string' && player.playerName.toLowerCase().includes(playerNameQuery)
     );
   }
+
+  // Sort by final ELO in descending order
+  filteredLeaderboard.sort((a, b) => b.finalElo - a.finalElo);
+  
   const paginated = filteredLeaderboard.slice(offset, offset + limit);
   try {
     res.json({
