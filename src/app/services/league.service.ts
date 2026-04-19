@@ -32,6 +32,30 @@ export interface TeamStats {
     teamName?: string;      // legacy support
 }
 
+export interface TeamWeekResult {
+  week: string;
+  label: string;
+  points: number;
+  gamesPlayed: number;
+  isPlayoffs: boolean;
+}
+
+export interface LeagueStanding {
+  teamId: number;
+  teamName: string;
+  totalPoints: number;
+  playoffPoints: number;
+  gamesPlayed: number;
+  weeks: TeamWeekResult[];
+}
+
+export interface DivisionSummary {
+  season: string;
+  division: string;
+  generatedAt: string;
+  teams: LeagueStanding[];
+}
+
 export interface LeagueMatchDay {
   season: string;
   division: string;
@@ -71,6 +95,7 @@ export class LeagueService {
   private seasonsCache$?: Observable<string[]>;
   private divisionsCache = new Map<string, Observable<string[]>>();
   private matchFilesCache = new Map<string, Observable<string[]>>();
+  private summaryCache = new Map<string, Observable<DivisionSummary | null>>();
 
   constructor(
     private http: HttpClient,
@@ -117,6 +142,18 @@ export class LeagueService {
       this.matchFilesCache.set(key, files$);
     }
     return this.matchFilesCache.get(key)!;
+  }
+
+  getDivisionSummary(season: string, division: string): Observable<DivisionSummary | null> {
+    const key = `${season}_${division}`;
+    if (!this.summaryCache.has(key)) {
+      const summary$ = this.matchLoaderService.loadLeagueDivisionSummary(season, division).pipe(
+        catchError(() => of(null)),
+        shareReplay(1)
+      );
+      this.summaryCache.set(key, summary$);
+    }
+    return this.summaryCache.get(key)!;
   }
 
   getMatchDay(season: string, division: string, filename: string): Observable<LeagueMatchDay | null> {

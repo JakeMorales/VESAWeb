@@ -27,6 +27,7 @@ export type Season = LeagueSeason;
 
         <select [(ngModel)]="viewMode" (ngModelChange)="onViewModeChange()" class="filter-select">
           <option value="matches">Match History</option>
+          <option value="standings">Season Standings</option>
           <option value="champions">Season Champions</option>
           <option value="leaderboards">Final Leaderboards</option>
         </select>

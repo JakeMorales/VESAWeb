@@ -108,8 +108,16 @@ export class MatchLoaderService {
    * Loads a league match file from HuggingFace dataset
    */
   loadLeagueMatch(season: string, division: string, filename: string): Observable<any> {
-    const path = `${encodeURIComponent(season)}/${encodeURIComponent('Division_' + division)}/${encodeURIComponent(filename)}`;
-    return this.http.get(`${this.HF_LEAGUE_RESOLVE_URL}/${path}`);
+    const filePath = `${encodeURIComponent(season)}/${encodeURIComponent('Division_' + division)}/${encodeURIComponent(filename)}`;
+    return this.http.get(`${this.HF_LEAGUE_RESOLVE_URL}/${filePath}`);
+  }
+
+  /**
+   * Loads the pre-computed _summary.json for a season/division from HuggingFace
+   */
+  loadLeagueDivisionSummary(season: string, division: string): Observable<any> {
+    const filePath = `${encodeURIComponent(season)}/${encodeURIComponent('Division_' + division)}/_summary.json`;
+    return this.http.get(`${this.HF_LEAGUE_RESOLVE_URL}/${filePath}`);
   }
 
     /**

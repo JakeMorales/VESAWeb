@@ -9,9 +9,10 @@ import { SeasonChampionsComponent, SeasonChampions } from './season-champions.co
 import { SeasonLeaderboardsComponent, SeasonLeaderboard, SeasonTeamResult } from './season-leaderboards.component';
 import { ArchiveMatchHistoryComponent, HistoricalMatch, MatchGameResult, GameTeamResult } from './archive-match-history-enhanced.component';
 import { ModernPaginationComponent } from '../modern-pagination/modern-pagination.component';
-import { LeagueService, LeagueMatchDay } from '../../services/league.service';
+import { LeagueService, LeagueMatchDay, DivisionSummary } from '../../services/league.service';
 // Import Season type from season-leaderboards for type safety
 import { Season as LeaderboardSeason } from './season-leaderboards.component';
+import { SeasonStandingsComponent } from './season-standings.component';
 
 interface FilterSeason {
   id: string;
@@ -33,7 +34,8 @@ interface FilterSeason {
     SeasonChampionsComponent,
     SeasonLeaderboardsComponent,
     ArchiveMatchHistoryComponent,
-    ModernPaginationComponent
+    ModernPaginationComponent,
+    SeasonStandingsComponent
   ],
   template: `
     <div class="scores-archive-container">
@@ -62,6 +64,13 @@ interface FilterSeason {
         [filteredLeaderboards]="filteredLeaderboards"
         [seasons]="convertToLeaderboardSeasons(seasons)">
       </app-season-leaderboards>
+
+      <!-- Season Standings View -->
+      <app-season-standings
+        *ngIf="viewMode === 'standings'"
+        [summary]="divisionSummary"
+        [loading]="loadingStandings">
+      </app-season-standings>
 
       <!-- Match History View -->
       <ng-container *ngIf="viewMode === 'matches'">
@@ -107,6 +116,8 @@ export class ScoresArchiveComponent implements OnInit {
 
   loading = false;
   loadingPage = false;
+  loadingStandings = false;
+  divisionSummary: DivisionSummary | null = null;
   page = 1;
   pageSize = 5;
 
@@ -151,6 +162,23 @@ export class ScoresArchiveComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Error loading seasons:', err);
+      }
+    });
+  }
+
+  /** Loads the division summary for the standings view */
+  loadDivisionSummary() {
+    if (!this.selectedSeason || !this.selectedDivision) return;
+    this.loadingStandings = true;
+    this.divisionSummary = null;
+    this.leagueService.getDivisionSummary(this.selectedSeason, this.selectedDivision).subscribe({
+      next: (summary) => {
+        this.divisionSummary = summary;
+        this.loadingStandings = false;
+      },
+      error: () => {
+        this.divisionSummary = null;
+        this.loadingStandings = false;
       }
     });
   }
@@ -315,7 +343,11 @@ export class ScoresArchiveComponent implements OnInit {
           season.divisions = divisions;
           if (divisions.length > 0) {
             this.selectedDivision = divisions[0];
-            this.loadMatchFiles();
+            if (this.viewMode === 'standings') {
+              this.loadDivisionSummary();
+            } else {
+              this.loadMatchFiles();
+            }
           }
         }
       },
@@ -327,11 +359,18 @@ export class ScoresArchiveComponent implements OnInit {
 
   onDivisionChange = (value: string): void => {
     this.selectedDivision = value;
-    this.loadMatchFiles();
+    if (this.viewMode === 'standings') {
+      this.loadDivisionSummary();
+    } else {
+      this.loadMatchFiles();
+    }
   };
 
   onViewModeChange = (value: string): void => {
     this.viewMode = value;
+    if (value === 'standings') {
+      this.loadDivisionSummary();
+    }
   };
 
   convertToLeaderboardSeasons(seasons: FilterSeason[]): LeaderboardSeason[] {
