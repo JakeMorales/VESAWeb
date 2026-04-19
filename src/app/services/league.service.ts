@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { map, catchError, shareReplay } from 'rxjs/operators';
+import { MatchLoaderService } from './match-loader.service';
 
 export interface LeagueMatch {
   game: number;
@@ -39,17 +41,25 @@ export interface LeagueMatchDay {
     games: Array<{
       game: number;
       teams: Array<{
+        name?: string;
         player_stats: Array<{
           playerId?: string | number;
-          playerName: string;
+          name?: string;
+          playerName?: string;
+          player_name?: string;
+          teamName?: string;
           kills: number;
           assists: number;
           damageDealt: number;
+          damage_dealt?: number;
           revivesGiven?: number;
+          revives_given?: number;
           revives?: number;
         }>;
         overall_stats?: {
           teamPlacement: number;
+          name?: string;
+          teamName?: string;
         };
       }>;
     }>;
@@ -58,23 +68,105 @@ export interface LeagueMatchDay {
 
 @Injectable({ providedIn: 'root' })
 export class LeagueService {
-  private baseUrl = 'http://localhost:3001';
+  private seasonsCache$?: Observable<string[]>;
+  private divisionsCache = new Map<string, Observable<string[]>>();
+  private matchFilesCache = new Map<string, Observable<string[]>>();
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private matchLoaderService: MatchLoaderService
+  ) {}
 
   getSeasons(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.baseUrl}/league/seasons`);
+    if (!this.seasonsCache$) {
+      this.seasonsCache$ = this.matchLoaderService.loadLeagueSeasons().pipe(
+        catchError(err => {
+          console.error('Error loading league seasons from HuggingFace:', err);
+          return of([]);
+        }),
+        shareReplay(1)
+      );
+    }
+    return this.seasonsCache$;
   }
 
   getDivisions(season: string): Observable<string[]> {
-    return this.http.get<string[]>(`${this.baseUrl}/league/seasons/${season}/divisions`);
+    if (!this.divisionsCache.has(season)) {
+      const divisions$ = this.matchLoaderService.loadLeagueDivisions(season).pipe(
+        catchError(err => {
+          console.error(`Error loading divisions for ${season}:`, err);
+          return of([]);
+        }),
+        shareReplay(1)
+      );
+      this.divisionsCache.set(season, divisions$);
+    }
+    return this.divisionsCache.get(season)!;
   }
 
-  getDivisionMatches(season: string, division: string): Observable<LeagueMatchDay[]> {
-    return this.http.get<LeagueMatchDay[]>(`${this.baseUrl}/league/seasons/${season}/divisions/${division}/matches`);
+  getMatchFiles(season: string, division: string): Observable<string[]> {
+    const key = `${season}_${division}`;
+    if (!this.matchFilesCache.has(key)) {
+      const files$ = this.matchLoaderService.loadLeagueMatchFiles(season, division).pipe(
+        catchError(err => {
+          console.error(`Error loading match files for ${season} Division ${division}:`, err);
+          return of([]);
+        }),
+        shareReplay(1)
+      );
+      this.matchFilesCache.set(key, files$);
+    }
+    return this.matchFilesCache.get(key)!;
   }
 
   getMatchDay(season: string, division: string, filename: string): Observable<LeagueMatchDay | null> {
-    return this.http.get<LeagueMatchDay>(`${this.baseUrl}/league/seasons/${season}/divisions/${division}/matches/${filename}`);
+    return this.matchLoaderService.loadLeagueMatch(season, division, filename).pipe(
+      map(data => this.transformToLeagueMatchDay(data, season, division, filename)),
+      catchError(err => {
+        console.error(`Error loading match day ${filename}:`, err);
+        return of(null);
+      })
+    );
+  }
+
+  private transformToLeagueMatchDay(data: any, season: string, division: string, filename: string): LeagueMatchDay {
+    const statsObj = data?.stats ?? data;
+    const weekMatch = filename.match(/Week_(\d+)|Playoffs_(\d+)|Finals/i);
+    const week = weekMatch ? weekMatch[0] : filename.replace('.json', '');
+    const isPlayoffs = week.toLowerCase().includes('playoffs') || week.toLowerCase().includes('finals');
+
+    return {
+      season,
+      division,
+      week,
+      isPlayoffs,
+      stats: {
+        games: (statsObj?.games || []).map((game: any, i: number) => ({
+          game: game.game ?? i + 1,
+          teams: (game.teams || []).map((team: any) => {
+            const teamName = team.name || team.overall_stats?.name || '';
+            return {
+              name: teamName,
+              player_stats: (team.player_stats || team.players || []).map((player: any) => ({
+                playerId: player.playerId?.toString() || player.player_id?.toString(),
+                name: player.name,
+                playerName: player.name || player.playerName || player.player_name || '',
+                teamName: player.teamName || teamName,
+                kills: player.kills || 0,
+                assists: player.assists || 0,
+                damageDealt: player.damageDealt || player.damage_dealt || 0,
+                revivesGiven: player.revivesGiven || player.revives_given || 0,
+                revives: player.revives
+              })),
+              overall_stats: team.overall_stats ? {
+                teamPlacement: team.overall_stats.teamPlacement,
+                name: teamName,
+                teamName: teamName
+              } : undefined
+            };
+          })
+        }))
+      }
+    };
   }
 }

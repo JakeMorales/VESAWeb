@@ -45,9 +45,9 @@ function precomputeLeaderboardAndStats() {
     const result: { [gameNumber: string]: any[] } = {};
     for (const game of json.stats.games) {
       if (!Array.isArray(game.teams)) continue;
-      const teams = game.teams.map(team => {
+      const teams = game.teams.map((team: any) => {
         const players = Array.isArray(team.player_stats)
-          ? team.player_stats.map(ps => ({
+          ? team.player_stats.map((ps: any) => ({
               ...ps,
               playerId: ps.playerId ?? ps.id ?? ps.name, // Prefer numeric ID, fallback to id, then name
               playerName: ps.name,
@@ -69,17 +69,17 @@ function precomputeLeaderboardAndStats() {
     return result;
   };
   const leaderboard: PlayerAggregatedStats[] = EloAggregationService.aggregatePlayerElos(scrimFileService, transformScrimJson);
-  function getStats(arr, key) {
-    const values = arr.map(x => x[key]).filter(v => typeof v === 'number');
+  function getStats(arr: any[], key: string) {
+    const values = arr.map((x: any) => x[key]).filter((v: any): v is number => typeof v === 'number');
     if (!values.length) return {};
     const min = Math.min(...values);
     const max = Math.max(...values);
-    const sum = values.reduce((a, b) => a + b, 0);
+    const sum = values.reduce((a: number, b: number) => a + b, 0);
     const avg = sum / values.length;
-    const sorted = [...values].sort((a, b) => a - b);
+    const sorted = [...values].sort((a: number, b: number) => a - b);
     const mid = Math.floor(sorted.length / 2);
     const median = sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
-    const std = Math.sqrt(values.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / values.length);
+    const std = Math.sqrt(values.reduce((a: number, b: number) => a + Math.pow(b - avg, 2), 0) / values.length);
     return { min, max, avg, median, std, count: values.length };
   }
   // Create empty stats object with the correct shape
@@ -117,14 +117,14 @@ function precomputeLeaderboardAndStats() {
   const playerGameCounts: Record<string, number> = {};
   // First, count games played per playerId
   let sampleLogged = 0;
-  scrimObjects.forEach(scrim => {
+  scrimObjects.forEach((scrim: any) => {
     if (!scrim || !scrim.stats || !Array.isArray(scrim.stats.games)) return;
-    scrim.stats.games.forEach(game => {
+    scrim.stats.games.forEach((game: any) => {
       totalGames++;
       if (!Array.isArray(game.teams)) return;
-      game.teams.forEach(team => {
+      game.teams.forEach((team: any) => {
         if (Array.isArray(team.player_stats)) {
-          team.player_stats.forEach(ps => {
+          team.player_stats.forEach((ps: any) => {
             if (ps.playerId) {
               playerGameCounts[ps.playerId] = (playerGameCounts[ps.playerId] || 0) + 1;
             }

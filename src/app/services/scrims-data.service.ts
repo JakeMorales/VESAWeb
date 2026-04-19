@@ -43,10 +43,10 @@ export class ScrimsDataService {
   ) {}
 
   /**
-   * Get list of available scrim batch files from backend
+   * Get list of available scrim batch files from HuggingFace dataset
    */
   getScrimFiles(): Observable<string[]> {
-  return this.http.get<string[]>('http://localhost:3001/scrims').pipe(
+  return this.matchLoaderService.loadScrimFileList().pipe(
       catchError((error) => {
         console.error('Error fetching scrim files:', error);
         return of([]);

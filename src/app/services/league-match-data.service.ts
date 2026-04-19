@@ -40,10 +40,10 @@ export class LeagueMatchDataService {
   }
 
   /**
-   * Gets all match days for a specific division
+   * Gets all match file names for a specific division
    */
-  getDivisionMatches(season: string, division: string): Observable<LeagueMatchDay[]> {
-    return this.leagueService.getDivisionMatches(season, division);
+  getMatchFiles(season: string, division: string): Observable<string[]> {
+    return this.leagueService.getMatchFiles(season, division);
   }
 
   /**

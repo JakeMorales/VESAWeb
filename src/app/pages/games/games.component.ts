@@ -37,110 +37,94 @@ export class GamesComponent implements OnInit {
     }
     this.viewMode = val;
   }
+
   searchTerm = '';
+  /** All filenames from HuggingFace tree API (sorted newest first) */
   scrimFiles: string[] = [];
-  scrimsTables: { file: string, matchResults: MatchDayResults }[] = [];
-  filteredScrims: { file: string, matchResults: MatchDayResults }[] = [];
+  /** Filenames after search filter */
+  filteredFiles: string[] = [];
+  /** Cache of already-loaded match data to avoid re-fetching on page back */
+  private pageCache = new Map<string, MatchDayResults>();
+  /** Data for the currently visible page */
   pagedScrims: { file: string, matchResults: MatchDayResults }[] = [];
+
   loading = true;
+  loadingPage = false;
   error = '';
   viewMode: 'current' | 'archive' = 'current';
   page = 1;
   pageSize = 10;
+
   get totalPages() {
-    return Math.ceil(this.scrimsTables.length / this.pageSize);
+    return Math.ceil(this.filteredFiles.length / this.pageSize);
   }
 
-  constructor(private scrimsDataService: ScrimsDataService) {
-    // Fetch scrim files from backend via ScrimsDataService
+  constructor(private scrimsDataService: ScrimsDataService) {}
+
+  ngOnInit() {
     this.scrimsDataService.getScrimFiles().subscribe({
       next: files => {
-        console.log('Scrim files received:', files);
-        this.scrimFiles = files;
-        this.loadScrimsTables(); // <-- Now triggers match data requests after files are loaded
+        this.scrimFiles = files.sort((a, b) => b.localeCompare(a));
+        this.filteredFiles = [...this.scrimFiles];
+        this.loadPage(1);
       },
-      error: err => {
-        console.error('Error loading scrim files:', err);
+      error: () => {
         this.error = 'Failed to load scrim files.';
+        this.loading = false;
       }
     });
   }
 
-  ngOnInit() {
-    // No longer needed here; handled after scrimFiles are loaded
-  }
+  /** Loads only the files needed for the given page, using cache for already-fetched files. */
+  loadPage(page: number) {
+    this.page = page;
+    const start = (page - 1) * this.pageSize;
+    const pageFiles = this.filteredFiles.slice(start, start + this.pageSize);
+    const toFetch = pageFiles.filter(f => !this.pageCache.has(f));
 
-  loadScrimsTables() {
-    this.loading = true;
-    this.error = '';
-    // Load all scrim files in parallel using ScrimsDataService
-    const scrimObservables = this.scrimFiles.map(file =>
-      this.scrimsDataService.getScrimMatchResults(file).pipe(
-        map(matchResults => ({ file, matchResults })),
-        catchError(() => of({ file, matchResults: {} as MatchDayResults }))
+    if (toFetch.length === 0) {
+      this.pagedScrims = pageFiles.map(f => ({ file: f, matchResults: this.pageCache.get(f)! }));
+      this.loading = false;
+      this.loadingPage = false;
+      return;
+    }
+
+    this.loadingPage = true;
+    forkJoin(
+      toFetch.map(file =>
+        this.scrimsDataService.getScrimMatchResults(file).pipe(
+          map(matchResults => ({ file, matchResults })),
+          catchError(() => of({ file, matchResults: {} as MatchDayResults }))
+        )
       )
-    );
-    forkJoin(scrimObservables).subscribe({
-      next: (results) => {
-        this.scrimsTables = results;
-        this.applyFilter();
-        this.setPage(1);
+    ).subscribe({
+      next: results => {
+        results.forEach(r => this.pageCache.set(r.file, r.matchResults));
+        this.pagedScrims = pageFiles.map(f => ({ file: f, matchResults: this.pageCache.get(f) ?? {} as MatchDayResults }));
         this.loading = false;
+        this.loadingPage = false;
       },
-      error: (err) => {
-        this.error = 'Failed to load scrim tables.';
+      error: () => {
+        this.error = 'Failed to load scrim data.';
         this.loading = false;
+        this.loadingPage = false;
       }
     });
   }
 
   setPage(page: number) {
-    this.page = page;
-    const start = (page - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    this.pagedScrims = this.filteredScrims.slice(start, end);
+    this.loadPage(page);
   }
 
   onSearchChange(term: string) {
     this.searchTerm = term;
-    this.applyFilter();
-    this.setPage(1);
-  }
-
-  applyFilter() {
-    if (!this.searchTerm.trim()) {
-      this.filteredScrims = [...this.scrimsTables];
-      return;
+    if (!term.trim()) {
+      this.filteredFiles = [...this.scrimFiles];
+    } else {
+      const lower = term.toLowerCase();
+      // Filter by filename (contains date and match ID: e.g. "2024_07_15")
+      this.filteredFiles = this.scrimFiles.filter(f => f.toLowerCase().includes(lower));
     }
-    const lower = this.searchTerm.toLowerCase();
-    this.filteredScrims = this.scrimsTables.filter(scrim => {
-      const matchResults = scrim.matchResults;
-      // matchResults is a dictionary: { [gameNumber: number]: TeamGameResult[] }
-      for (const gameKey in matchResults) {
-        const teams = matchResults[gameKey];
-        for (const team of teams) {
-          if (team.teamName?.toLowerCase().includes(lower)) {
-            return true;
-          }
-          for (const player of team.players || []) {
-            if (player.playerName?.toLowerCase().includes(lower)) {
-              return true;
-            }
-          }
-        }
-      }
-      return false;
-    });
+    this.loadPage(1);
   }
-
-  // All mock data, filtering, and statistics logic has been removed. This component now only loads and displays real scrim tables.
-
-  // The following methods and properties are now obsolete and should be removed:
-  // - filterGames, filteredGames, filterMap, filterMode, searchTerm, displayedCount
-  // - loadScrimSessions, scrimSessions, filteredScrimSessions
-  // - updateStats, gameStats, getAverageKills, getAverageDuration, getMostPopularMap
-  // - generateMockData, games
-  // Remove all of them below:
-
-  // (All obsolete methods and properties have been removed. Only scrimsTables loading and display logic remains.)
 }

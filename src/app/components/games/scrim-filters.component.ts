@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
       <div class="search-box">
         <input 
           type="text" 
-          placeholder="Search by player or team..." 
+          placeholder="Search by date or match ID (e.g. 2024_07_15)..." 
           class="search-input"
           [(ngModel)]="searchTerm"
           (ngModelChange)="onSearchChange($event)"

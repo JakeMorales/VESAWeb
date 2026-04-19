@@ -6,5 +6,29 @@
   "/league": {
     "target": "http://localhost:3001",
     "secure": false
+  },
+  "/hf-api": {
+    "target": "https://huggingface.co",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": { "^/hf-api": "/api/datasets/VESA-apex/apex-scrims" }
+  },
+  "/hf-resolve": {
+    "target": "https://huggingface.co",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": { "^/hf-resolve": "/datasets/VESA-apex/apex-scrims/raw/main" }
+  },
+  "/hf-league-api": {
+    "target": "https://huggingface.co",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": { "^/hf-league-api": "/api/datasets/VESA-apex/apex-league" }
+  },
+  "/hf-league-resolve": {
+    "target": "https://huggingface.co",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": { "^/hf-league-resolve": "/datasets/VESA-apex/apex-league/raw/main" }
   }
 }
