@@ -82,22 +82,21 @@ export class MatchLoaderService {
     const path = `${encodeURIComponent(season)}/${encodeURIComponent('Division_' + division)}`;
     return this.http.get<HFTreeEntry[]>(`${this.HF_LEAGUE_API_URL}/${path}`).pipe(
       map(entries => entries
-        .filter(e => e.type === 'file' && e.path.endsWith('.json'))
+        .filter(e => e.type === 'file' && e.path.endsWith('.json') && !e.path.startsWith('_') && !e.path.includes('/_'))
         .map(e => {
           // Extract just the filename from the full path
           const parts = e.path.split('/');
           return parts[parts.length - 1];
         })
+        .filter(name => !name.startsWith('_'))
         .sort((a, b) => {
-          // Sort regular weeks by number first
-          const weekA = parseInt(a.match(/Week_(\d+)/)?.[1] || '0');
-          const weekB = parseInt(b.match(/Week_(\d+)/)?.[1] || '0');
-          if (weekA !== weekB) return weekA - weekB;
-          // Playoffs/Finals at end
-          const aIsSpecial = a.includes('Playoffs') || a.includes('Finals');
-          const bIsSpecial = b.includes('Playoffs') || b.includes('Finals');
-          if (aIsSpecial && !bIsSpecial) return 1;
-          if (!aIsSpecial && bIsSpecial) return -1;
+          // Prefer numeric Week_N files in ascending order; push non-numbered files
+          // (MP / Playoffs / Finals etc.) to the end.
+          const matchA = a.match(/Week_(\d+)/i);
+          const matchB = b.match(/Week_(\d+)/i);
+          const numA = matchA ? parseInt(matchA[1], 10) : 999;
+          const numB = matchB ? parseInt(matchB[1], 10) : 999;
+          if (numA !== numB) return numA - numB;
           return a.localeCompare(b);
         })
       )

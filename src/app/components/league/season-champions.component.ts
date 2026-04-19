@@ -28,7 +28,8 @@ export interface SeasonChampions {
   imports: [CommonModule],
   template: `
     <div class="champions-section">
-      <h2>Season Champions</h2>
+      <h2>Match Point Champions</h2>
+      <div *ngIf="!filteredChampions || filteredChampions.length === 0" class="no-data">No match point champion data for the selected season/division.</div>
       <div class="seasons-list">
         <ng-container *ngFor="let season of filteredChampions">
           <div class="season-champions-row" *ngIf="hasSelectedDivisionChampion(season)">

@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges, Pipe, PipeTransform } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { DivisionSummary, LeagueStanding } from '../../services/league.service';
+import { DivisionSummary, StandingEntry } from '../../services/league.service';
 
 @Pipe({ name: 'seasonLabel', standalone: true })
 export class SeasonLabelPipe implements PipeTransform {
@@ -19,54 +19,74 @@ export class SeasonLabelPipe implements PipeTransform {
 
       <div *ngIf="!loading && !summary" class="empty-state">
         <p>No standings data available for this division.</p>
-        <p class="empty-hint">Run <code>npm run generate-summaries</code> and upload the <code>_summary.json</code> files to HuggingFace.</p>
       </div>
 
       <ng-container *ngIf="!loading && summary">
         <div class="standings-header">
-          <h3>{{ summary.season | seasonLabel }} &mdash; Division {{ summary.division }} Standings</h3>
+          <h3>{{ summary.season | seasonLabel }} &mdash; Division {{ summary.division }}</h3>
           <p class="generated-note">Last updated {{ summary.generatedAt | date:'mediumDate' }}</p>
         </div>
 
-        <div class="table-scroll">
-          <table class="standings-table">
-            <thead>
-              <tr>
-                <th class="rank-col">#</th>
-                <th class="team-col">Team</th>
-                <th
-                  class="pts-col sortable"
-                  [class.sorted]="sortKey === 'total'"
-                  (click)="sortBy('total')">
-                  Total <span class="sort-arrow">{{ sortKey === 'total' ? (sortAsc ? '▲' : '▼') : '↕' }}</span>
-                </th>
-                <th
-                  *ngFor="let col of weekColumns"
-                  class="week-col sortable"
-                  [class.sorted]="sortKey === col.week"
-                  [class.playoffs-col]="col.isPlayoffs"
-                  (click)="sortBy(col.week)">
-                  {{ col.label }}
-                  <span class="sort-arrow">{{ sortKey === col.week ? (sortAsc ? '▲' : '▼') : '↕' }}</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let team of sortedTeams; let i = index"
-                  [class.top-three]="i < 3">
-                <td class="rank-col">
-                  <span class="rank-badge" [attr.data-rank]="i + 1">{{ i + 1 }}</span>
-                </td>
-                <td class="team-col">{{ team.teamName }}</td>
-                <td class="pts-col total-pts">{{ team.totalPoints }}</td>
-                <td *ngFor="let col of weekColumns"
-                    class="week-col"
-                    [class.playoffs-col]="col.isPlayoffs">
-                  {{ getWeekPoints(team, col.week) !== null ? getWeekPoints(team, col.week) : '—' }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Match Point Champion -->
+        <div *ngIf="summary.matchPointChampion" class="champion-banner">
+          <div class="champion-crown">&#x1F451;</div>
+          <div class="champion-info">
+            <div class="champion-label">Match Point Champion</div>
+            <div class="champion-team">{{ summary.matchPointChampion.teamName }}</div>
+            <div class="champion-roster">{{ summary.matchPointChampion.players.join(' &bull; ') }}</div>
+          </div>
+        </div>
+
+        <!-- Season Standings (Weeks 1-5) -->
+        <div class="table-section" *ngIf="summary.seasonStandings.length">
+          <h4 class="table-title">Season Standings</h4>
+          <div class="table-scroll">
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="rank-col">#</th>
+                  <th class="team-col">Team</th>
+                  <th class="pts-col">Points</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let team of summary.seasonStandings; let i = index"
+                    [class.top-three]="i < 3">
+                  <td class="rank-col">
+                    <span class="rank-badge" [attr.data-rank]="team.rank">{{ team.rank }}</span>
+                  </td>
+                  <td class="team-col">{{ team.teamName }}</td>
+                  <td class="pts-col total-pts">{{ team.points }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Match Point Finals Standings -->
+        <div class="table-section" *ngIf="summary.matchPointFinalsStandings.length">
+          <h4 class="table-title">Match Point Finals</h4>
+          <div class="table-scroll">
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="rank-col">#</th>
+                  <th class="team-col">Team</th>
+                  <th class="pts-col">Points</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let team of summary.matchPointFinalsStandings; let i = index"
+                    [class.top-three]="i < 3">
+                  <td class="rank-col">
+                    <span class="rank-badge" [attr.data-rank]="team.rank">{{ team.rank }}</span>
+                  </td>
+                  <td class="team-col">{{ team.teamName }}</td>
+                  <td class="pts-col total-pts">{{ team.points }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </ng-container>
     </div>
@@ -90,19 +110,6 @@ export class SeasonLabelPipe implements PipeTransform {
       line-height: 2;
     }
 
-    .empty-state code {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 0.15rem 0.4rem;
-      border-radius: 4px;
-      font-size: 0.9em;
-      font-family: monospace;
-    }
-
-    .empty-hint {
-      font-size: 0.85rem;
-      opacity: 0.7;
-    }
-
     .standings-header {
       text-align: center;
       margin-bottom: 1.5rem;
@@ -119,6 +126,59 @@ export class SeasonLabelPipe implements PipeTransform {
       font-size: 0.8rem;
       color: var(--color-text-secondary, #aaa);
       margin: 0;
+    }
+
+    .champion-banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(255, 165, 0, 0.08));
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 12px;
+      padding: 1.25rem 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .champion-crown {
+      font-size: 2rem;
+    }
+
+    .champion-info {
+      text-align: center;
+    }
+
+    .champion-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-text-secondary, #aaa);
+      margin-bottom: 0.25rem;
+    }
+
+    .champion-team {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #ffd700;
+    }
+
+    .champion-roster {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary, #ccc);
+      margin-top: 0.25rem;
+    }
+
+    .table-section {
+      margin-bottom: 2rem;
+    }
+
+    .table-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--color-text-primary, #fff);
+      margin: 0 0 0.75rem;
+      padding-left: 0.5rem;
+      border-left: 3px solid var(--color-accent-primary, #e8c46a);
     }
 
     .table-scroll {
@@ -156,26 +216,6 @@ export class SeasonLabelPipe implements PipeTransform {
       min-width: 180px;
     }
 
-    .standings-table th.sortable {
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .standings-table th.sortable:hover {
-      color: var(--color-text-primary, #fff);
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .standings-table th.sorted {
-      color: var(--color-accent-primary, #e8c46a);
-    }
-
-    .sort-arrow {
-      margin-left: 0.3rem;
-      opacity: 0.7;
-      font-size: 0.7rem;
-    }
-
     .standings-table td {
       padding: 0.65rem 1rem;
       text-align: center;
@@ -199,10 +239,6 @@ export class SeasonLabelPipe implements PipeTransform {
 
     .standings-table tbody tr.top-three td {
       background: rgba(232, 196, 106, 0.03);
-    }
-
-    .playoffs-col {
-      border-left: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .rank-col {
@@ -239,78 +275,7 @@ export class SeasonLabelPipe implements PipeTransform {
     }
   `]
 })
-export class SeasonStandingsComponent implements OnChanges {
+export class SeasonStandingsComponent {
   @Input() summary: DivisionSummary | null = null;
   @Input() loading = false;
-
-  sortKey = 'total';
-  sortAsc = false;
-
-  weekColumns: { week: string; label: string; isPlayoffs: boolean }[] = [];
-  sortedTeams: LeagueStanding[] = [];
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['summary']) {
-      this.buildColumns();
-      this.applySort();
-    }
-  }
-
-  private buildColumns(): void {
-    if (!this.summary?.teams?.length) {
-      this.weekColumns = [];
-      return;
-    }
-
-    const seen = new Set<string>();
-    const cols: { week: string; label: string; isPlayoffs: boolean }[] = [];
-
-    for (const team of this.summary.teams) {
-      for (const w of team.weeks) {
-        if (!seen.has(w.week)) {
-          seen.add(w.week);
-          cols.push({ week: w.week, label: w.label, isPlayoffs: w.isPlayoffs });
-        }
-      }
-    }
-
-    this.weekColumns = cols;
-  }
-
-  sortBy(key: string): void {
-    if (this.sortKey === key) {
-      this.sortAsc = !this.sortAsc;
-    } else {
-      this.sortKey = key;
-      this.sortAsc = false;
-    }
-    this.applySort();
-  }
-
-  private applySort(): void {
-    if (!this.summary) {
-      this.sortedTeams = [];
-      return;
-    }
-
-    this.sortedTeams = [...this.summary.teams].sort((a, b) => {
-      let valA: number;
-      let valB: number;
-
-      if (this.sortKey === 'total') {
-        valA = a.totalPoints;
-        valB = b.totalPoints;
-      } else {
-        valA = this.getWeekPoints(a, this.sortKey) ?? -1;
-        valB = this.getWeekPoints(b, this.sortKey) ?? -1;
-      }
-
-      return this.sortAsc ? valA - valB : valB - valA;
-    });
-  }
-
-  getWeekPoints(team: LeagueStanding, weekFilename: string): number | null {
-    const result = team.weeks.find(w => w.week === weekFilename);
-    return result != null ? result.points : null;
-  }
 }

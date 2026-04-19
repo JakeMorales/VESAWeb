@@ -16,6 +16,7 @@ export const APEX_MAP_NAMES: Record<string, string> = {
   // World's Edge
   'mp_rr_desertlands_64k_x_64k':      "World's Edge",
   'mp_rr_desertlands_holiday':        "World's Edge",
+  'mp_rr_desertlands_hu':             "World's Edge",
   'mp_rr_desertlands_mu1':            "World's Edge",
   'mp_rr_desertlands_mu2':            "World's Edge",
   'mp_rr_desertlands_mu3':            "World's Edge",

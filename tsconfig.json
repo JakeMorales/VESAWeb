@@ -32,5 +32,5 @@
     "strictTemplates": true
   }
   ,
-  "exclude": ["server"]
+  "exclude": ["server", "scripts", "node_modules"]
 }

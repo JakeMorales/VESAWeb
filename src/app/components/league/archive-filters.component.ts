@@ -18,18 +18,17 @@ export type Season = LeagueSeason;
           </option>
         </select>
 
-        <select [(ngModel)]="selectedDivision" (ngModelChange)="onDivisionChange()" class="filter-select" [disabled]="!selectedSeason">
+        <select [(ngModel)]="viewMode" (ngModelChange)="onViewModeChange()" class="filter-select">
+          <option value="matches" [disabled]="!selectedSeason || !selectedDivision">Match History</option>
+          <option value="standings" [disabled]="!selectedSeason || !selectedDivision">Season Standings</option>
+          <option value="champions">Match Point Champions</option>
+        </select>
+
+        <select [(ngModel)]="selectedDivision" (ngModelChange)="onDivisionChange()" class="filter-select" [disabled]="!selectedSeason && viewMode !== 'champions'">
           <option value="">All Divisions</option>
           <option *ngFor="let division of getSelectedSeasonDivisions()" [value]="division">
             Division {{ division }}
           </option>
-        </select>
-
-        <select [(ngModel)]="viewMode" (ngModelChange)="onViewModeChange()" class="filter-select">
-          <option value="matches">Match History</option>
-          <option value="standings">Season Standings</option>
-          <option value="champions">Season Champions</option>
-          <option value="leaderboards">Final Leaderboards</option>
         </select>
       </div>
     </div>
@@ -110,7 +109,7 @@ export class ArchiveFiltersComponent {
   @Output() viewModeChange = new EventEmitter<string>();
 
   getSelectedSeasonDivisions(): string[] {
-    if (!this.selectedSeason) return [];
+    if (!this.selectedSeason) return ['1','2','3','4','5','6'];
     const season = this.seasons.find(s => s.id === this.selectedSeason);
     return season ? season.divisions : [];
   }

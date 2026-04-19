@@ -7,6 +7,7 @@ export interface HistoricalMatch {
   id: string;
   seasonId: string;
   division: string;
+  week: string;
   matchNumber: number;
   date: string;
   teams: string[];
@@ -47,15 +48,7 @@ export interface Season {
         <div *ngFor="let match of filteredMatches" class="match-card">
           <div class="match-header">
             <div class="match-title">
-              <h3>{{ getSeasonName(match.seasonId) }} - {{ match.division }}</h3>
-              <div class="match-subtitle">
-                <span class="match-number">Match {{ match.matchNumber }}</span>
-                <span class="match-date">{{ formatDate(match.date) }}</span>
-              </div>
-            </div>
-            <div class="participating-teams">
-              <span class="teams-label">Teams:</span>
-              <span class="teams-list">{{ match.teams.join(' • ') }}</span>
+              <h3>Division {{ match.division }} &middot; {{ getSeasonName(match.seasonId) }} &middot; {{ match.week }}</h3>
             </div>
           </div>
 
@@ -97,7 +90,7 @@ export class ArchiveMatchHistoryComponent {
         teamKills: teamResult.kills,
         placementPoints: this.calculatePlacementPoints(teamResult.placement),
         totalPoints: teamResult.points,
-        mapName: gameResult.mapName || `Map ${gameResult.gameNumber}`,
+        mapName: gameResult.mapName || `Game ${gameResult.gameNumber}`,
         players: teamResult.players || this.generateMockPlayerData(teamResult.teamName, teamResult.kills),
         isExpanded: false
       }));

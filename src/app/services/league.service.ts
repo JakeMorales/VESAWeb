@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError, shareReplay } from 'rxjs/operators';
 import { MatchLoaderService } from './match-loader.service';
+import { getApexMapDisplayName, APEX_MAP_NAMES } from '../models/apex-map-names';
 
 export interface LeagueMatch {
   game: number;
@@ -32,28 +33,26 @@ export interface TeamStats {
     teamName?: string;      // legacy support
 }
 
-export interface TeamWeekResult {
-  week: string;
-  label: string;
-  points: number;
-  gamesPlayed: number;
-  isPlayoffs: boolean;
-}
-
-export interface LeagueStanding {
+export interface StandingEntry {
+  rank: number;
   teamId: number;
   teamName: string;
-  totalPoints: number;
-  playoffPoints: number;
-  gamesPlayed: number;
-  weeks: TeamWeekResult[];
+  points: number;
+}
+
+export interface MatchPointChampion {
+  teamId: number;
+  teamName: string;
+  players: string[];
 }
 
 export interface DivisionSummary {
   season: string;
   division: string;
   generatedAt: string;
-  teams: LeagueStanding[];
+  seasonStandings: StandingEntry[];
+  matchPointFinalsStandings: StandingEntry[];
+  matchPointChampion: MatchPointChampion | null;
 }
 
 export interface LeagueMatchDay {
@@ -64,6 +63,7 @@ export interface LeagueMatchDay {
   stats: {
     games: Array<{
       game: number;
+      mapName?: string;
       teams: Array<{
         name?: string;
         player_stats: Array<{
@@ -148,12 +148,34 @@ export class LeagueService {
     const key = `${season}_${division}`;
     if (!this.summaryCache.has(key)) {
       const summary$ = this.matchLoaderService.loadLeagueDivisionSummary(season, division).pipe(
+        map((raw: any) => raw ? this.normalizeSummary(raw) : null),
         catchError(() => of(null)),
         shareReplay(1)
       );
       this.summaryCache.set(key, summary$);
     }
     return this.summaryCache.get(key)!;
+  }
+
+  private normalizeSummary(raw: any): DivisionSummary {
+    const normalize = (name: string) => this.matchLoaderService.normalizeTeamName(name);
+    return {
+      season: raw.season,
+      division: raw.division,
+      generatedAt: raw.generatedAt,
+      seasonStandings: (raw.seasonStandings || []).map((e: any) => ({
+        ...e,
+        teamName: normalize(e.teamName)
+      })),
+      matchPointFinalsStandings: (raw.matchPointFinalsStandings || []).map((e: any) => ({
+        ...e,
+        teamName: normalize(e.teamName)
+      })),
+      matchPointChampion: raw.matchPointChampion ? {
+        ...raw.matchPointChampion,
+        teamName: normalize(raw.matchPointChampion.teamName)
+      } : null
+    };
   }
 
   getMatchDay(season: string, division: string, filename: string): Observable<LeagueMatchDay | null> {
@@ -180,8 +202,19 @@ export class LeagueService {
       stats: {
         games: (statsObj?.games || []).map((game: any, i: number) => ({
           game: game.game ?? i + 1,
+          mapName: game.map_name ? getApexMapDisplayName(game.map_name) : (() => {
+            // If the game is missing an explicit map_name, try to infer from the filename
+            // by checking for any known internal map keys contained in the filename.
+            const lowerFile = filename.toLowerCase();
+            for (const key of Object.keys(APEX_MAP_NAMES)) {
+              if (lowerFile.includes(key.toLowerCase())) return APEX_MAP_NAMES[key];
+            }
+            return undefined;
+          })(),
           teams: (game.teams || []).map((team: any) => {
-            const teamName = team.name || team.overall_stats?.name || '';
+            const teamName = this.matchLoaderService.normalizeTeamName(
+              team.name || team.overall_stats?.name || ''
+            );
             return {
               name: teamName,
               player_stats: (team.player_stats || team.players || []).map((player: any) => ({
