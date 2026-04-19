@@ -42,6 +42,36 @@ export class MatchLoaderService {
   }
 
   /**
+   * Load a single page of scrim batch filenames from HuggingFace dataset API.
+   * Returns filenames sorted newest-first and a hasMore flag indicating if another page likely exists.
+   */
+  loadScrimFilePage(page: number, pageSize: number): Observable<{ files: string[]; hasMore: boolean }> {
+    const offset = Math.max(0, (page - 1) * pageSize);
+    const url = `${this.HF_API_URL}?limit=${pageSize}&offset=${offset}`;
+    return this.http.get<HFTreeEntry[]>(url).pipe(
+      map(entries => {
+        const files = entries
+          .filter(e => e.type === 'file' && e.path.startsWith('scrim_') && e.path.endsWith('.json'))
+          .map(e => e.path)
+          .sort((a, b) => {
+            const dateFrom = (s: string) => {
+              const m = s.match(/(\d{4}_\d{2}_\d{2})/);
+              return m ? m[1].replace(/_/g, '-') : '';
+            };
+            const da = dateFrom(a);
+            const db = dateFrom(b);
+            if (!da && !db) return a.localeCompare(b);
+            if (!da) return 1;
+            if (!db) return -1;
+            return db.localeCompare(da); // newest first
+          });
+        const hasMore = entries.length >= pageSize;
+        return { files, hasMore };
+      })
+    );
+  }
+
+  /**
    * Loads the list of seasons from the HuggingFace league dataset
    */
   loadLeagueSeasons(): Observable<string[]> {
@@ -150,7 +180,7 @@ export class MatchLoaderService {
         return {
           gameNumber: i + 1,
           teamId: team.teamId,
-          teamName: team.name,
+          teamName: this.normalizeTeamName(team.name),
           placement: team.overall_stats?.teamPlacement ?? 0,
           teamKills: team.overall_stats?.kills ?? 0,
           placementPoints: this.getPlacementPoints(team.overall_stats?.teamPlacement ?? 0),
@@ -185,7 +215,9 @@ export class MatchLoaderService {
    */
   normalizeTeamName(name: string): string {
     if (typeof name !== 'string') return name;
-    // Remove any '@...' or '#...' at the end, then trailing whitespace/tabs
-    return name.replace(/[@#][^\s\t]*[\s\t]*$/, '').replace(/[\t\s]+$/, '').trim();
+    // Remove any trailing tokens that start with @ or # (e.g. "Team @123 #abc")
+    // This removes one or more occurrences of optional space + @/#token at the end.
+    const cleaned = name.replace(/(?:\s*[@#]\S+)+$/g, '');
+    return cleaned.replace(/\s+$/g, '').trim();
   }
 }

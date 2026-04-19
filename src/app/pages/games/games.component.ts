@@ -39,10 +39,8 @@ export class GamesComponent implements OnInit {
   }
 
   searchTerm = '';
-  /** All filenames from HuggingFace tree API (sorted newest first) */
+  /** Filenames for the current server page (sorted newest first) */
   scrimFiles: string[] = [];
-  /** Filenames after search filter */
-  filteredFiles: string[] = [];
   /** Cache of already-loaded match data to avoid re-fetching on page back */
   private pageCache = new Map<string, MatchDayResults>();
   /** Data for the currently visible page */
@@ -55,57 +53,60 @@ export class GamesComponent implements OnInit {
   page = 1;
   pageSize = 10;
 
+  hasMore = false;
   get totalPages() {
-    return Math.ceil(this.filteredFiles.length / this.pageSize);
+    // If there's more, allow one more page; otherwise current page is last
+    return this.hasMore ? this.page + 1 : this.page;
   }
 
   constructor(private scrimsDataService: ScrimsDataService) {}
 
   ngOnInit() {
-    this.scrimsDataService.getScrimFiles().subscribe({
-      next: files => {
-        this.scrimFiles = files.sort((a, b) => b.localeCompare(a));
-        this.filteredFiles = [...this.scrimFiles];
-        this.loadPage(1);
-      },
-      error: () => {
-        this.error = 'Failed to load scrim files.';
-        this.loading = false;
-      }
-    });
+    // Load first page of filenames from server
+    this.loadPage(1);
   }
 
   /** Loads only the files needed for the given page, using cache for already-fetched files. */
   loadPage(page: number) {
     this.page = page;
-    const start = (page - 1) * this.pageSize;
-    const pageFiles = this.filteredFiles.slice(start, start + this.pageSize);
-    const toFetch = pageFiles.filter(f => !this.pageCache.has(f));
-
-    if (toFetch.length === 0) {
-      this.pagedScrims = pageFiles.map(f => ({ file: f, matchResults: this.pageCache.get(f)! }));
-      this.loading = false;
-      this.loadingPage = false;
-      return;
-    }
-
     this.loadingPage = true;
-    forkJoin(
-      toFetch.map(file =>
-        this.scrimsDataService.getScrimMatchResults(file).pipe(
-          map(matchResults => ({ file, matchResults })),
-          catchError(() => of({ file, matchResults: {} as MatchDayResults }))
-        )
-      )
-    ).subscribe({
-      next: results => {
-        results.forEach(r => this.pageCache.set(r.file, r.matchResults));
-        this.pagedScrims = pageFiles.map(f => ({ file: f, matchResults: this.pageCache.get(f) ?? {} as MatchDayResults }));
-        this.loading = false;
-        this.loadingPage = false;
+    this.scrimsDataService.getScrimFiles(page, this.pageSize).subscribe({
+      next: resp => {
+        this.scrimFiles = resp.files;
+        this.hasMore = resp.hasMore;
+        const pageFiles = this.scrimFiles;
+        const toFetch = pageFiles.filter(f => !this.pageCache.has(f));
+
+        if (toFetch.length === 0) {
+          this.pagedScrims = pageFiles.map(f => ({ file: f, matchResults: this.pageCache.get(f)! }));
+          this.loading = false;
+          this.loadingPage = false;
+          return;
+        }
+
+        forkJoin(
+          toFetch.map(file =>
+            this.scrimsDataService.getScrimMatchResults(file).pipe(
+              map(matchResults => ({ file, matchResults })),
+              catchError(() => of({ file, matchResults: {} as MatchDayResults }))
+            )
+          )
+        ).subscribe({
+          next: results => {
+            results.forEach(r => this.pageCache.set(r.file, r.matchResults));
+            this.pagedScrims = pageFiles.map(f => ({ file: f, matchResults: this.pageCache.get(f) ?? {} as MatchDayResults }));
+            this.loading = false;
+            this.loadingPage = false;
+          },
+          error: () => {
+            this.error = 'Failed to load scrim data.';
+            this.loading = false;
+            this.loadingPage = false;
+          }
+        });
       },
       error: () => {
-        this.error = 'Failed to load scrim data.';
+        this.error = 'Failed to load scrim files.';
         this.loading = false;
         this.loadingPage = false;
       }
@@ -118,13 +119,14 @@ export class GamesComponent implements OnInit {
 
   onSearchChange(term: string) {
     this.searchTerm = term;
+    // Search is only applied to current page of filenames
     if (!term.trim()) {
-      this.filteredFiles = [...this.scrimFiles];
-    } else {
-      const lower = term.toLowerCase();
-      // Filter by filename (contains date and match ID: e.g. "2024_07_15")
-      this.filteredFiles = this.scrimFiles.filter(f => f.toLowerCase().includes(lower));
+      // nothing to do; reload current page
+      this.loadPage(1);
+      return;
     }
+    const lower = term.toLowerCase();
+    this.scrimFiles = this.scrimFiles.filter(f => f.toLowerCase().includes(lower));
     this.loadPage(1);
   }
 }

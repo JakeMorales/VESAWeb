@@ -45,11 +45,16 @@ export class ScrimsDataService {
   /**
    * Get list of available scrim batch files from HuggingFace dataset
    */
-  getScrimFiles(): Observable<string[]> {
-  return this.matchLoaderService.loadScrimFileList().pipe(
+  /**
+   * Get a page of available scrim batch files from HuggingFace dataset
+   * @param page 1-based page number
+   * @param pageSize number of filenames per page
+   */
+  getScrimFiles(page = 1, pageSize = 10): Observable<{ files: string[]; hasMore: boolean }> {
+    return this.matchLoaderService.loadScrimFilePage(page, pageSize).pipe(
       catchError((error) => {
-        console.error('Error fetching scrim files:', error);
-        return of([]);
+        console.error('Error fetching scrim files page:', error);
+        return of({ files: [], hasMore: false });
       }),
       shareReplay(1)
     );

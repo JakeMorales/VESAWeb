@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { PlayerStats } from './scrims-data.service';
+import { MatchLoaderService } from './match-loader.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TeamUtilsService {
+  constructor(private matchLoaderService: MatchLoaderService) {}
+
   groupPlayersByActualTeams(
     playerStats: PlayerStats[],
     scrimSignups: any[]
@@ -54,7 +57,7 @@ export class TeamUtilsService {
       const totalKills = group.players.reduce((sum, player) => sum + (player.kills || 0), 0);
       const avgScore = 0;
       return {
-        teamName: group.signup.team_name || 'Unknown Team',
+        teamName: this.matchLoaderService.normalizeTeamName(group.signup.team_name || 'Unknown Team'),
         placement: 1,
         totalKills,
         avgScore,
