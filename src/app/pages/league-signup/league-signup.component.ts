@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NhostService, Player } from '../../services/nhost.service';
 import { DiscordService } from '../../services/discord.service';
+import { LeagueScheduleComponent, SEASON_14_SCHEDULE } from '../../components/league/league-schedule.component';
 
 interface RosterPlayer {
   discordUsername: string;
@@ -71,7 +72,7 @@ function emptyRosterPlayer(): RosterPlayer {
 @Component({
   selector: 'app-league-signup',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, LeagueScheduleComponent],
   template: `
     <div class="signup-container">
       <div class="signup-header">
@@ -84,6 +85,8 @@ function emptyRosterPlayer(): RosterPlayer {
           If spots are full or a season is underway, your team is added to the waitlist automatically.
         </p>
       </div>
+
+      <app-league-schedule [dates]="scheduleEntries"></app-league-schedule>
 
       <div class="signup-body">
 
@@ -863,6 +866,7 @@ export class LeagueSignupComponent implements OnInit, OnDestroy {
   readonly ranks = RANKS;
   readonly vesaDivisions = VESA_DIVISIONS;
   readonly platforms = PLATFORMS;
+  readonly scheduleEntries = SEASON_14_SCHEDULE;
 
   form: SignupForm = {
     teamName: '',
