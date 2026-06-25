@@ -3,6 +3,8 @@ import { HomeComponent } from './pages/home/home.component';
 import { PlayerStatsComponent } from './pages/player-stats/player-stats.component';
 import { GamesComponent } from './pages/games/games.component';
 import { LeagueComponent } from './pages/league/league.component';
+import { LeagueOverviewComponent } from './pages/league-overview/league-overview.component';
+import { LeagueSignupComponent } from './pages/league-signup/league-signup.component';
 import { DivisionComponent } from './pages/league/division/division.component';
 import { MatchComponent } from './pages/match/match.component';
 import { ScrimsComponent } from './pages/scrims/scrims.component';
@@ -17,7 +19,9 @@ export const routes: Routes = [
   { path: 'players', component: PlayerStatsComponent },
   { path: 'games', component: GamesComponent },
   { path: 'scrims', component: ScrimsComponent },
-  { path: 'league', component: LeagueComponent },
+  { path: 'league', component: LeagueOverviewComponent },
+  { path: 'league/current-season', component: LeagueComponent },
+  { path: 'league/signup', component: LeagueSignupComponent },
   { path: 'league/:id', component: DivisionComponent },
   { path: 'match/:id', component: MatchComponent },
   { path: 'ratings', component: RatingsComponent },

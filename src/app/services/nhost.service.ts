@@ -77,6 +77,10 @@ export class NhostService {
     });
   }
 
+  get auth() {
+    return this.nhost.auth;
+  }
+
   /**
    * Get all players using pagination
    */

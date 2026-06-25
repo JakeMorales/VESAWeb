@@ -1,0 +1,696 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { NhostService } from '../../services/nhost.service';
+
+interface Player {
+  inGameName: string;
+  discord: string;
+}
+
+interface SignupForm {
+  teamName: string;
+  skillLevel: string;
+  notes: string;
+  players: Player[];
+  subs: Player[];
+}
+
+interface DiscordUser {
+  id: string;
+  displayName: string;
+  avatarUrl: string;
+}
+
+@Component({
+  selector: 'app-league-signup',
+  standalone: true,
+  imports: [CommonModule, RouterModule, FormsModule],
+  template: `
+    <div class="signup-container">
+      <div class="signup-header">
+        <a routerLink="/league" class="back-link">← League Overview</a>
+        <span class="badge">Season 14</span>
+        <h1>League Signup & Waitlist</h1>
+        <p class="sub">
+          Register your team for VESA League play. If league play is already underway or spots are
+          full, your team will be placed on the waitlist automatically.
+        </p>
+      </div>
+
+      <div class="signup-body">
+
+        <!-- Auth gate -->
+        <div *ngIf="!currentUser && !submitted" class="auth-gate">
+          <div class="auth-icon">💬</div>
+          <h2>Sign in with Discord</h2>
+          <p>We use your Discord account to identify your signup. No extra contact info needed.</p>
+          <button class="btn-discord-signin" (click)="signInWithDiscord()" [disabled]="signingIn">
+            <svg class="discord-logo" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
+            </svg>
+            {{ signingIn ? 'Redirecting to Discord…' : 'Sign in with Discord' }}
+          </button>
+        </div>
+
+        <!-- Form -->
+        <div *ngIf="currentUser && !submitted" class="form-card">
+
+          <!-- Signed-in user banner -->
+          <div class="user-banner">
+            <img
+              *ngIf="currentUser.avatarUrl"
+              [src]="currentUser.avatarUrl"
+              [alt]="currentUser.displayName"
+              class="user-avatar"
+            />
+            <div *ngIf="!currentUser.avatarUrl" class="user-avatar-placeholder">
+              {{ currentUser.displayName[0] }}
+            </div>
+            <span class="user-name">{{ currentUser.displayName }}</span>
+            <button class="sign-out-btn" (click)="signOut()">Sign out</button>
+          </div>
+
+          <form (ngSubmit)="onSubmit()" #signupForm="ngForm">
+
+            <!-- Team Info -->
+            <div class="form-section">
+              <h3>Team Information</h3>
+              <div class="field-row">
+                <div class="field-group">
+                  <label for="teamName">Team Name <span class="required">*</span></label>
+                  <input
+                    id="teamName"
+                    type="text"
+                    [(ngModel)]="form.teamName"
+                    name="teamName"
+                    required
+                    placeholder="e.g. Night Owls"
+                    class="input"
+                  />
+                </div>
+                <div class="field-group">
+                  <label for="skillLevel">Average Skill Level <span class="required">*</span></label>
+                  <select id="skillLevel" [(ngModel)]="form.skillLevel" name="skillLevel" required class="input">
+                    <option value="">Select...</option>
+                    <option value="predator-masters">Predator / Masters</option>
+                    <option value="diamond">Diamond</option>
+                    <option value="platinum">Platinum</option>
+                    <option value="gold">Gold</option>
+                    <option value="silver">Silver</option>
+                    <option value="bronze">Bronze</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Roster (3 required) -->
+            <div class="form-section">
+              <h3>Roster <span class="section-note">— 3 players required</span></h3>
+              <div *ngFor="let player of form.players; let i = index" class="player-row">
+                <span class="player-label">Player {{ i + 1 }}</span>
+                <div class="field-row player-fields">
+                  <div class="field-group">
+                    <label [for]="'p-ign-' + i">EA / In-Game Name <span class="required">*</span></label>
+                    <input
+                      [id]="'p-ign-' + i"
+                      type="text"
+                      [(ngModel)]="player.inGameName"
+                      [name]="'playerIgn' + i"
+                      required
+                      placeholder="ExamplePlayer123"
+                      class="input"
+                    />
+                  </div>
+                  <div class="field-group">
+                    <label [for]="'p-disc-' + i">Discord Username</label>
+                    <input
+                      [id]="'p-disc-' + i"
+                      type="text"
+                      [(ngModel)]="player.discord"
+                      [name]="'playerDisc' + i"
+                      placeholder="username"
+                      class="input"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Alternates / Subs (optional) -->
+            <div class="form-section">
+              <h3>Alternates / Subs <span class="section-note">— optional</span></h3>
+              <div *ngFor="let sub of form.subs; let i = index" class="player-row sub-row">
+                <span class="player-label">Sub {{ i + 1 }}</span>
+                <div class="field-row player-fields">
+                  <div class="field-group">
+                    <label [for]="'s-ign-' + i">EA / In-Game Name</label>
+                    <input
+                      [id]="'s-ign-' + i"
+                      type="text"
+                      [(ngModel)]="sub.inGameName"
+                      [name]="'subIgn' + i"
+                      placeholder="ExamplePlayer123"
+                      class="input"
+                    />
+                  </div>
+                  <div class="field-group">
+                    <label [for]="'s-disc-' + i">Discord Username</label>
+                    <input
+                      [id]="'s-disc-' + i"
+                      type="text"
+                      [(ngModel)]="sub.discord"
+                      [name]="'subDisc' + i"
+                      placeholder="username"
+                      class="input"
+                    />
+                  </div>
+                </div>
+                <button type="button" class="remove-btn" (click)="removeSub(i)" aria-label="Remove sub">✕</button>
+              </div>
+              <button type="button" class="add-sub-btn" (click)="addSub()">+ Add Alternate</button>
+            </div>
+
+            <!-- Notes -->
+            <div class="form-section">
+              <h3>Additional Notes</h3>
+              <div class="field-group">
+                <label for="notes">Anything we should know?</label>
+                <textarea
+                  id="notes"
+                  [(ngModel)]="form.notes"
+                  name="notes"
+                  rows="3"
+                  placeholder="Previous season results, scheduling constraints, etc."
+                  class="input textarea"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="form-footer">
+              <p class="form-note">
+                Registrations are reviewed by league admins before placement. You'll be contacted
+                via Discord once your team is confirmed. Make sure all roster players are
+                registered on VESA before submitting. Teams are placed on the waitlist automatically
+                if league play is underway or spots are full.
+              </p>
+              <button type="submit" class="btn-submit" [disabled]="signupForm.invalid">
+                Submit Registration
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- Success -->
+        <div *ngIf="submitted" class="success-card">
+          <div class="success-icon">✓</div>
+          <h2>Registration Received</h2>
+          <p>
+            We've received the signup for <strong>{{ form.teamName }}</strong>
+            from <strong>{{ currentUser?.displayName }}</strong>.
+            League admins will reach out via Discord once your team has been reviewed and placed.
+          </p>
+          <p>Make sure your team is in the League Discord for announcements.</p>
+          <div class="success-actions">
+            <a href="https://discord.gg/RyvVJqnXbe" target="_blank" rel="noopener noreferrer" class="btn-discord">
+              Join League Discord
+            </a>
+            <a routerLink="/league" class="btn-outline">Back to League Overview</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `,
+  styles: [`
+    .signup-container {
+      min-height: 100vh;
+      width: 100vw;
+      background: linear-gradient(135deg, var(--color-primary-dark, #0a0a1a) 0%, #000 100%);
+      color: #e3e6f3;
+      padding-bottom: 5rem;
+    }
+
+    .signup-header {
+      text-align: center;
+      padding: 4rem 2rem 2rem;
+      background: radial-gradient(ellipse at 50% 0%, rgba(94,108,255,0.15) 0%, transparent 65%);
+    }
+
+    .back-link {
+      display: inline-block;
+      color: rgba(227,230,243,0.55);
+      text-decoration: none;
+      font-size: 0.88rem;
+      margin-bottom: 1.2rem;
+      transition: color 0.18s;
+    }
+    .back-link:hover { color: #e3e6f3; }
+
+    .badge {
+      display: inline-block;
+      background: linear-gradient(90deg, #5e6cff, #b45cff);
+      color: #fff;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.28rem 0.9rem;
+      border-radius: 2rem;
+      margin-bottom: 1rem;
+      margin-left: 0.5rem;
+    }
+
+    .signup-header h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      margin: 0 0 0.75rem;
+      background: linear-gradient(90deg, #fff 60%, #b45cff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .sub {
+      color: rgba(227,230,243,0.65);
+      font-size: 1rem;
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .signup-body {
+      max-width: 720px;
+      margin: 2.5rem auto 0;
+      padding: 0 1.5rem;
+    }
+
+    /* Auth gate */
+    .auth-gate {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(88,101,242,0.3);
+      border-radius: 1.2rem;
+      padding: 3.5rem 2rem;
+      text-align: center;
+    }
+
+    .auth-icon { font-size: 2.8rem; margin-bottom: 1rem; }
+
+    .auth-gate h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin: 0 0 0.6rem;
+    }
+
+    .auth-gate p {
+      color: rgba(227,230,243,0.62);
+      margin: 0 0 2rem;
+      max-width: 380px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+
+    .btn-discord-signin {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      background: #5865f2;
+      color: #fff;
+      border: none;
+      border-radius: 2rem;
+      padding: 0.85rem 2rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.18s, transform 0.18s, opacity 0.18s;
+      font-family: inherit;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-discord-signin:hover:not(:disabled) {
+      background: #4752c4;
+      transform: translateY(-2px);
+    }
+
+    .btn-discord-signin:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .discord-logo { width: 1.2rem; height: 1.2rem; flex-shrink: 0; }
+
+    /* User banner */
+    .user-banner {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: rgba(88,101,242,0.12);
+      border: 1px solid rgba(88,101,242,0.25);
+      border-radius: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .user-avatar {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .user-avatar-placeholder {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #5e6cff, #b45cff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      flex: 1;
+    }
+
+    .sign-out-btn {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(227,230,243,0.55);
+      border-radius: 1rem;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      font-family: inherit;
+    }
+    .sign-out-btn:hover { color: #e3e6f3; border-color: rgba(255,255,255,0.3); }
+
+    /* Form card */
+    .form-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 1.2rem;
+      padding: 2rem;
+    }
+
+    .form-section { margin-bottom: 2rem; }
+
+    .form-section h3 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(227,230,243,0.5);
+      margin: 0 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .section-note {
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      color: rgba(227,230,243,0.35);
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: rgba(227,230,243,0.75);
+    }
+
+    .required { color: #ff2c5c; }
+
+    .input {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 0.6rem;
+      padding: 0.65rem 0.9rem;
+      color: #e3e6f3;
+      font-size: 0.93rem;
+      width: 100%;
+      box-sizing: border-box;
+      transition: border-color 0.18s, background 0.18s;
+      font-family: inherit;
+    }
+
+    .input:focus {
+      outline: none;
+      border-color: #5e6cff;
+      background: rgba(94,108,255,0.08);
+    }
+
+    .input option { background: #1a1a2e; color: #e3e6f3; }
+
+    .textarea { resize: vertical; min-height: 80px; }
+
+    /* Player rows */
+    .player-row {
+      position: relative;
+      margin-bottom: 1.2rem;
+      padding: 1rem 1rem 0.25rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 0.75rem;
+    }
+
+    .sub-row { border-color: rgba(94,108,255,0.15); }
+
+    .player-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(227,230,243,0.38);
+      margin-bottom: 0.6rem;
+    }
+
+    .player-fields { margin-bottom: 0; }
+    .player-fields .field-group { margin-bottom: 0.5rem; }
+
+    .remove-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: none;
+      border: none;
+      color: rgba(227,230,243,0.3);
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 0.2rem 0.4rem;
+      border-radius: 0.3rem;
+      transition: color 0.15s, background 0.15s;
+      line-height: 1;
+    }
+    .remove-btn:hover { color: #ff2c5c; background: rgba(255,44,92,0.1); }
+
+    .add-sub-btn {
+      background: transparent;
+      border: 1px dashed rgba(94,108,255,0.4);
+      color: rgba(94,108,255,0.85);
+      border-radius: 0.6rem;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: border-color 0.18s, color 0.18s, background 0.18s;
+      font-family: inherit;
+    }
+    .add-sub-btn:hover { border-color: #5e6cff; color: #fff; background: rgba(94,108,255,0.1); }
+
+    .form-footer {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form-note {
+      font-size: 0.81rem;
+      color: rgba(227,230,243,0.42);
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    .btn-submit {
+      background: linear-gradient(90deg, #5e6cff, #b45cff);
+      color: #fff;
+      border: none;
+      border-radius: 2rem;
+      padding: 0.8rem 2.2rem;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: all 0.2s;
+      align-self: flex-end;
+      box-shadow: 0 4px 18px rgba(94,108,255,0.35);
+      font-family: inherit;
+    }
+    .btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(94,108,255,0.5); }
+    .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Success */
+    .success-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(94,108,255,0.35);
+      border-radius: 1.2rem;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .success-icon {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #5e6cff, #b45cff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: #fff;
+      margin: 0 auto 1.5rem;
+    }
+
+    .success-card h2 { font-size: 1.6rem; font-weight: 800; margin: 0 0 1rem; }
+    .success-card p { color: rgba(227,230,243,0.72); line-height: 1.7; margin: 0 0 0.75rem; }
+
+    .success-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+
+    .btn-discord {
+      display: inline-block;
+      background: #5865f2;
+      color: #fff;
+      padding: 0.7rem 1.6rem;
+      border-radius: 2rem;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: background 0.18s, transform 0.18s;
+    }
+    .btn-discord:hover { background: #4752c4; transform: translateY(-2px); }
+
+    .btn-outline {
+      display: inline-block;
+      background: transparent;
+      color: #e3e6f3;
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 0.7rem 1.6rem;
+      border-radius: 2rem;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: background 0.18s, transform 0.18s;
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.07); transform: translateY(-2px); }
+
+    @media (max-width: 560px) {
+      .field-row { grid-template-columns: 1fr; }
+      .form-card { padding: 1.5rem 1rem; }
+      .btn-submit { align-self: stretch; }
+    }
+  `]
+})
+export class LeagueSignupComponent implements OnInit, OnDestroy {
+  submitted = false;
+  signingIn = false;
+  currentUser: DiscordUser | null = null;
+
+  form: SignupForm = {
+    teamName: '',
+    skillLevel: '',
+    notes: '',
+    players: [
+      { inGameName: '', discord: '' },
+      { inGameName: '', discord: '' },
+      { inGameName: '', discord: '' }
+    ],
+    subs: []
+  };
+
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  private unsubscribeAuth?: Function;
+
+  constructor(private nhostService: NhostService) {}
+
+  ngOnInit() {
+    const auth = this.nhostService.auth;
+
+    // Sync current auth state on load (handles post-OAuth redirect)
+    const user = auth.getUser();
+    if (user) {
+      this.currentUser = {
+        id: user.id,
+        displayName: user.displayName ?? user.email ?? 'Discord User',
+        avatarUrl: user.avatarUrl ?? ''
+      };
+    }
+
+    // Keep in sync as auth state changes
+    this.unsubscribeAuth = auth.onAuthStateChanged((_event: string, session: any) => {
+      if (session?.user) {
+        this.currentUser = {
+          id: session.user.id,
+          displayName: session.user.displayName ?? session.user.email ?? 'Discord User',
+          avatarUrl: session.user.avatarUrl ?? ''
+        };
+      } else {
+        this.currentUser = null;
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeAuth?.();
+  }
+
+  signInWithDiscord() {
+    this.signingIn = true;
+    this.nhostService.auth.signIn({
+      provider: 'discord',
+      options: { redirectTo: window.location.href }
+    });
+  }
+
+  signOut() {
+    this.nhostService.auth.signOut();
+  }
+
+  addSub() {
+    this.form.subs.push({ inGameName: '', discord: '' });
+  }
+
+  removeSub(index: number) {
+    this.form.subs.splice(index, 1);
+  }
+
+  onSubmit() {
+    this.submitted = true;
+  }
+}

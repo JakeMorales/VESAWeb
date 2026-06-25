@@ -23,7 +23,7 @@ export interface Division {
   styleUrl: './league.component.css'
 })
 export class LeagueComponent {
-  currentSeason = 11;
+  currentSeason = 14;
   totalWeeks = 5;
   currentWeek = 2; // Started 7-21, now 8-7 = 2 weeks (with bye week)
   seasonStartDate = new Date('2025-07-21');

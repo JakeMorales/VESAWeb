@@ -22,12 +22,17 @@ import { RouterModule } from '@angular/router';
               League <span class="dropdown-arrow">▼</span>
             </a>
             <div class="dropdown-menu">
-              <a routerLink="/league/pinnacle" (click)="closeNav()">Pinnacle (I)</a>
-              <a routerLink="/league/vanguard" (click)="closeNav()">Vanguard (II)</a>
-              <a routerLink="/league/ascendant" (click)="closeNav()">Ascendant (III)</a>
-              <a routerLink="/league/emergent" (click)="closeNav()">Emergent (IV)</a>
-              <a routerLink="/league/challengers" (click)="closeNav()">Challengers (V)</a>
-              <a routerLink="/league/contenders" (click)="closeNav()">Contenders (VI)</a>
+              <a routerLink="/league/current-season" (click)="closeNav()" class="dropdown-featured">Current Season (S14)</a>
+              <a routerLink="/league/signup" (click)="closeNav()" class="dropdown-featured">League Signup</a>
+              <div class="dropdown-divider"></div>
+              <a routerLink="/league/pinnacle"   (click)="closeNav()">Pinnacle (I)</a>
+              <a routerLink="/league/vanguard"   (click)="closeNav()">Vanguard (II)</a>
+              <a routerLink="/league/ascendant"  (click)="closeNav()">Ascendant (III)</a>
+              <a routerLink="/league/emergent"   (click)="closeNav()">Emergent (IV)</a>
+              <a routerLink="/league/challenger" (click)="closeNav()">Challenger (V)</a>
+              <a routerLink="/league/prospect"   (click)="closeNav()">Prospect (VI)</a>
+              <a routerLink="/league/aspirant"   (click)="closeNav()">Aspirant (VII)</a>
+              <a routerLink="/league/contenders" (click)="closeNav()">Contenders (VIII)</a>
             </div>
           </div>
           <a routerLink="/scrims" routerLinkActive="active" (click)="closeNav()">Scrims</a>
@@ -325,6 +330,21 @@ import { RouterModule } from '@angular/router';
       transform: none;
       box-shadow: none;
       border-color: transparent;
+    }
+
+    .dropdown-featured {
+      color: #b45cff !important;
+      font-weight: 600 !important;
+    }
+
+    .dropdown-featured:hover {
+      color: #fff !important;
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 0.25rem 0;
     }
 
     .mobile-toggle {
