@@ -1,4 +1,6 @@
-import { Routes } from '@angular/router';
+import { Routes, CanActivateFn, Router } from '@angular/router';
+import { inject } from '@angular/core';
+import { environment } from '../environments/environment';
 import { HomeComponent } from './pages/home/home.component';
 import { PlayerStatsComponent } from './pages/player-stats/player-stats.component';
 import { GamesComponent } from './pages/games/games.component';
@@ -13,10 +15,24 @@ import { NhostTestComponent } from './components/test/nhost-test.component';
 import { SimpleNhostTestComponent } from './components/test/simple-nhost-test.component';
 import { TeamTrackerTestComponent } from './components/test/team-tracker-test.component';
 
+const playerStatsGuard: CanActivateFn = () => {
+  if (environment.features.playerStats) {
+    return true;
+  }
+  return inject(Router).createUrlTree(['/']);
+};
+
+const ratingsLeaderboardGuard: CanActivateFn = () => {
+  if (environment.features.ratingsLeaderboard) {
+    return true;
+  }
+  return inject(Router).createUrlTree(['/']);
+};
+
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'players', component: PlayerStatsComponent },
+  { path: 'players', component: PlayerStatsComponent, canActivate: [playerStatsGuard] },
   { path: 'games', component: GamesComponent },
   { path: 'scrims', component: ScrimsComponent },
   { path: 'league', component: LeagueOverviewComponent },
@@ -24,7 +40,7 @@ export const routes: Routes = [
   { path: 'league/signup', component: LeagueSignupComponent },
   { path: 'league/:id', component: DivisionComponent },
   { path: 'match/:id', component: MatchComponent },
-  { path: 'ratings', component: RatingsComponent },
+  { path: 'ratings', component: RatingsComponent, canActivate: [ratingsLeaderboardGuard] },
   { path: 'test', component: NhostTestComponent },
   { path: 'simple-test', component: SimpleNhostTestComponent },
   { path: 'team-tracker-test', component: TeamTrackerTestComponent },

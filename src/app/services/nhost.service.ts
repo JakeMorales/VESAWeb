@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { NhostClient } from '@nhost/nhost-js';
 import { Observable, from } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 // Define interfaces for our database tables
 export interface Player {
@@ -72,8 +73,8 @@ export class NhostService {
 
   constructor() {
     this.nhost = new NhostClient({
-      subdomain: 'bsgzgiiagytbnyqsvebl',
-      region: 'us-east-1'
+      subdomain: environment.nhost.subdomain,
+      region: environment.nhost.region
     });
   }
 
