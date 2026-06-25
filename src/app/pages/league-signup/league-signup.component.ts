@@ -2,25 +2,70 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { NhostService } from '../../services/nhost.service';
+import { NhostService, Player } from '../../services/nhost.service';
+import { DiscordService } from '../../services/discord.service';
 
-interface Player {
-  inGameName: string;
-  discord: string;
+interface RosterPlayer {
+  discordUsername: string;
+  rank: string;
+  vesaDivision: string;
+  overstatLink: string;
+  platform: string;
+}
+
+interface PlayerMeta {
+  overstatLocked: boolean;
+  overstatLoading: boolean;
+}
+
+interface SubPlayer {
+  discordUsername: string;
+  rank: string;
+  platform: string;
 }
 
 interface SignupForm {
   teamName: string;
-  skillLevel: string;
-  notes: string;
-  players: Player[];
-  subs: Player[];
+  compExperience: string;
+  players: RosterPlayer[];
+  subs: SubPlayer[];
 }
 
 interface DiscordUser {
   id: string;
   displayName: string;
   avatarUrl: string;
+}
+
+const RANKS = [
+  { value: 'predator-masters', label: 'Predator / Masters' },
+  { value: 'diamond',          label: 'Diamond' },
+  { value: 'platinum',         label: 'Platinum' },
+  { value: 'gold',             label: 'Gold' },
+  { value: 'silver',           label: 'Silver' },
+  { value: 'bronze',           label: 'Bronze' },
+];
+
+const VESA_DIVISIONS = [
+  { value: 'none',       label: 'None' },
+  { value: 'pinnacle',   label: 'Pinnacle (I)' },
+  { value: 'vanguard',   label: 'Vanguard (II)' },
+  { value: 'ascendant',  label: 'Ascendant (III)' },
+  { value: 'emergent',   label: 'Emergent (IV)' },
+  { value: 'challenger', label: 'Challenger (V)' },
+  { value: 'prospect',   label: 'Prospect (VI)' },
+  { value: 'aspirant',   label: 'Aspirant (VII)' },
+  { value: 'contenders', label: 'Contenders (VIII)' },
+];
+
+const PLATFORMS = [
+  { value: 'pc',          label: 'PC' },
+  { value: 'playstation', label: 'PlayStation' },
+  { value: 'xbox',        label: 'Xbox' },
+];
+
+function emptyRosterPlayer(): RosterPlayer {
+  return { discordUsername: '', rank: '', vesaDivision: '', overstatLink: '', platform: '' };
 }
 
 @Component({
@@ -34,8 +79,9 @@ interface DiscordUser {
         <span class="badge">Season 14</span>
         <h1>League Signup & Waitlist</h1>
         <p class="sub">
-          Register your team for VESA League play. If league play is already underway or spots are
-          full, your team will be placed on the waitlist automatically.
+          Register your team for VESA League play. Provide accurate rank and experience info —
+          it directly affects division placement for all 60 players in a lobby.
+          If spots are full or a season is underway, your team is added to the waitlist automatically.
         </p>
       </div>
 
@@ -52,6 +98,7 @@ interface DiscordUser {
             </svg>
             {{ signingIn ? 'Redirecting to Discord…' : 'Sign in with Discord' }}
           </button>
+          <button class="btn-dev-bypass" (click)="devBypass()">Dev bypass</button>
         </div>
 
         <!-- Form -->
@@ -59,15 +106,8 @@ interface DiscordUser {
 
           <!-- Signed-in user banner -->
           <div class="user-banner">
-            <img
-              *ngIf="currentUser.avatarUrl"
-              [src]="currentUser.avatarUrl"
-              [alt]="currentUser.displayName"
-              class="user-avatar"
-            />
-            <div *ngIf="!currentUser.avatarUrl" class="user-avatar-placeholder">
-              {{ currentUser.displayName[0] }}
-            </div>
+            <img *ngIf="currentUser.avatarUrl" [src]="currentUser.avatarUrl" [alt]="currentUser.displayName" class="user-avatar" />
+            <div *ngIf="!currentUser.avatarUrl" class="user-avatar-placeholder">{{ currentUser.displayName[0] }}</div>
             <span class="user-name">{{ currentUser.displayName }}</span>
             <button class="sign-out-btn" (click)="signOut()">Sign out</button>
           </div>
@@ -76,95 +116,112 @@ interface DiscordUser {
 
             <!-- Team Info -->
             <div class="form-section">
-              <h3>Team Information</h3>
-              <div class="field-row">
-                <div class="field-group">
-                  <label for="teamName">Team Name <span class="required">*</span></label>
-                  <input
-                    id="teamName"
-                    type="text"
-                    [(ngModel)]="form.teamName"
-                    name="teamName"
-                    required
-                    placeholder="e.g. Night Owls"
-                    class="input"
-                  />
-                </div>
-                <div class="field-group">
-                  <label for="skillLevel">Average Skill Level <span class="required">*</span></label>
-                  <select id="skillLevel" [(ngModel)]="form.skillLevel" name="skillLevel" required class="input">
-                    <option value="">Select...</option>
-                    <option value="predator-masters">Predator / Masters</option>
-                    <option value="diamond">Diamond</option>
-                    <option value="platinum">Platinum</option>
-                    <option value="gold">Gold</option>
-                    <option value="silver">Silver</option>
-                    <option value="bronze">Bronze</option>
-                  </select>
-                </div>
+              <h3>Team</h3>
+              <div class="field-group">
+                <label for="teamName">Team Name <span class="required">*</span></label>
+                <input id="teamName" type="text" [(ngModel)]="form.teamName" name="teamName"
+                  required placeholder="e.g. Night Owls" class="input" />
+              </div>
+              <div class="field-group">
+                <label for="compExperience">Competitive Experience <span class="required">*</span></label>
+                <input id="compExperience" type="text" [(ngModel)]="form.compExperience" name="compExperience"
+                  required placeholder="e.g. ~2 days/wk for 2 yrs, EEC" class="input" />
+                <span class="field-hint">Scrim frequency, how long you've been playing competitively, main servers (EEC, NAE, NAW, etc.)</span>
               </div>
             </div>
 
-            <!-- Roster (3 required) -->
+            <!-- Player 1 — Captain (identity from Discord auth) -->
             <div class="form-section">
-              <h3>Roster <span class="section-note">— 3 players required</span></h3>
-              <div *ngFor="let player of form.players; let i = index" class="player-row">
-                <span class="player-label">Player {{ i + 1 }}</span>
-                <div class="field-row player-fields">
-                  <div class="field-group">
-                    <label [for]="'p-ign-' + i">EA / In-Game Name <span class="required">*</span></label>
-                    <input
-                      [id]="'p-ign-' + i"
-                      type="text"
-                      [(ngModel)]="player.inGameName"
-                      [name]="'playerIgn' + i"
-                      required
-                      placeholder="ExamplePlayer123"
-                      class="input"
-                    />
-                  </div>
-                  <div class="field-group">
-                    <label [for]="'p-disc-' + i">Discord Username</label>
-                    <input
-                      [id]="'p-disc-' + i"
-                      type="text"
-                      [(ngModel)]="player.discord"
-                      [name]="'playerDisc' + i"
-                      placeholder="username"
-                      class="input"
-                    />
+              <h3>Player 1 <span class="captain-tag">Captain</span></h3>
+              <div class="captain-id">
+                <img *ngIf="currentUser.avatarUrl" [src]="currentUser.avatarUrl" [alt]="currentUser.displayName" class="mini-avatar" />
+                <div *ngIf="!currentUser.avatarUrl" class="mini-avatar-placeholder">{{ currentUser.displayName[0] }}</div>
+                <span>{{ currentUser.displayName }}</span>
+              </div>
+              <ng-container *ngTemplateOutlet="playerFields; context: { player: form.players[0], idx: 0, meta: playerMeta[0] }"></ng-container>
+            </div>
+
+            <!-- Player 2 -->
+            <div class="form-section">
+              <h3>Player 2</h3>
+              <div class="field-group">
+                <label [for]="'disc-1'">VESA Display Name <span class="required">*</span></label>
+                <div *ngIf="playerSelections[1]" class="player-chip">
+                  <img *ngIf="playerAvatarUrls[1]" [src]="playerAvatarUrls[1]" class="chip-avatar" alt="" />
+                  <div *ngIf="!playerAvatarUrls[1]" class="chip-avatar-placeholder">{{ (playerSelections[1].display_name || '?')[0] }}</div>
+                  <span class="chip-name">{{ playerSelections[1].display_name }}</span>
+                  <button type="button" class="chip-clear" (click)="clearPlayerSelection(1)">Change</button>
+                </div>
+                <div *ngIf="!playerSelections[1]" class="autocomplete-wrap">
+                  <input [id]="'disc-1'" type="text" [ngModel]="form.players[1].discordUsername" name="disc1"
+                    required placeholder="Start typing a name…" class="input" autocomplete="off"
+                    (input)="onDiscordInput(1, $any($event.target).value)"
+                    (blur)="onDiscordBlur(1)"
+                    (focus)="playerSearchVisible[1] = playerSearchResults[1].length > 0" />
+                  <div *ngIf="playerSearchVisible[1]" class="search-dropdown">
+                    <div *ngFor="let p of playerSearchResults[1]" class="search-result"
+                      (mousedown)="selectPlayer(1, p)">
+                      <span class="result-name">{{ p.display_name }}</span>
+                      <span *ngIf="p.overstat_id" class="result-overstat-dot" title="Has Overstat"></span>
+                    </div>
                   </div>
                 </div>
               </div>
+              <ng-container *ngTemplateOutlet="playerFields; context: { player: form.players[1], idx: 1, meta: playerMeta[1] }"></ng-container>
             </div>
 
-            <!-- Alternates / Subs (optional) -->
+            <!-- Player 3 -->
+            <div class="form-section">
+              <h3>Player 3</h3>
+              <div class="field-group">
+                <label [for]="'disc-2'">VESA Display Name <span class="required">*</span></label>
+                <div *ngIf="playerSelections[2]" class="player-chip">
+                  <img *ngIf="playerAvatarUrls[2]" [src]="playerAvatarUrls[2]" class="chip-avatar" alt="" />
+                  <div *ngIf="!playerAvatarUrls[2]" class="chip-avatar-placeholder">{{ (playerSelections[2].display_name || '?')[0] }}</div>
+                  <span class="chip-name">{{ playerSelections[2].display_name }}</span>
+                  <button type="button" class="chip-clear" (click)="clearPlayerSelection(2)">Change</button>
+                </div>
+                <div *ngIf="!playerSelections[2]" class="autocomplete-wrap">
+                  <input [id]="'disc-2'" type="text" [ngModel]="form.players[2].discordUsername" name="disc2"
+                    required placeholder="Start typing a name…" class="input" autocomplete="off"
+                    (input)="onDiscordInput(2, $any($event.target).value)"
+                    (blur)="onDiscordBlur(2)"
+                    (focus)="playerSearchVisible[2] = playerSearchResults[2].length > 0" />
+                  <div *ngIf="playerSearchVisible[2]" class="search-dropdown">
+                    <div *ngFor="let p of playerSearchResults[2]" class="search-result"
+                      (mousedown)="selectPlayer(2, p)">
+                      <span class="result-name">{{ p.display_name }}</span>
+                      <span *ngIf="p.overstat_id" class="result-overstat-dot" title="Has Overstat"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <ng-container *ngTemplateOutlet="playerFields; context: { player: form.players[2], idx: 2, meta: playerMeta[2] }"></ng-container>
+            </div>
+
+            <!-- Alternates / Subs -->
             <div class="form-section">
               <h3>Alternates / Subs <span class="section-note">— optional</span></h3>
               <div *ngFor="let sub of form.subs; let i = index" class="player-row sub-row">
                 <span class="player-label">Sub {{ i + 1 }}</span>
-                <div class="field-row player-fields">
-                  <div class="field-group">
-                    <label [for]="'s-ign-' + i">EA / In-Game Name</label>
-                    <input
-                      [id]="'s-ign-' + i"
-                      type="text"
-                      [(ngModel)]="sub.inGameName"
-                      [name]="'subIgn' + i"
-                      placeholder="ExamplePlayer123"
-                      class="input"
-                    />
-                  </div>
+                <div class="field-grid-3">
                   <div class="field-group">
                     <label [for]="'s-disc-' + i">Discord Username</label>
-                    <input
-                      [id]="'s-disc-' + i"
-                      type="text"
-                      [(ngModel)]="sub.discord"
-                      [name]="'subDisc' + i"
-                      placeholder="username"
-                      class="input"
-                    />
+                    <input [id]="'s-disc-' + i" type="text" [(ngModel)]="sub.discordUsername" [name]="'sDisc' + i" placeholder="username" class="input" />
+                  </div>
+                  <div class="field-group">
+                    <label [for]="'s-rank-' + i">Rank</label>
+                    <select [id]="'s-rank-' + i" [(ngModel)]="sub.rank" [name]="'sRank' + i" class="input">
+                      <option value="">Select…</option>
+                      <option *ngFor="let r of ranks" [value]="r.value">{{ r.label }}</option>
+                    </select>
+                  </div>
+                  <div class="field-group">
+                    <label [for]="'s-plat-' + i">Platform</label>
+                    <select [id]="'s-plat-' + i" [(ngModel)]="sub.platform" [name]="'sPlat' + i" class="input">
+                      <option value="">Select…</option>
+                      <option *ngFor="let p of platforms" [value]="p.value">{{ p.label }}</option>
+                    </select>
                   </div>
                 </div>
                 <button type="button" class="remove-btn" (click)="removeSub(i)" aria-label="Remove sub">✕</button>
@@ -172,28 +229,11 @@ interface DiscordUser {
               <button type="button" class="add-sub-btn" (click)="addSub()">+ Add Alternate</button>
             </div>
 
-            <!-- Notes -->
-            <div class="form-section">
-              <h3>Additional Notes</h3>
-              <div class="field-group">
-                <label for="notes">Anything we should know?</label>
-                <textarea
-                  id="notes"
-                  [(ngModel)]="form.notes"
-                  name="notes"
-                  rows="3"
-                  placeholder="Previous season results, scheduling constraints, etc."
-                  class="input textarea"
-                ></textarea>
-              </div>
-            </div>
-
             <div class="form-footer">
               <p class="form-note">
-                Registrations are reviewed by league admins before placement. You'll be contacted
-                via Discord once your team is confirmed. Make sure all roster players are
-                registered on VESA before submitting. Teams are placed on the waitlist automatically
-                if league play is underway or spots are full.
+                Inaccurate rank or experience info affects division placement for every team in
+                your lobby. Admins will reach out via Discord once your signup is reviewed.
+                Teams are waitlisted automatically if spots are full or the season is underway.
               </p>
               <button type="submit" class="btn-submit" [disabled]="signupForm.invalid">
                 Submit Registration
@@ -212,7 +252,7 @@ interface DiscordUser {
             from <strong>{{ currentUser?.displayName }}</strong>.
             League admins will reach out via Discord once your team has been reviewed and placed.
           </p>
-          <p>Make sure your team is in the League Discord for announcements.</p>
+          <p>Make sure your full roster is in the League Discord for announcements.</p>
           <div class="success-actions">
             <a href="https://discord.gg/RyvVJqnXbe" target="_blank" rel="noopener noreferrer" class="btn-discord">
               Join League Discord
@@ -223,6 +263,61 @@ interface DiscordUser {
 
       </div>
     </div>
+
+    <!-- Reusable per-player fields template -->
+    <ng-template #playerFields let-player="player" let-idx="idx" let-meta="meta">
+      <div class="field-grid-2">
+        <div class="field-group">
+          <label [for]="'rank-' + idx">Rank <span class="required">*</span></label>
+          <select [id]="'rank-' + idx" [(ngModel)]="player.rank" [name]="'rank' + idx" required class="input">
+            <option value="">Select…</option>
+            <option *ngFor="let r of ranks" [value]="r.value">{{ r.label }}</option>
+          </select>
+          <span class="field-hint">Highest rank achieved in the most recent ranked split with a decent number of games played.</span>
+        </div>
+        <div class="field-group">
+          <label [for]="'div-' + idx">Previous VESA Division <span class="required">*</span></label>
+          <select [id]="'div-' + idx" [(ngModel)]="player.vesaDivision" [name]="'div' + idx" required class="input">
+            <option value="">Select…</option>
+            <option *ngFor="let d of vesaDivisions" [value]="d.value">{{ d.label }}</option>
+          </select>
+          <span class="field-hint">Select "None" if this player hasn't been on a VESA roster (subbing doesn't count).</span>
+        </div>
+      </div>
+      <div class="field-grid-2">
+        <div class="field-group">
+          <label [for]="'overstat-' + idx">
+            Overstat Link <span *ngIf="!meta?.overstatLocked" class="required">*</span>
+          </label>
+          <ng-container *ngIf="!meta?.overstatLocked">
+            <div class="overstat-wrap">
+              <input
+                [id]="'overstat-' + idx"
+                type="text"
+                [(ngModel)]="player.overstatLink"
+                [name]="'overstat' + idx"
+                required
+                placeholder="https://overstat.gg/… or None"
+                class="input"
+                [class.input-loading]="meta?.overstatLoading"
+                [readonly]="meta?.overstatLoading"
+              />
+              <span *ngIf="meta?.overstatLoading" class="overstat-spinner" aria-label="Looking up…"></span>
+            </div>
+          </ng-container>
+          <div *ngIf="meta?.overstatLocked" class="linked-pill">
+            <span class="linked-badge">Linked</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label [for]="'platform-' + idx">Platform <span class="required">*</span></label>
+          <select [id]="'platform-' + idx" [(ngModel)]="player.platform" [name]="'platform' + idx" required class="input">
+            <option value="">Select…</option>
+            <option *ngFor="let p of platforms" [value]="p.value">{{ p.label }}</option>
+          </select>
+        </div>
+      </div>
+    </ng-template>
   `,
   styles: [`
     .signup-container {
@@ -276,13 +371,13 @@ interface DiscordUser {
     .sub {
       color: rgba(227,230,243,0.65);
       font-size: 1rem;
-      max-width: 560px;
+      max-width: 580px;
       margin: 0 auto;
       line-height: 1.6;
     }
 
     .signup-body {
-      max-width: 720px;
+      max-width: 760px;
       margin: 2.5rem auto 0;
       padding: 0 1.5rem;
     }
@@ -297,13 +392,7 @@ interface DiscordUser {
     }
 
     .auth-icon { font-size: 2.8rem; margin-bottom: 1rem; }
-
-    .auth-gate h2 {
-      font-size: 1.5rem;
-      font-weight: 800;
-      margin: 0 0 0.6rem;
-    }
-
+    .auth-gate h2 { font-size: 1.5rem; font-weight: 800; margin: 0 0 0.6rem; }
     .auth-gate p {
       color: rgba(227,230,243,0.62);
       margin: 0 0 2rem;
@@ -327,17 +416,24 @@ interface DiscordUser {
       cursor: pointer;
       transition: background 0.18s, transform 0.18s, opacity 0.18s;
       font-family: inherit;
-      letter-spacing: 0.02em;
     }
-
-    .btn-discord-signin:hover:not(:disabled) {
-      background: #4752c4;
-      transform: translateY(-2px);
-    }
-
+    .btn-discord-signin:hover:not(:disabled) { background: #4752c4; transform: translateY(-2px); }
     .btn-discord-signin:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .discord-logo { width: 1.2rem; height: 1.2rem; flex-shrink: 0; }
+
+    .btn-dev-bypass {
+      display: block;
+      margin: 0.75rem auto 0;
+      background: none;
+      border: none;
+      color: rgba(227,230,243,0.25);
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: color 0.15s;
+    }
+    .btn-dev-bypass:hover { color: rgba(227,230,243,0.55); }
 
     /* User banner */
     .user-banner {
@@ -351,32 +447,16 @@ interface DiscordUser {
       margin-bottom: 1.5rem;
     }
 
-    .user-avatar {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      object-fit: cover;
-    }
+    .user-avatar { width: 2rem; height: 2rem; border-radius: 50%; object-fit: cover; }
 
     .user-avatar-placeholder {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
+      width: 2rem; height: 2rem; border-radius: 50%;
       background: linear-gradient(135deg, #5e6cff, #b45cff);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #fff;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 700; color: #fff; flex-shrink: 0;
     }
 
-    .user-name {
-      font-weight: 600;
-      font-size: 0.95rem;
-      flex: 1;
-    }
+    .user-name { font-weight: 600; font-size: 0.95rem; flex: 1; }
 
     .sign-out-btn {
       background: none;
@@ -399,9 +479,17 @@ interface DiscordUser {
       padding: 2rem;
     }
 
-    .form-section { margin-bottom: 2rem; }
+    .form-section {
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .form-section:last-of-type { border-bottom: none; }
 
     .form-section h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       font-size: 0.82rem;
       font-weight: 700;
       text-transform: uppercase;
@@ -412,6 +500,17 @@ interface DiscordUser {
       border-bottom: 1px solid rgba(255,255,255,0.07);
     }
 
+    .captain-tag {
+      background: linear-gradient(90deg, #5e6cff, #b45cff);
+      color: #fff;
+      font-size: 0.68rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+    }
+
     .section-note {
       font-weight: 400;
       text-transform: none;
@@ -419,16 +518,45 @@ interface DiscordUser {
       color: rgba(227,230,243,0.35);
     }
 
+    /* Captain identity row */
+    .captain-id {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+      padding: 0.6rem 0.9rem;
+      background: rgba(94,108,255,0.08);
+      border: 1px solid rgba(94,108,255,0.2);
+      border-radius: 0.6rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    .mini-avatar { width: 1.5rem; height: 1.5rem; border-radius: 50%; object-fit: cover; }
+    .mini-avatar-placeholder {
+      width: 1.5rem; height: 1.5rem; border-radius: 50%;
+      background: linear-gradient(135deg, #5e6cff, #b45cff);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+
+    /* Field layouts */
     .field-group {
       display: flex;
       flex-direction: column;
-      gap: 0.4rem;
+      gap: 0.35rem;
       margin-bottom: 1rem;
     }
 
-    .field-row {
+    .field-grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .field-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 1rem;
     }
 
@@ -439,6 +567,12 @@ interface DiscordUser {
     }
 
     .required { color: #ff2c5c; }
+
+    .field-hint {
+      font-size: 0.76rem;
+      color: rgba(227,230,243,0.38);
+      line-height: 1.5;
+    }
 
     .input {
       background: rgba(255,255,255,0.06);
@@ -452,28 +586,168 @@ interface DiscordUser {
       transition: border-color 0.18s, background 0.18s;
       font-family: inherit;
     }
-
-    .input:focus {
-      outline: none;
-      border-color: #5e6cff;
-      background: rgba(94,108,255,0.08);
-    }
-
+    .input:focus { outline: none; border-color: #5e6cff; background: rgba(94,108,255,0.08); }
     .input option { background: #1a1a2e; color: #e3e6f3; }
 
-    .textarea { resize: vertical; min-height: 80px; }
+    /* Autocomplete */
+    .autocomplete-wrap { position: relative; }
 
-    /* Player rows */
+    .search-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: #1a1a2e;
+      border: 1px solid rgba(94,108,255,0.35);
+      border-radius: 0.6rem;
+      overflow: hidden;
+      z-index: 100;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+
+    .search-result {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem 0.9rem;
+      cursor: pointer;
+      transition: background 0.12s;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .search-result:last-child { border-bottom: none; }
+    .search-result:hover { background: rgba(94,108,255,0.15); }
+
+    .result-name { font-size: 0.92rem; color: #e3e6f3; flex: 1; }
+
+    .result-overstat-dot {
+      width: 0.55rem; height: 0.55rem;
+      border-radius: 50%;
+      background: #10b981;
+      flex-shrink: 0;
+      title: "Has Overstat";
+    }
+
+    .player-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      background: rgba(94,108,255,0.12);
+      border: 1px solid rgba(94,108,255,0.35);
+      border-radius: 2rem;
+      padding: 0.35rem 0.5rem 0.35rem 0.35rem;
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .chip-avatar {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .chip-avatar-placeholder {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #5e6cff, #b45cff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+
+    .chip-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #e3e6f3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chip-clear {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 1rem;
+      color: rgba(227,230,243,0.7);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.65rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .chip-clear:hover {
+      background: rgba(255,80,80,0.18);
+      border-color: rgba(255,80,80,0.4);
+      color: #ff8080;
+    }
+
+    .input-loading {
+      border-color: rgba(94,108,255,0.3) !important;
+      color: rgba(227,230,243,0.4);
+      cursor: wait;
+    }
+
+    .overstat-wrap {
+      position: relative;
+    }
+
+    .overstat-spinner {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0.9rem;
+      height: 0.9rem;
+      border: 2px solid rgba(94,108,255,0.25);
+      border-top-color: #5e6cff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+
+    .linked-pill {
+      display: flex;
+      align-items: center;
+      height: 2.3rem;
+      padding: 0 0.9rem;
+      background: rgba(16,185,129,0.06);
+      border: 1px solid rgba(16,185,129,0.3);
+      border-radius: 0.6rem;
+    }
+
+    .linked-badge {
+      display: inline-block;
+      background: rgba(16,185,129,0.15);
+      border: 1px solid rgba(16,185,129,0.4);
+      color: #10b981;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.1rem 0.45rem;
+      border-radius: 1rem;
+    }
+
+    /* Sub rows */
     .player-row {
       position: relative;
       margin-bottom: 1.2rem;
       padding: 1rem 1rem 0.25rem;
       background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.07);
+      border: 1px solid rgba(94,108,255,0.15);
       border-radius: 0.75rem;
     }
-
-    .sub-row { border-color: rgba(94,108,255,0.15); }
 
     .player-label {
       display: block;
@@ -485,18 +759,12 @@ interface DiscordUser {
       margin-bottom: 0.6rem;
     }
 
-    .player-fields { margin-bottom: 0; }
-    .player-fields .field-group { margin-bottom: 0.5rem; }
-
     .remove-btn {
       position: absolute;
-      top: 0.75rem;
-      right: 0.75rem;
-      background: none;
-      border: none;
+      top: 0.75rem; right: 0.75rem;
+      background: none; border: none;
       color: rgba(227,230,243,0.3);
-      font-size: 0.85rem;
-      cursor: pointer;
+      font-size: 0.85rem; cursor: pointer;
       padding: 0.2rem 0.4rem;
       border-radius: 0.3rem;
       transition: color 0.15s, background 0.15s;
@@ -519,11 +787,8 @@ interface DiscordUser {
     }
     .add-sub-btn:hover { border-color: #5e6cff; color: #fff; background: rgba(94,108,255,0.1); }
 
-    .form-footer {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
+    /* Footer */
+    .form-footer { display: flex; flex-direction: column; gap: 1rem; }
 
     .form-note {
       font-size: 0.81rem;
@@ -534,15 +799,9 @@ interface DiscordUser {
 
     .btn-submit {
       background: linear-gradient(90deg, #5e6cff, #b45cff);
-      color: #fff;
-      border: none;
-      border-radius: 2rem;
-      padding: 0.8rem 2.2rem;
-      font-size: 0.98rem;
-      font-weight: 700;
-      cursor: pointer;
-      letter-spacing: 0.04em;
-      transition: all 0.2s;
+      color: #fff; border: none; border-radius: 2rem;
+      padding: 0.8rem 2.2rem; font-size: 0.98rem; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.04em; transition: all 0.2s;
       align-self: flex-end;
       box-shadow: 0 4px 18px rgba(94,108,255,0.35);
       font-family: inherit;
@@ -560,58 +819,37 @@ interface DiscordUser {
     }
 
     .success-icon {
-      width: 3.5rem;
-      height: 3.5rem;
-      border-radius: 50%;
+      width: 3.5rem; height: 3.5rem; border-radius: 50%;
       background: linear-gradient(135deg, #5e6cff, #b45cff);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: #fff;
-      margin: 0 auto 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; color: #fff; margin: 0 auto 1.5rem;
     }
 
     .success-card h2 { font-size: 1.6rem; font-weight: 800; margin: 0 0 1rem; }
     .success-card p { color: rgba(227,230,243,0.72); line-height: 1.7; margin: 0 0 0.75rem; }
 
     .success-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 1.5rem;
+      display: flex; gap: 1rem; justify-content: center;
+      flex-wrap: wrap; margin-top: 1.5rem;
     }
 
     .btn-discord {
-      display: inline-block;
-      background: #5865f2;
-      color: #fff;
-      padding: 0.7rem 1.6rem;
-      border-radius: 2rem;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.92rem;
-      transition: background 0.18s, transform 0.18s;
+      display: inline-block; background: #5865f2; color: #fff;
+      padding: 0.7rem 1.6rem; border-radius: 2rem; text-decoration: none;
+      font-weight: 600; font-size: 0.92rem; transition: background 0.18s, transform 0.18s;
     }
     .btn-discord:hover { background: #4752c4; transform: translateY(-2px); }
 
     .btn-outline {
-      display: inline-block;
-      background: transparent;
-      color: #e3e6f3;
-      border: 1px solid rgba(255,255,255,0.2);
-      padding: 0.7rem 1.6rem;
-      border-radius: 2rem;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.92rem;
+      display: inline-block; background: transparent; color: #e3e6f3;
+      border: 1px solid rgba(255,255,255,0.2); padding: 0.7rem 1.6rem;
+      border-radius: 2rem; text-decoration: none; font-weight: 600; font-size: 0.92rem;
       transition: background 0.18s, transform 0.18s;
     }
     .btn-outline:hover { background: rgba(255,255,255,0.07); transform: translateY(-2px); }
 
-    @media (max-width: 560px) {
-      .field-row { grid-template-columns: 1fr; }
+    @media (max-width: 600px) {
+      .field-grid-2, .field-grid-3 { grid-template-columns: 1fr; }
       .form-card { padding: 1.5rem 1rem; }
       .btn-submit { align-self: stretch; }
     }
@@ -622,27 +860,38 @@ export class LeagueSignupComponent implements OnInit, OnDestroy {
   signingIn = false;
   currentUser: DiscordUser | null = null;
 
+  readonly ranks = RANKS;
+  readonly vesaDivisions = VESA_DIVISIONS;
+  readonly platforms = PLATFORMS;
+
   form: SignupForm = {
     teamName: '',
-    skillLevel: '',
-    notes: '',
-    players: [
-      { inGameName: '', discord: '' },
-      { inGameName: '', discord: '' },
-      { inGameName: '', discord: '' }
-    ],
+    compExperience: '',
+    players: [emptyRosterPlayer(), emptyRosterPlayer(), emptyRosterPlayer()],
     subs: []
   };
+
+  playerMeta: PlayerMeta[] = [
+    { overstatLocked: false, overstatLoading: false },
+    { overstatLocked: false, overstatLoading: false },
+    { overstatLocked: false, overstatLoading: false },
+  ];
+
+  playerSearchResults: Player[][] = [[], [], []];
+  playerSearchVisible: boolean[] = [false, false, false];
+  playerSelections: (Player | null)[] = [null, null, null];
+  playerAvatarUrls: (string | null)[] = [null, null, null];
+
+  private searchTimers: (ReturnType<typeof setTimeout> | null)[] = [null, null, null];
+  private hideTimers:   (ReturnType<typeof setTimeout> | null)[] = [null, null, null];
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   private unsubscribeAuth?: Function;
 
-  constructor(private nhostService: NhostService) {}
+  constructor(private nhostService: NhostService, private discordService: DiscordService) {}
 
   ngOnInit() {
     const auth = this.nhostService.auth;
-
-    // Sync current auth state on load (handles post-OAuth redirect)
     const user = auth.getUser();
     if (user) {
       this.currentUser = {
@@ -650,9 +899,8 @@ export class LeagueSignupComponent implements OnInit, OnDestroy {
         displayName: user.displayName ?? user.email ?? 'Discord User',
         avatarUrl: user.avatarUrl ?? ''
       };
+      this.lookupOverstat(0, this.currentUser.displayName);
     }
-
-    // Keep in sync as auth state changes
     this.unsubscribeAuth = auth.onAuthStateChanged((_event: string, session: any) => {
       if (session?.user) {
         this.currentUser = {
@@ -660,14 +908,103 @@ export class LeagueSignupComponent implements OnInit, OnDestroy {
           displayName: session.user.displayName ?? session.user.email ?? 'Discord User',
           avatarUrl: session.user.avatarUrl ?? ''
         };
+        this.lookupOverstat(0, this.currentUser.displayName);
       } else {
         this.currentUser = null;
+        this.playerMeta[0] = { overstatLocked: false, overstatLoading: false };
+        this.form.players[0].overstatLink = '';
       }
     });
   }
 
   ngOnDestroy() {
     this.unsubscribeAuth?.();
+  }
+
+  lookupOverstat(playerIdx: number, displayName: string) {
+    if (!displayName.trim()) return;
+    this.playerMeta[playerIdx] = { overstatLocked: false, overstatLoading: true };
+    this.nhostService.getPlayerByDisplayName(displayName.trim()).subscribe({
+      next: player => {
+        if (player?.overstat_id) {
+          this.form.players[playerIdx].overstatLink = player.overstat_id;
+          this.playerMeta[playerIdx] = { overstatLocked: true, overstatLoading: false };
+        } else {
+          this.playerMeta[playerIdx] = { overstatLocked: false, overstatLoading: false };
+        }
+        if (player && playerIdx > 0) {
+          this.form.players[playerIdx].discordUsername = player.display_name ?? displayName;
+          this.playerSelections[playerIdx] = player;
+          if (player.discord_id) this.fetchAvatar(playerIdx, player.discord_id);
+        }
+      },
+      error: () => {
+        this.playerMeta[playerIdx] = { overstatLocked: false, overstatLoading: false };
+      }
+    });
+  }
+
+  onDiscordBlur(playerIdx: number) {
+    this.scheduleHideSearch(playerIdx);
+    const name = this.form.players[playerIdx].discordUsername;
+    this.playerMeta[playerIdx] = { overstatLocked: false, overstatLoading: false };
+    this.form.players[playerIdx].overstatLink = '';
+    this.lookupOverstat(playerIdx, name);
+  }
+
+  fetchAvatar(playerIdx: number, discordId: string) {
+    this.discordService.getUserById(discordId).subscribe(profile => {
+      this.playerAvatarUrls[playerIdx] = profile?.avatarUrl ?? null;
+    });
+  }
+
+  clearPlayerSelection(playerIdx: number) {
+    this.playerSelections[playerIdx] = null;
+    this.playerAvatarUrls[playerIdx] = null;
+    this.form.players[playerIdx].discordUsername = '';
+    this.form.players[playerIdx].overstatLink = '';
+    this.playerMeta[playerIdx] = { overstatLocked: false, overstatLoading: false };
+    this.playerSearchResults[playerIdx] = [];
+    this.playerSearchVisible[playerIdx] = false;
+  }
+
+  onDiscordInput(playerIdx: number, value: string) {
+    if (this.searchTimers[playerIdx] !== null) clearTimeout(this.searchTimers[playerIdx]!);
+    this.form.players[playerIdx].discordUsername = value;
+    if (!value.trim()) {
+      this.playerSearchResults[playerIdx] = [];
+      this.playerSearchVisible[playerIdx] = false;
+      return;
+    }
+    this.searchTimers[playerIdx] = setTimeout(() => {
+      this.nhostService.searchPlayersByName(value.trim()).subscribe(players => {
+        this.playerSearchResults[playerIdx] = players;
+        this.playerSearchVisible[playerIdx] = true;
+      });
+    }, 250);
+  }
+
+  scheduleHideSearch(playerIdx: number) {
+    this.hideTimers[playerIdx] = setTimeout(() => {
+      this.playerSearchVisible[playerIdx] = false;
+    }, 150);
+  }
+
+  selectPlayer(playerIdx: number, player: Player) {
+    if (this.hideTimers[playerIdx] !== null) clearTimeout(this.hideTimers[playerIdx]!);
+    this.form.players[playerIdx].discordUsername = player.display_name ?? '';
+    this.playerSearchVisible[playerIdx] = false;
+    this.playerSearchResults[playerIdx] = [];
+    this.playerMeta[playerIdx] = { overstatLocked: false, overstatLoading: false };
+    this.form.players[playerIdx].overstatLink = '';
+    this.playerSelections[playerIdx] = player;
+    if (player.discord_id) this.fetchAvatar(playerIdx, player.discord_id);
+    this.lookupOverstat(playerIdx, player.display_name ?? '');
+  }
+
+  devBypass() {
+    this.currentUser = { id: 'dev', displayName: 'Dev User', avatarUrl: '' };
+    this.lookupOverstat(0, 'Dev User');
   }
 
   signInWithDiscord() {
@@ -683,7 +1020,7 @@ export class LeagueSignupComponent implements OnInit, OnDestroy {
   }
 
   addSub() {
-    this.form.subs.push({ inGameName: '', discord: '' });
+    this.form.subs.push({ discordUsername: '', rank: '', platform: '' });
   }
 
   removeSub(index: number) {

@@ -81,6 +81,44 @@ export class NhostService {
     return this.nhost.auth;
   }
 
+  getPlayerByDisplayName(displayName: string): Observable<Player | null> {
+    const query = `
+      query GetPlayerByDisplayName($displayName: String!) {
+        players(where: { display_name: { _ilike: $displayName } }, limit: 1) {
+          id
+          discord_id
+          display_name
+          overstat_id
+        }
+      }
+    `;
+    return from(
+      this.nhost.graphql.request(query, { displayName }).then((response: any) => {
+        if (response.error || !response.data?.players?.length) return null;
+        return response.data.players[0] as Player;
+      })
+    );
+  }
+
+  searchPlayersByName(query: string): Observable<Player[]> {
+    const gql = `
+      query SearchPlayers($query: String!) {
+        players(where: { display_name: { _ilike: $query } }, limit: 8, order_by: { display_name: asc }) {
+          id
+          discord_id
+          display_name
+          overstat_id
+        }
+      }
+    `;
+    return from(
+      this.nhost.graphql.request(gql, { query: `%${query}%` }).then((response: any) => {
+        if (response.error) return [];
+        return (response.data?.players ?? []) as Player[];
+      })
+    );
+  }
+
   /**
    * Get all players using pagination
    */
