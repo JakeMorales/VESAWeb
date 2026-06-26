@@ -7,7 +7,7 @@ export interface MatchDaySlot {
 
 export interface ScheduleEntry {
   label: string;
-  type: 'signup' | 'placement' | 'regular' | 'match-point' | 'award';
+  type: 'signup' | 'placement' | 'regular' | 'match-point' | 'award' | 'break';
   date?: Date;       // single-date entries: signup open/close, award show
   slots?: MatchDaySlot[]; // multi-date entries: placement week, regular weeks, MP
 }
@@ -62,16 +62,12 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
     ],
   },
   {
-    label: 'Week 4',
-    type: 'regular',
-    slots: [
-      { date: new Date('2026-09-07T20:00:00-04:00'), divisions: 'Div III, V & VIII' },
-      { date: new Date('2026-09-09T20:00:00-04:00'), divisions: 'Div II, IV & VII' },
-      { date: new Date('2026-09-11T20:00:00-04:00'), divisions: 'Div I & VI' },
-    ],
+    label: 'Labor Day Break',
+    type: 'break',
+    date: new Date('2026-09-07T00:00:00-04:00'),
   },
   {
-    label: 'Week 5',
+    label: 'Week 4',
     type: 'regular',
     slots: [
       { date: new Date('2026-09-14T20:00:00-04:00'), divisions: 'Div III, V & VIII' },
@@ -80,7 +76,7 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
     ],
   },
   {
-    label: 'Week 6',
+    label: 'Week 5',
     type: 'regular',
     slots: [
       { date: new Date('2026-09-21T20:00:00-04:00'), divisions: 'Div III, V & VIII' },
@@ -89,8 +85,8 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
     ],
   },
   {
-    label: 'Match Point',
-    type: 'match-point',
+    label: 'Week 6',
+    type: 'regular',
     slots: [
       { date: new Date('2026-09-28T20:00:00-04:00'), divisions: 'Div III, V & VIII' },
       { date: new Date('2026-09-30T20:00:00-04:00'), divisions: 'Div II, IV & VII' },
@@ -98,9 +94,18 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
     ],
   },
   {
+    label: 'Match Point',
+    type: 'match-point',
+    slots: [
+      { date: new Date('2026-10-05T20:00:00-04:00'), divisions: 'Div III, V & VIII' },
+      { date: new Date('2026-10-07T20:00:00-04:00'), divisions: 'Div II, IV & VII' },
+      { date: new Date('2026-10-08T20:00:00-04:00'), divisions: 'Div I & VI' },
+    ],
+  },
+  {
     label: 'Season 14 Award Show',
     type: 'award',
-    date: new Date('2026-10-03T00:00:00-04:00'),
+    date: new Date('2026-10-10T00:00:00-04:00'),
   },
 ];
 
@@ -128,6 +133,7 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
             [class.type-placement]="entry.type === 'placement'"
             [class.type-match-point]="entry.type === 'match-point'"
             [class.type-award]="entry.type === 'award'"
+            [class.type-break]="entry.type === 'break'"
           >
             <div class="week-header">
               <span class="week-label">{{ entry.label }}</span>
@@ -238,6 +244,15 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
     }
 
     .type-signup { background: rgba(255,255,255,0.01); }
+    .type-break {
+      background: rgba(255,255,255,0.01);
+      opacity: 0.45;
+    }
+    .type-break .week-label {
+      font-size: 0.78rem;
+      font-style: italic;
+      color: rgba(227,230,243,0.45);
+    }
     .type-placement::before { background: #5e6cff; }
     .type-match-point::before { background: linear-gradient(180deg, #ffd700, #ff8c00); }
     .type-award::before { background: linear-gradient(180deg, #b45cff, #5e6cff); }
