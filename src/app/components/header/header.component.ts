@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-header',
@@ -36,9 +37,13 @@ import { RouterModule } from '@angular/router';
             </div>
           </div>
           <a routerLink="/scrims" routerLinkActive="active" (click)="closeNav()">Scrims</a>
-          <a routerLink="/players" routerLinkActive="active" (click)="closeNav()">Player Stats</a>
+          @if (environment.features.playerStats) {
+            <a routerLink="/players" routerLinkActive="active" (click)="closeNav()">Player Stats</a>
+          }
           <a routerLink="/games" routerLinkActive="active" (click)="closeNav()">Games</a>
-          <a routerLink="/ratings" routerLinkActive="active" (click)="closeNav()">Ratings</a>
+          @if (environment.features.ratingsLeaderboard) {
+            <a routerLink="/ratings" routerLinkActive="active" (click)="closeNav()">Ratings</a>
+          }
         </nav>
 
         <button class="mobile-toggle" (click)="toggleNav()" [attr.aria-expanded]="isNavOpen">
@@ -452,6 +457,7 @@ import { RouterModule } from '@angular/router';
   `]
 })
 export class HeaderComponent {
+  protected readonly environment = environment;
   isNavOpen = false;
 
   toggleNav() {
