@@ -43,6 +43,7 @@ import { TwitchEmbedComponent } from './twitch-embed.component';
           <div class="current-match-header">
             <h2>Last Played</h2>
           </div>
+          <app-twitch-embed *ngIf="streamChannel" [channel]="streamChannel" height="400px"></app-twitch-embed>
           <a [routerLink]="['/match', currentMatch!.id]" class="last-played-card">
             <div class="last-played-info">
               <span class="last-played-label">{{ currentMatch!.matchDay }}</span>
