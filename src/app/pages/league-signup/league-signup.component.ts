@@ -86,8 +86,6 @@ function emptyRosterPlayer(): RosterPlayer {
         </p>
       </div>
 
-      <app-league-schedule [dates]="scheduleEntries"></app-league-schedule>
-
       <div class="signup-body">
 
         <!-- Auth gate -->
@@ -265,6 +263,9 @@ function emptyRosterPlayer(): RosterPlayer {
         </div>
 
       </div>
+
+      <app-league-schedule [dates]="scheduleEntries"></app-league-schedule>
+
     </div>
 
     <!-- Reusable per-player fields template -->
