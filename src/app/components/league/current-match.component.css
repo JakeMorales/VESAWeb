@@ -119,6 +119,7 @@
 
 .last-played-card {
   display: flex;
+  margin-top: 1.5rem;
   justify-content: space-between;
   align-items: center;
   background: rgba(255, 255, 255, 0.05);
