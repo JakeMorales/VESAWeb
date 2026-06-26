@@ -81,6 +81,8 @@ export interface LeagueMatchDay {
           assists: number;
           damageDealt: number;
           damage_dealt?: number;
+          knockdowns?: number;
+          headshots?: number;
           revivesGiven?: number;
           revives_given?: number;
           revives?: number;
@@ -89,6 +91,8 @@ export interface LeagueMatchDay {
           teamPlacement: number;
           name?: string;
           teamName?: string;
+          score?: number;
+          kills?: number;
         };
       }>;
     }>;
@@ -230,13 +234,17 @@ export class LeagueService {
                 kills: player.kills || 0,
                 assists: player.assists || 0,
                 damageDealt: player.damageDealt || player.damage_dealt || 0,
+                knockdowns: player.knockdowns || 0,
+                headshots: player.headshots || 0,
                 revivesGiven: player.revivesGiven || player.revives_given || 0,
                 revives: player.revives
               })),
               overall_stats: team.overall_stats ? {
                 teamPlacement: team.overall_stats.teamPlacement,
                 name: teamName,
-                teamName: teamName
+                teamName: teamName,
+                score: team.overall_stats.score,
+                kills: team.overall_stats.kills
               } : undefined
             };
           })

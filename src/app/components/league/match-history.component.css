@@ -132,6 +132,15 @@
   text-decoration: underline;
 }
 
+.match-card-finale {
+  border-color: rgba(255, 200, 50, 0.3);
+  background: rgba(255, 200, 50, 0.05);
+}
+
+.match-card-finale:hover {
+  border-color: rgba(255, 200, 50, 0.55);
+}
+
 @media (max-width: 768px) {
   .matches-grid {
     grid-template-columns: 1fr;

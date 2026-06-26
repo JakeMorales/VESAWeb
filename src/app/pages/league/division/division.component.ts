@@ -26,6 +26,7 @@ export interface Match {
   id: string;
   weekNumber: number;
   matchDay: string;
+  filename: string;
   date: string;
   time: string;
   status: 'upcoming' | 'live' | 'completed';
@@ -34,6 +35,7 @@ export interface Match {
   totalGames?: number;
   winner?: string;
   streamUrl?: string;
+  isFinale?: boolean;
 }
 
 export interface MatchResult {
@@ -59,6 +61,14 @@ const NAME_TO_DIVISION: Record<string, number> = Object.fromEntries(
   Object.entries(DIVISION_META).map(([num, meta]) => [meta.name.toLowerCase(), parseInt(num)])
 );
 
+// Per-division Twitch channel — update per-season as streamers are assigned
+const DIVISION_STREAM_CHANNELS: Record<number, string> = {
+  1: 'virida3', 2: 'virida3', 3: 'virida3', 4: 'virida3',
+  5: 'virida3', 6: 'virida3', 7: 'virida3', 8: 'virida3',
+};
+
+const isFinalsFile = (f: string) => /playoffs|finals|_mp/i.test(f);
+
 @Component({
   selector: 'app-division',
   standalone: true,
@@ -81,6 +91,8 @@ export class DivisionComponent implements OnInit {
   loading = true;
   error = false;
 
+  divisionNumber: string = '';
+  streamChannel: string = '';
   teams: Team[] = [];
   matches: Match[] = [];
   currentMatch?: Match;
@@ -115,6 +127,8 @@ export class DivisionComponent implements OnInit {
 
       const season = 'Season_14';
       const divStr = String(divNum);
+      this.divisionNumber = divStr;
+      this.streamChannel = DIVISION_STREAM_CHANNELS[divNum] ?? 'virida3';
 
       forkJoin({
         summary: this.leagueService.getDivisionSummary(season, divStr),
@@ -133,7 +147,8 @@ export class DivisionComponent implements OnInit {
             trendDelta: entry.trendDelta ?? 0
           }));
 
-          const weekFiles = files.filter(f => /Week_\d+\.json$/i.test(f));
+          const weekFiles = files.filter(f => /Week_\d+\.json$/i.test(f) && !isFinalsFile(f));
+          const finalsFiles = files.filter(isFinalsFile);
           this.currentWeek = weekFiles.length;
 
           this.division = {
@@ -142,20 +157,62 @@ export class DivisionComponent implements OnInit {
             currentWeek: this.currentWeek
           };
 
-          this.matches = weekFiles.map(filename => {
+          const weekMatches: Match[] = weekFiles.map(filename => {
             const weekMatch = filename.match(/Week_(\d+)/i);
             const weekNum = weekMatch ? parseInt(weekMatch[1]) : 0;
             return {
-              id: `s14-div${divNum}-week${weekNum}`,
+              id: `Season_14~${divStr}~${filename}`,
               weekNumber: weekNum,
               matchDay: `Week ${weekNum}`,
+              filename,
               date: '',
               time: '',
               status: 'completed' as const,
-              teamsCount: this.teams.length
+              teamsCount: this.teams.length,
+              isFinale: false,
             };
           });
 
+          const finaleMatches: Match[] = finalsFiles.map(filename => ({
+            id: `Season_14~${divStr}~${filename}`,
+            weekNumber: 999,
+            matchDay: 'Match Point Finals',
+            filename,
+            date: '',
+            time: '',
+            status: 'completed' as const,
+            teamsCount: this.teams.length,
+            isFinale: true,
+          }));
+
+          const upcomingWeeks: Match[] = [];
+          for (let w = weekFiles.length + 1; w <= this.totalWeeks; w++) {
+            upcomingWeeks.push({
+              id: `s14-div${divNum}-week${w}-upcoming`,
+              weekNumber: w,
+              matchDay: `Week ${w}`,
+              filename: '',
+              date: '',
+              time: '',
+              status: 'upcoming' as const,
+              teamsCount: this.teams.length,
+              isFinale: false,
+            });
+          }
+
+          const upcomingFinals: Match[] = finalsFiles.length === 0 ? [{
+            id: `s14-div${divNum}-finals-upcoming`,
+            weekNumber: 999,
+            matchDay: 'Match Point Finals',
+            filename: '',
+            date: '',
+            time: '',
+            status: 'upcoming' as const,
+            teamsCount: this.teams.length,
+            isFinale: true,
+          }] : [];
+
+          this.matches = [...finaleMatches, ...weekMatches, ...upcomingWeeks, ...upcomingFinals];
           this.loading = false;
         },
         error: () => {

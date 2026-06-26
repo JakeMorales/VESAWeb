@@ -10,6 +10,11 @@ import { MatchUpcomingSectionComponent } from '../../components/match/match-upco
 import { LeagueMatchDataService } from '../../services/league-match-data.service';
 import { MatchDetail } from '../../services/match-data.service';
 
+const DIVISION_NAMES: Record<number, string> = {
+  1: 'Pinnacle', 2: 'Vanguard', 3: 'Ascendant', 4: 'Emergent',
+  5: 'Challenger', 6: 'Prospect', 7: 'Aspirant', 8: 'Contenders'
+};
+
 @Component({
   selector: 'app-match',
   standalone: true,
@@ -71,39 +76,44 @@ export class MatchComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Get the match ID from the route parameters
-    const matchId = this.route.snapshot.paramMap.get('id') || 'week1-match1';
-    
-    // Load match details and data
-    this.loadMatchData(matchId);
-  }
+    const matchId = this.route.snapshot.paramMap.get('id') || '';
+    const parts = matchId.split('~');
 
-  private loadMatchData(matchId: string) {
-    // Get match details
-    // Placeholder: keep using static meta-data for now
-    // TODO: Replace with real meta-data when available
+    if (parts.length !== 3) {
+      this.match = null;
+      return;
+    }
+
+    const [season, division, filename] = parts;
+    const divNum = parseInt(division, 10);
+    const isFinale = /playoffs|finals|_mp/i.test(filename);
+    const weekMatch = filename.match(/Week_(\d+)/i);
+    const weekNum = weekMatch ? parseInt(weekMatch[1], 10) : 0;
+    const divisionName = DIVISION_NAMES[divNum] || `Division ${division}`;
+
     this.match = {
       id: matchId,
-      weekNumber: 1,
-      matchDay: 'Week 1 - Placeholder',
-      date: '2024-12-01',
-      time: '7:00 PM EST',
+      weekNumber: weekNum,
+      matchDay: isFinale ? 'Match Point Finals' : `Week ${weekNum}`,
+      date: '',
+      time: '',
       status: 'completed',
-      division: 'Pinnacle',
-      divisionTier: 1,
-      teamsCount: 20,
-      gamesPlayed: 6,
-      totalGames: 6,
-      winner: 'Placeholder Winner',
-      description: 'Placeholder match meta-data.'
+      division: divisionName,
+      divisionTier: divNum,
+      teamsCount: 0,
+      gamesPlayed: 0,
+      totalGames: 0,
+      description: `${season.replace(/_/g, ' ')} · ${divisionName} Division`
     };
 
-    // Get match day results (detailed with player stats)
     this.leagueMatchDataService.getLeagueMatchResults(matchId).subscribe({
       next: (results: MatchDayResults | null) => {
         this.matchDayResults = results;
-        if (!results) {
-          console.error('No match results found for:', matchId);
+        if (results) {
+          const gameNums = Object.keys(results).map(n => parseInt(n, 10));
+          this.match!.gamesPlayed = gameNums.length;
+          this.match!.totalGames = gameNums.length;
+          this.match!.teamsCount = results[gameNums[0]]?.length ?? 0;
         }
       },
       error: (err: any) => {

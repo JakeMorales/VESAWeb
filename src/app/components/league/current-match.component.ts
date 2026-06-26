@@ -2,20 +2,27 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Match } from '../../pages/league/division/division.component';
+import { TwitchEmbedComponent } from './twitch-embed.component';
 
 @Component({
   selector: 'app-current-match',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TwitchEmbedComponent],
   template: `
-    <section class="current-match-section" *ngIf="currentMatch">
+    <section class="current-match-section" *ngIf="currentMatch || streamChannel">
       <div class="current-match-content">
         <div class="current-match-header">
           <h2>Current Match</h2>
-          <span class="live-indicator">🔴 LIVE</span>
+          <span class="live-indicator" *ngIf="currentMatch?.status === 'live'">🔴 LIVE</span>
         </div>
-        
-        <div class="current-match-card">
+
+        <app-twitch-embed
+          *ngIf="streamChannel"
+          [channel]="streamChannel"
+          height="400px">
+        </app-twitch-embed>
+
+        <div class="current-match-card" *ngIf="currentMatch">
           <div class="match-info">
             <h3>{{ currentMatch.matchDay }}</h3>
             <div class="match-details">
@@ -46,4 +53,5 @@ import { Match } from '../../pages/league/division/division.component';
 })
 export class CurrentMatchComponent {
   @Input() currentMatch?: Match;
+  @Input() streamChannel: string = '';
 }
