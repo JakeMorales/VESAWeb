@@ -1,0 +1,196 @@
+{
+  "season": "Season_14",
+  "division": "6",
+  "generatedAt": "2026-06-26T18:56:25.174Z",
+  "seasonStandings": [
+    {
+      "rank": 1,
+      "teamId": 1,
+      "teamName": "Tig Biddies",
+      "points": 75,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 124,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 2,
+      "teamId": 3,
+      "teamName": "Spicy Yacht Club",
+      "points": 75,
+      "wins": 5,
+      "matchDaysPlayed": 5,
+      "kills": 118,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 3,
+      "teamId": 5,
+      "teamName": "SUS Krew",
+      "points": 72,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 112,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 4,
+      "teamId": 9,
+      "teamName": "Snipers Nest Esports",
+      "points": 69,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 113,
+      "trend": "up",
+      "trendDelta": 3
+    },
+    {
+      "rank": 5,
+      "teamId": 12,
+      "teamName": "OMPA",
+      "points": 69,
+      "wins": 3,
+      "matchDaysPlayed": 5,
+      "kills": 96,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 6,
+      "teamId": 11,
+      "teamName": "Semi-Retired",
+      "points": 67,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 144,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 7,
+      "teamId": 8,
+      "teamName": "LCU",
+      "points": 65,
+      "wins": 2,
+      "matchDaysPlayed": 4,
+      "kills": 132,
+      "trend": "up",
+      "trendDelta": 3
+    },
+    {
+      "rank": 8,
+      "teamId": 6,
+      "teamName": "Overpeek",
+      "points": 58,
+      "wins": 3,
+      "matchDaysPlayed": 5,
+      "kills": 85,
+      "trend": "down",
+      "trendDelta": 4
+    },
+    {
+      "rank": 9,
+      "teamId": 2,
+      "teamName": "For The Boys",
+      "points": 55,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 85,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 10,
+      "teamId": 10,
+      "teamName": "Karnage",
+      "points": 53,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 77,
+      "trend": "up",
+      "trendDelta": 1
+    },
+    {
+      "rank": 11,
+      "teamId": 4,
+      "teamName": "Tlatoani",
+      "points": 49,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 72,
+      "trend": "up",
+      "trendDelta": 2
+    },
+    {
+      "rank": 12,
+      "teamId": 17,
+      "teamName": "Fauxliance",
+      "points": 43,
+      "wins": 3,
+      "matchDaysPlayed": 5,
+      "kills": 76,
+      "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 13,
+      "teamId": 15,
+      "teamName": "Badger Grabbers",
+      "points": 37,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 39,
+      "trend": "up",
+      "trendDelta": 1
+    },
+    {
+      "rank": 14,
+      "teamId": 13,
+      "teamName": "Valor Esports",
+      "points": 34,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 87,
+      "trend": "up",
+      "trendDelta": 1
+    },
+    {
+      "rank": 15,
+      "teamId": 18,
+      "teamName": "Dino Thugs",
+      "points": 34,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 51,
+      "trend": "down",
+      "trendDelta": 2
+    },
+    {
+      "rank": 16,
+      "teamId": 20,
+      "teamName": "Yokai",
+      "points": 25,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 72,
+      "trend": "up",
+      "trendDelta": 2
+    },
+    {
+      "rank": 17,
+      "teamId": 22,
+      "teamName": "Sway GG",
+      "points": 19,
+      "wins": 0,
+      "matchDaysPlayed": 3,
+      "kills": 36,
+      "trend": "same",
+      "trendDelta": 0
+    }
+  ],
+  "matchPointFinalsStandings": [],
+  "matchPointChampion": null
+}

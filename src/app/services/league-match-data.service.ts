@@ -10,7 +10,7 @@ import { LeagueService, LeagueMatchDay } from './league.service';
 // import { LeagueMatchTableLoaderService } from './league-match-table-loader.service';
 
 // Import required interfaces
-import { MatchDayResults } from '../models/match-day-results.model';
+import { MatchDayResults, TeamGameResult } from '../models/match-day-results.model';
 
 @Injectable({ providedIn: 'root' })
 export class LeagueMatchDataService {
@@ -59,44 +59,52 @@ export class LeagueMatchDataService {
   }
 
   /**
-   * Gets the match results for a specific league match
-   * @param matchId The ID of the match (format: [season]_[division]_[week])
+   * Gets the match results for a specific league match.
+   * @param matchId Encoded as Season_14~{division}~{filename}
    */
   getLeagueMatchResults(matchId: string): Observable<MatchDayResults | null> {
-    // Parse matchId to get season, division, and week
-    const [season, division, week] = matchId.split('_');
-    if (!season || !division || !week) {
-      console.error('Invalid match ID format:', matchId);
+    const parts = matchId.split('~');
+    if (parts.length !== 3) {
+      console.error('Invalid match ID format (expected season~division~filename):', matchId);
       return of(null);
     }
+    const [season, division, filename] = parts;
 
-    return this.leagueService.getMatchDay(season, division, week).pipe(
+    return this.leagueService.getMatchDay(season, division, filename).pipe(
       map(matchDay => {
         if (!matchDay) return null;
-
-        // Convert LeagueMatchDay to MatchDayResults
-        return {
-          id: matchId,
-          season: matchDay.season,
-          division: matchDay.division,
-          week: matchDay.week,
-          isPlayoffs: matchDay.isPlayoffs,
-          date: new Date().toISOString(), // TODO: Add actual date to the model
-          games: matchDay.stats.games.map(game => ({
-            gameNumber: game.game,
-            teams: game.teams.map(team => ({
-              placement: team.overall_stats?.teamPlacement || 0,
-              name: `Team ${team.overall_stats?.teamPlacement || 'Unknown'}`,
-              players: team.player_stats.map(player => ({
-                name: player.playerName,
-                kills: player.kills || 0,
-                assists: player.assists || 0,
-                damage: player.damageDealt || 0,
-                revives: player.revivesGiven || player.revives || 0
-              }))
-            }))
-          }))
-        };
+        const results: MatchDayResults = {};
+        matchDay.stats.games.forEach(game => {
+          results[game.game] = [...game.teams]
+            .sort((a, b) => (a.overall_stats?.teamPlacement ?? 99) - (b.overall_stats?.teamPlacement ?? 99))
+            .map(team => {
+              const placement = team.overall_stats?.teamPlacement ?? 0;
+              const totalPoints = team.overall_stats?.score ?? 0;
+              const teamKills = team.overall_stats?.kills
+                ?? team.player_stats.reduce((s, p) => s + (p.kills || 0), 0);
+              const placementPoints = totalPoints - teamKills;
+              return {
+                gameNumber: game.game,
+                teamName: team.name || team.overall_stats?.name || '',
+                placement,
+                teamKills,
+                placementPoints,
+                totalPoints,
+                mapName: game.mapName || '',
+                players: team.player_stats.map(p => ({
+                  playerName: p.playerName || p.name || p.player_name || '',
+                  kills: p.kills || 0,
+                  damage: p.damageDealt || p.damage_dealt || 0,
+                  downs: p.knockdowns || 0,
+                  headshots: p.headshots || 0,
+                  assists: p.assists || 0,
+                  revives: p.revivesGiven || p.revives_given || p.revives || 0,
+                  respawns: 0
+                }))
+              } as TeamGameResult;
+            });
+        });
+        return results;
       }),
       catchError(err => {
         console.error('Error loading match results:', err);

@@ -1,0 +1,229 @@
+{
+  "season": "Season_14",
+  "division": "7",
+  "generatedAt": "2026-06-26T18:56:25.187Z",
+  "seasonStandings": [
+    {
+      "rank": 1,
+      "teamId": 2,
+      "teamName": "The Randies",
+      "points": 86,
+      "wins": 4,
+      "matchDaysPlayed": 5,
+      "kills": 132,
+      "trend": "up",
+      "trendDelta": 4
+    },
+    {
+      "rank": 2,
+      "teamId": 5,
+      "teamName": "The Fruity Bunch",
+      "points": 84,
+      "wins": 4,
+      "matchDaysPlayed": 5,
+      "kills": 123,
+      "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 3,
+      "teamId": 1,
+      "teamName": "Team Grey",
+      "points": 72,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 137,
+      "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 4,
+      "teamId": 7,
+      "teamName": "3PH",
+      "points": 68,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 97,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 5,
+      "teamId": 11,
+      "teamName": "Moirai Esports",
+      "points": 65,
+      "wins": 4,
+      "matchDaysPlayed": 5,
+      "kills": 99,
+      "trend": "up",
+      "trendDelta": 2
+    },
+    {
+      "rank": 6,
+      "teamId": 3,
+      "teamName": "Baked Goods",
+      "points": 64,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 115,
+      "trend": "up",
+      "trendDelta": 2
+    },
+    {
+      "rank": 7,
+      "teamId": 8,
+      "teamName": "BlueHeat Syndicate",
+      "points": 64,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 107,
+      "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 8,
+      "teamId": 12,
+      "teamName": "Yozakura",
+      "points": 64,
+      "wins": 4,
+      "matchDaysPlayed": 5,
+      "kills": 115,
+      "trend": "down",
+      "trendDelta": 5
+    },
+    {
+      "rank": 9,
+      "teamId": 13,
+      "teamName": "True instincts",
+      "points": 63,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 102,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 10,
+      "teamId": 17,
+      "teamName": "Reales",
+      "points": 54,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 97,
+      "trend": "up",
+      "trendDelta": 1
+    },
+    {
+      "rank": 11,
+      "teamId": 20,
+      "teamName": "No Peel",
+      "points": 52,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 97,
+      "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 12,
+      "teamId": 10,
+      "teamName": "SwayGG",
+      "points": 39,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 62,
+      "trend": "up",
+      "trendDelta": 1
+    },
+    {
+      "rank": 13,
+      "teamId": 4,
+      "teamName": "Geriatric Reflexes",
+      "points": 38,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 69,
+      "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 14,
+      "teamId": 16,
+      "teamName": "Turbo Shandy",
+      "points": 35,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 88,
+      "trend": "up",
+      "trendDelta": 2
+    },
+    {
+      "rank": 15,
+      "teamId": 18,
+      "teamName": "Executive Management",
+      "points": 31,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 53,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 16,
+      "teamId": 9,
+      "teamName": "FolgersInYourCup",
+      "points": 25,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 54,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 17,
+      "teamId": 15,
+      "teamName": "Primal Shock",
+      "points": 24,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 55,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 18,
+      "teamId": 21,
+      "teamName": "Purple Cobras",
+      "points": 23,
+      "wins": 0,
+      "matchDaysPlayed": 3,
+      "kills": 32,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 19,
+      "teamId": 14,
+      "teamName": "Revive and Repeat",
+      "points": 19,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 28,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 20,
+      "teamId": 22,
+      "teamName": "3 Blind Mice",
+      "points": 0,
+      "wins": 0,
+      "matchDaysPlayed": 1,
+      "kills": 2,
+      "trend": "same",
+      "trendDelta": 0
+    }
+  ],
+  "matchPointFinalsStandings": [],
+  "matchPointChampion": null
+}

@@ -1,0 +1,229 @@
+{
+  "season": "Season_14",
+  "division": "8",
+  "generatedAt": "2026-06-26T18:56:25.207Z",
+  "seasonStandings": [
+    {
+      "rank": 1,
+      "teamId": 1,
+      "teamName": "Purple Cobras",
+      "points": 93,
+      "wins": 6,
+      "matchDaysPlayed": 5,
+      "kills": 155,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 2,
+      "teamId": 4,
+      "teamName": "The BooBees",
+      "points": 85,
+      "wins": 4,
+      "matchDaysPlayed": 5,
+      "kills": 132,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 3,
+      "teamId": 7,
+      "teamName": "Just Worse",
+      "points": 80,
+      "wins": 5,
+      "matchDaysPlayed": 5,
+      "kills": 137,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 4,
+      "teamId": 14,
+      "teamName": "Atlas Gaming",
+      "points": 70,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 147,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 5,
+      "teamId": 10,
+      "teamName": "Whiskey N' Coke",
+      "points": 60,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 108,
+      "trend": "up",
+      "trendDelta": 1
+    },
+    {
+      "rank": 6,
+      "teamId": 9,
+      "teamName": "Sloppy Foes",
+      "points": 58,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 80,
+      "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 7,
+      "teamId": 2,
+      "teamName": "Bad Decision Club Redux",
+      "points": 52,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 71,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 8,
+      "teamId": 11,
+      "teamName": "Vortex Legacy",
+      "points": 51,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 86,
+      "trend": "up",
+      "trendDelta": 3
+    },
+    {
+      "rank": 9,
+      "teamId": 21,
+      "teamName": "VTX Floaters",
+      "points": 51,
+      "wins": 2,
+      "matchDaysPlayed": 3,
+      "kills": 113,
+      "trend": "up",
+      "trendDelta": 5
+    },
+    {
+      "rank": 10,
+      "teamId": 13,
+      "teamName": "3 Deaf Squirrels",
+      "points": 50,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 67,
+      "trend": "up",
+      "trendDelta": 3
+    },
+    {
+      "rank": 11,
+      "teamId": 8,
+      "teamName": "The Backyard",
+      "points": 48,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 78,
+      "trend": "down",
+      "trendDelta": 3
+    },
+    {
+      "rank": 12,
+      "teamId": 17,
+      "teamName": "Average Joes",
+      "points": 48,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 80,
+      "trend": "down",
+      "trendDelta": 2
+    },
+    {
+      "rank": 13,
+      "teamId": 5,
+      "teamName": "Bush Enthusiasts",
+      "points": 43,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 77,
+      "trend": "down",
+      "trendDelta": 2
+    },
+    {
+      "rank": 14,
+      "teamId": 16,
+      "teamName": "Respawn Rejects",
+      "points": 39,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 63,
+      "trend": "up",
+      "trendDelta": 2
+    },
+    {
+      "rank": 15,
+      "teamId": 15,
+      "teamName": "Personality Hires",
+      "points": 37,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 62,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 16,
+      "teamId": 6,
+      "teamName": "GOM Squad",
+      "points": 31,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 67,
+      "trend": "down",
+      "trendDelta": 2
+    },
+    {
+      "rank": 17,
+      "teamId": 22,
+      "teamName": "Day Ones",
+      "points": 25,
+      "wins": 1,
+      "matchDaysPlayed": 2,
+      "kills": 36,
+      "trend": "up",
+      "trendDelta": 2
+    },
+    {
+      "rank": 18,
+      "teamId": 12,
+      "teamName": "Triple A",
+      "points": 23,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 48,
+      "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 19,
+      "teamId": 18,
+      "teamName": "Time2Starve",
+      "points": 8,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 30,
+      "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 20,
+      "teamId": 19,
+      "teamName": "Lucky Ladies",
+      "points": 5,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 3,
+      "trend": "same",
+      "trendDelta": 0
+    }
+  ],
+  "matchPointFinalsStandings": [],
+  "matchPointChampion": null
+}

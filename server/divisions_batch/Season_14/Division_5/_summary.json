@@ -1,0 +1,218 @@
+{
+  "season": "Season_14",
+  "division": "5",
+  "generatedAt": "2026-06-26T18:56:25.159Z",
+  "seasonStandings": [
+    {
+      "rank": 1,
+      "teamId": 1,
+      "teamName": "TGUN West",
+      "points": 84,
+      "wins": 3,
+      "matchDaysPlayed": 5,
+      "kills": 139,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 2,
+      "teamId": 8,
+      "teamName": "Chudder Cheese",
+      "points": 78,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 133,
+      "trend": "up",
+      "trendDelta": 3
+    },
+    {
+      "rank": 3,
+      "teamId": 15,
+      "teamName": "Gravity",
+      "points": 74,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 153,
+      "trend": "up",
+      "trendDelta": 3
+    },
+    {
+      "rank": 4,
+      "teamId": 4,
+      "teamName": "Powerpuff Girls",
+      "points": 70,
+      "wins": 4,
+      "matchDaysPlayed": 5,
+      "kills": 113,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 5,
+      "teamId": 6,
+      "teamName": "Getting Active",
+      "points": 65,
+      "wins": 3,
+      "matchDaysPlayed": 5,
+      "kills": 103,
+      "trend": "down",
+      "trendDelta": 2
+    },
+    {
+      "rank": 6,
+      "teamId": 5,
+      "teamName": "Crashing Out",
+      "points": 63,
+      "wins": 3,
+      "matchDaysPlayed": 5,
+      "kills": 104,
+      "trend": "down",
+      "trendDelta": 4
+    },
+    {
+      "rank": 7,
+      "teamId": 2,
+      "teamName": "SkyRisers",
+      "points": 62,
+      "wins": 3,
+      "matchDaysPlayed": 5,
+      "kills": 91,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 8,
+      "teamId": 7,
+      "teamName": "JERRY'S JUNGLE JUICER",
+      "points": 61,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 103,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 9,
+      "teamId": 10,
+      "teamName": "Dihydrogen Monoxide",
+      "points": 54,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 93,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 10,
+      "teamId": 9,
+      "teamName": "Tiny Timmys",
+      "points": 51,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 73,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 11,
+      "teamId": 14,
+      "teamName": "Hibiscus Academy",
+      "points": 43,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 80,
+      "trend": "up",
+      "trendDelta": 2
+    },
+    {
+      "rank": 12,
+      "teamId": 12,
+      "teamName": "JESTERMAXING",
+      "points": 42,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 69,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 13,
+      "teamId": 3,
+      "teamName": "Piglets in a Blanket",
+      "points": 41,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 56,
+      "trend": "down",
+      "trendDelta": 2
+    },
+    {
+      "rank": 14,
+      "teamId": 17,
+      "teamName": "Mee Hoyy Minoyyy",
+      "points": 39,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 65,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 15,
+      "teamId": 19,
+      "teamName": "Hangin’ Brain",
+      "points": 39,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 82,
+      "trend": "up",
+      "trendDelta": 2
+    },
+    {
+      "rank": 16,
+      "teamId": 11,
+      "teamName": "Triumvir",
+      "points": 29,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 49,
+      "trend": "up",
+      "trendDelta": 2
+    },
+    {
+      "rank": 17,
+      "teamId": 18,
+      "teamName": "South Harmon Inst of Tech",
+      "points": 28,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 63,
+      "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 18,
+      "teamId": 24,
+      "teamName": "Taiwanese Mornings",
+      "points": 9,
+      "wins": 0,
+      "matchDaysPlayed": 1,
+      "kills": 13,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 19,
+      "teamId": 25,
+      "teamName": "Sway GG",
+      "points": 2,
+      "wins": 0,
+      "matchDaysPlayed": 1,
+      "kills": 4,
+      "trend": "same",
+      "trendDelta": 0
+    }
+  ],
+  "matchPointFinalsStandings": [],
+  "matchPointChampion": null
+}

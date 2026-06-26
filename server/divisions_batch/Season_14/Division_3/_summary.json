@@ -1,0 +1,229 @@
+{
+  "season": "Season_14",
+  "division": "3",
+  "generatedAt": "2026-06-26T18:56:25.127Z",
+  "seasonStandings": [
+    {
+      "rank": 1,
+      "teamId": 11,
+      "teamName": "Made Men",
+      "points": 87,
+      "wins": 3,
+      "matchDaysPlayed": 5,
+      "kills": 176,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 2,
+      "teamId": 10,
+      "teamName": "BoysNightOut",
+      "points": 80,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 139,
+      "trend": "up",
+      "trendDelta": 1
+    },
+    {
+      "rank": 3,
+      "teamId": 5,
+      "teamName": "RAWRXD",
+      "points": 77,
+      "wins": 4,
+      "matchDaysPlayed": 5,
+      "kills": 111,
+      "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 4,
+      "teamId": 3,
+      "teamName": "Part-Timers",
+      "points": 64,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 112,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 5,
+      "teamId": 14,
+      "teamName": "Equinox",
+      "points": 56,
+      "wins": 3,
+      "matchDaysPlayed": 5,
+      "kills": 109,
+      "trend": "up",
+      "trendDelta": 4
+    },
+    {
+      "rank": 6,
+      "teamId": 4,
+      "teamName": "Low Cortisol",
+      "points": 53,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 92,
+      "trend": "up",
+      "trendDelta": 1
+    },
+    {
+      "rank": 7,
+      "teamId": 8,
+      "teamName": "DIAMOND DAWGS",
+      "points": 51,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 79,
+      "trend": "down",
+      "trendDelta": 2
+    },
+    {
+      "rank": 8,
+      "teamId": 15,
+      "teamName": "TTG",
+      "points": 51,
+      "wins": 3,
+      "matchDaysPlayed": 5,
+      "kills": 94,
+      "trend": "down",
+      "trendDelta": 2
+    },
+    {
+      "rank": 9,
+      "teamId": 7,
+      "teamName": "Gators",
+      "points": 46,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 83,
+      "trend": "up",
+      "trendDelta": 1
+    },
+    {
+      "rank": 10,
+      "teamId": 12,
+      "teamName": "Frog & Friends",
+      "points": 40,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 82,
+      "trend": "up",
+      "trendDelta": 1
+    },
+    {
+      "rank": 11,
+      "teamId": 23,
+      "teamName": "Jedi Mind Tricks",
+      "points": 38,
+      "wins": 2,
+      "matchDaysPlayed": 3,
+      "kills": 81,
+      "trend": "up",
+      "trendDelta": 12
+    },
+    {
+      "rank": 12,
+      "teamId": 25,
+      "teamName": "Scrubalia",
+      "points": 36,
+      "wins": 1,
+      "matchDaysPlayed": 3,
+      "kills": 60,
+      "trend": "up",
+      "trendDelta": 8
+    },
+    {
+      "rank": 13,
+      "teamId": 13,
+      "teamName": "HG2D",
+      "points": 35,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 82,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 14,
+      "teamId": 16,
+      "teamName": "Minas Tirith",
+      "points": 33,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 65,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 15,
+      "teamId": 18,
+      "teamName": "Project ELEVEN",
+      "points": 33,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 61,
+      "trend": "down",
+      "trendDelta": 7
+    },
+    {
+      "rank": 16,
+      "teamId": 21,
+      "teamName": "TGUN Diabetes",
+      "points": 32,
+      "wins": 1,
+      "matchDaysPlayed": 4,
+      "kills": 57,
+      "trend": "up",
+      "trendDelta": 3
+    },
+    {
+      "rank": 17,
+      "teamId": 17,
+      "teamName": "Muskingum",
+      "points": 28,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 74,
+      "trend": "down",
+      "trendDelta": 2
+    },
+    {
+      "rank": 18,
+      "teamId": 24,
+      "teamName": "12 Stink Bugs",
+      "points": 27,
+      "wins": 1,
+      "matchDaysPlayed": 4,
+      "kills": 57,
+      "trend": "up",
+      "trendDelta": 3
+    },
+    {
+      "rank": 19,
+      "teamId": 26,
+      "teamName": "Bee Happy",
+      "points": 27,
+      "wins": 1,
+      "matchDaysPlayed": 3,
+      "kills": 46,
+      "trend": "down",
+      "trendDelta": 3
+    },
+    {
+      "rank": 20,
+      "teamId": 9,
+      "teamName": "YRWeTilted",
+      "points": 18,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 45,
+      "trend": "down",
+      "trendDelta": 1
+    }
+  ],
+  "matchPointFinalsStandings": [],
+  "matchPointChampion": null
+}

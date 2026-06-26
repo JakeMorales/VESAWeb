@@ -22,7 +22,7 @@ import { CommonModule } from '@angular/common';
             <div class="format-icon">📅</div>
             <div class="format-info">
               <h4>Regular Season</h4>
-              <p>5 weeks of competitive play</p>
+              <p>6 weeks of competitive play</p>
             </div>
           </div>
           <div class="format-card">
@@ -30,13 +30,6 @@ import { CommonModule } from '@angular/common';
             <div class="format-info">
               <h4>Match Point Finals</h4>
               <p>Championship format</p>
-            </div>
-          </div>
-          <div class="format-card">
-            <div class="format-icon">⬆️</div>
-            <div class="format-info">
-              <h4>Promotion/Relegation</h4>
-              <p>Active between Divisions I & II only</p>
             </div>
           </div>
           <div class="format-card">

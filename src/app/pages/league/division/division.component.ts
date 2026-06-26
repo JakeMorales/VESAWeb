@@ -7,6 +7,8 @@ import { CurrentMatchComponent } from '../../../components/league/current-match.
 import { DivisionStandingsComponent } from '../../../components/league/division-standings.component';
 import { MatchHistoryComponent } from '../../../components/league/match-history.component';
 import { DivisionInfoComponent } from '../../../components/league/division-info.component';
+import { LeagueService } from '../../../services/league.service';
+import { forkJoin } from 'rxjs';
 
 export interface Team {
   id: string;
@@ -17,12 +19,14 @@ export interface Team {
   kills: number;
   placement: number;
   trend: 'up' | 'down' | 'same';
+  trendDelta: number;
 }
 
 export interface Match {
   id: string;
   weekNumber: number;
   matchDay: string;
+  filename: string;
   date: string;
   time: string;
   status: 'upcoming' | 'live' | 'completed';
@@ -31,6 +35,7 @@ export interface Match {
   totalGames?: number;
   winner?: string;
   streamUrl?: string;
+  isFinale?: boolean;
 }
 
 export interface MatchResult {
@@ -41,12 +46,35 @@ export interface MatchResult {
   points: number;
 }
 
+const DIVISION_META: Record<number, { name: string; romanNumeral: string; color: string; description: string }> = {
+  1: { name: 'Pinnacle',   romanNumeral: 'I',    color: '#ff2c5c', description: 'The elite tier featuring the most skilled teams in VESA.' },
+  2: { name: 'Vanguard',   romanNumeral: 'II',   color: '#2c9cff', description: 'High-level competitive play with rising stars.' },
+  3: { name: 'Ascendant',  romanNumeral: 'III',  color: '#00d4ff', description: 'Competitive teams working towards the next level.' },
+  4: { name: 'Emergent',   romanNumeral: 'IV',   color: '#7c3aed', description: 'Developing teams with strong potential.' },
+  5: { name: 'Challenger', romanNumeral: 'V',    color: '#f59e0b', description: 'Ambitious teams ready to prove themselves.' },
+  6: { name: 'Prospect',   romanNumeral: 'VI',   color: '#ec4899', description: 'Entry-level competitive teams building their skills.' },
+  7: { name: 'Aspirant',   romanNumeral: 'VII',  color: '#14b8a6', description: 'Newest teams finding their footing.' },
+  8: { name: 'Contenders', romanNumeral: 'VIII', color: '#10b981', description: 'Entry-level teams new to structured competition.' },
+};
+
+const NAME_TO_DIVISION: Record<string, number> = Object.fromEntries(
+  Object.entries(DIVISION_META).map(([num, meta]) => [meta.name.toLowerCase(), parseInt(num)])
+);
+
+// Per-division Twitch channel — update per-season as streamers are assigned
+const DIVISION_STREAM_CHANNELS: Record<number, string> = {
+  1: 'virida3', 2: 'virida3', 3: 'virida3', 4: 'virida3',
+  5: 'virida3', 6: 'virida3', 7: 'virida3', 8: 'virida3',
+};
+
+const isFinalsFile = (f: string) => /playoffs|finals|_mp/i.test(f);
+
 @Component({
   selector: 'app-division',
   standalone: true,
   imports: [
-    CommonModule, 
-    RouterModule, 
+    CommonModule,
+    RouterModule,
     DivisionHeaderComponent,
     CurrentMatchComponent,
     DivisionStandingsComponent,
@@ -58,153 +86,147 @@ export interface MatchResult {
 })
 export class DivisionComponent implements OnInit {
   division: Division | null = null;
-  currentWeek = 2; // Updated to match actual season progress
-  totalWeeks = 5;
+  currentWeek = 0;
+  totalWeeks = 6;
+  loading = true;
+  error = false;
 
-  divisions: Division[] = [
-    {
-      id: 'pinnacle',
-      name: 'Pinnacle',
-      romanNumeral: 'I',
-      tier: 1,
-      description: 'The elite tier featuring the most skilled teams in VESA. Promotion/relegation active.',
-      teamCount: 20,
-      currentWeek: 2,
-      color: '#ff2c5c'
-    },
-    {
-      id: 'vanguard',
-      name: 'Vanguard',
-      romanNumeral: 'II',
-      tier: 2,
-      description: 'High-level competitive play with rising stars. Promotion/relegation active.',
-      teamCount: 20,
-      currentWeek: 2,
-      color: '#2c9cff'
-    },
-    {
-      id: 'ascendant',
-      name: 'Ascendant',
-      romanNumeral: 'III',
-      tier: 3,
-      description: 'Competitive teams working towards the next level. Static division for this season.',
-      teamCount: 20,
-      currentWeek: 2,
-      color: '#00d4ff'
-    },
-    {
-      id: 'emergent',
-      name: 'Emergent',
-      romanNumeral: 'IV',
-      tier: 4,
-      description: 'Developing teams with strong potential. Static division for this season.',
-      teamCount: 20,
-      currentWeek: 2,
-      color: '#7c3aed'
-    },
-    {
-      id: 'challengers',
-      name: 'Challengers',
-      romanNumeral: 'V',
-      tier: 5,
-      description: 'Ambitious teams ready to prove themselves. Static division for this season.',
-      teamCount: 20,
-      currentWeek: 2,
-      color: '#f59e0b'
-    },
-    {
-      id: 'contenders',
-      name: 'Contenders',
-      romanNumeral: 'VI',
-      tier: 6,
-      description: 'Entry-level competitive teams building their skills. Static division for this season.',
-      teamCount: 20,
-      currentWeek: 2,
-      color: '#10b981'
-    }
-  ];
-
-  teams: Team[] = [
-    { id: '1', name: 'Apex Predators', points: 87, wins: 4, gamesPlayed: 8, kills: 68, placement: 1, trend: 'up' },
-    { id: '2', name: 'Storm Legends', points: 82, wins: 3, gamesPlayed: 8, kills: 61, placement: 2, trend: 'same' },
-    { id: '3', name: 'Shadow Squad', points: 78, wins: 3, gamesPlayed: 8, kills: 59, placement: 3, trend: 'up' },
-    { id: '4', name: 'Digital Legends', points: 71, wins: 2, gamesPlayed: 8, kills: 52, placement: 4, trend: 'down' },
-    { id: '5', name: 'Void Runners', points: 68, wins: 2, gamesPlayed: 8, kills: 48, placement: 5, trend: 'up' },
-    { id: '6', name: 'Catalyst Gaming', points: 63, wins: 2, gamesPlayed: 8, kills: 45, placement: 6, trend: 'same' },
-    { id: '7', name: 'Phoenix Rising', points: 59, wins: 1, gamesPlayed: 8, kills: 41, placement: 7, trend: 'down' },
-    { id: '8', name: 'Thunder Wolves', points: 55, wins: 1, gamesPlayed: 8, kills: 38, placement: 8, trend: 'up' },
-    { id: '9', name: 'Neon Knights', points: 51, wins: 1, gamesPlayed: 8, kills: 35, placement: 9, trend: 'down' },
-    { id: '10', name: 'Crimson Elite', points: 47, wins: 0, gamesPlayed: 8, kills: 32, placement: 10, trend: 'same' }
-  ];
-
-  matches: Match[] = [
-    {
-      id: 'week1-match1',
-      weekNumber: 1,
-      matchDay: 'Week 1 - Opening Day',
-      date: '2024-12-01',
-      time: '7:00 PM EST',
-      status: 'completed',
-      teamsCount: 20,
-      gamesPlayed: 6,
-      totalGames: 6,
-      winner: 'Apex Predators'
-    },
-    {
-      id: 'week2-match1',
-      weekNumber: 2,
-      matchDay: 'Week 2 - Regular Season',
-      date: '2024-12-08',
-      time: '7:00 PM EST',
-      status: 'completed',
-      teamsCount: 20,
-      gamesPlayed: 6,
-      totalGames: 6,
-      winner: 'Storm Legends'
-    },
-    {
-      id: 'week3-match1',
-      weekNumber: 3,
-      matchDay: 'Week 3 - Mid Season',
-      date: '2024-12-15',
-      time: '7:00 PM EST',
-      status: 'live',
-      teamsCount: 20,
-      gamesPlayed: 3,
-      totalGames: 6,
-      streamUrl: 'https://twitch.tv/vesaapex'
-    },
-    {
-      id: 'week4-match1',
-      weekNumber: 4,
-      matchDay: 'Week 4 - Late Season',
-      date: '2024-12-22',
-      time: '7:00 PM EST',
-      status: 'upcoming',
-      teamsCount: 20,
-      totalGames: 6
-    },
-    {
-      id: 'week5-match1',
-      weekNumber: 5,
-      matchDay: 'Week 5 - Finals',
-      date: '2024-12-29',
-      time: '7:00 PM EST',
-      status: 'upcoming',
-      teamsCount: 20,
-      totalGames: 6
-    }
-  ];
-
+  divisionNumber: string = '';
+  streamChannel: string = '';
+  teams: Team[] = [];
+  matches: Match[] = [];
   currentMatch?: Match;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private route: ActivatedRoute,
+    private leagueService: LeagueService
+  ) {}
 
   ngOnInit() {
     this.route.params.subscribe(params => {
-      const divisionId = params['id'];
-      this.division = this.divisions.find(d => d.id === divisionId) || null;
-      this.currentMatch = this.matches.find(m => m.status === 'live') || undefined;
+      const divisionId = params['id'] as string;
+      const divNum = NAME_TO_DIVISION[divisionId.toLowerCase()];
+
+      if (!divNum) {
+        this.error = true;
+        this.loading = false;
+        return;
+      }
+
+      const meta = DIVISION_META[divNum];
+      this.division = {
+        id: divisionId,
+        name: meta.name,
+        romanNumeral: meta.romanNumeral,
+        tier: divNum,
+        description: meta.description,
+        teamCount: 0,
+        currentWeek: 0,
+        color: meta.color
+      };
+
+      const season = 'Season_14';
+      const divStr = String(divNum);
+      this.divisionNumber = divStr;
+      this.streamChannel = DIVISION_STREAM_CHANNELS[divNum] ?? 'virida3';
+
+      forkJoin({
+        summary: this.leagueService.getDivisionSummary(season, divStr),
+        files: this.leagueService.getMatchFiles(season, divStr)
+      }).subscribe({
+        next: ({ summary, files }) => {
+          this.teams = (summary?.seasonStandings ?? []).map(entry => ({
+            id: String(entry.teamId),
+            name: entry.teamName,
+            points: entry.points,
+            wins: entry.wins ?? 0,
+            gamesPlayed: entry.matchDaysPlayed ?? 0,
+            kills: entry.kills ?? 0,
+            placement: entry.rank,
+            trend: entry.trend ?? 'same',
+            trendDelta: entry.trendDelta ?? 0
+          }));
+
+          const weekFiles = files.filter(f => /Week_\d+\.json$/i.test(f) && !isFinalsFile(f));
+          const finalsFiles = files.filter(isFinalsFile);
+          this.currentWeek = weekFiles.length;
+
+          this.division = {
+            ...this.division!,
+            teamCount: this.teams.length,
+            currentWeek: this.currentWeek
+          };
+
+          const weekMatches: Match[] = weekFiles.map(filename => {
+            const weekMatch = filename.match(/Week_(\d+)/i);
+            const weekNum = weekMatch ? parseInt(weekMatch[1]) : 0;
+            return {
+              id: `Season_14~${divStr}~${filename}`,
+              weekNumber: weekNum,
+              matchDay: `Week ${weekNum}`,
+              filename,
+              date: '',
+              time: '',
+              status: 'completed' as const,
+              teamsCount: this.teams.length,
+              isFinale: false,
+            };
+          });
+
+          const finaleMatches: Match[] = finalsFiles.map(filename => ({
+            id: `Season_14~${divStr}~${filename}`,
+            weekNumber: 999,
+            matchDay: 'Match Point Finals',
+            filename,
+            date: '',
+            time: '',
+            status: 'completed' as const,
+            teamsCount: this.teams.length,
+            isFinale: true,
+          }));
+
+          const upcomingWeeks: Match[] = [];
+          for (let w = weekFiles.length + 1; w <= this.totalWeeks; w++) {
+            upcomingWeeks.push({
+              id: `s14-div${divNum}-week${w}-upcoming`,
+              weekNumber: w,
+              matchDay: `Week ${w}`,
+              filename: '',
+              date: '',
+              time: '',
+              status: 'upcoming' as const,
+              teamsCount: this.teams.length,
+              isFinale: false,
+            });
+          }
+
+          const upcomingFinals: Match[] = finalsFiles.length === 0 ? [{
+            id: `s14-div${divNum}-finals-upcoming`,
+            weekNumber: 999,
+            matchDay: 'Match Point Finals',
+            filename: '',
+            date: '',
+            time: '',
+            status: 'upcoming' as const,
+            teamsCount: this.teams.length,
+            isFinale: true,
+          }] : [];
+
+          this.matches = [...finaleMatches, ...weekMatches, ...upcomingWeeks, ...upcomingFinals];
+
+          // Show the most recently completed regular week in the Current Match section.
+          // Sorted descending by weekNumber so Week 5 comes before Week 4, etc.
+          this.currentMatch = [...weekMatches]
+            .sort((a, b) => b.weekNumber - a.weekNumber)
+            .find(m => m.status === 'completed');
+
+          this.loading = false;
+        },
+        error: () => {
+          this.error = true;
+          this.loading = false;
+        }
+      });
     });
   }
 }
