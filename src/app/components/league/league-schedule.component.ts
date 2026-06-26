@@ -126,23 +126,37 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
       </div>
 
       <div class="schedule-list">
-        @for (entry of dates; track entry.label) {
+        @for (entry of dates; track entry.label; let i = $index) {
           <div class="week-row"
             [class.is-fully-past]="isEntryFullyPast(entry)"
+            [class.is-expanded]="expandedEntries.has(i)"
+            [class.is-collapsible]="!!entry.slots"
             [class.type-signup]="entry.type === 'signup'"
             [class.type-placement]="entry.type === 'placement'"
             [class.type-match-point]="entry.type === 'match-point'"
             [class.type-award]="entry.type === 'award'"
             [class.type-break]="entry.type === 'break'"
           >
-            <div class="week-header">
+            <button
+              class="week-header"
+              [class.clickable]="!!entry.slots"
+              [attr.aria-expanded]="entry.slots ? expandedEntries.has(i) : null"
+              (click)="entry.slots ? toggleEntry(i) : null"
+              [disabled]="!entry.slots"
+            >
               <span class="week-label">{{ entry.label }}</span>
-              @if (entry.date) {
-                <span class="single-date">{{ formatDate(entry.date) }}</span>
-              }
-            </div>
+              <span class="header-right">
+                @if (entry.date) {
+                  <span class="single-date">{{ formatDate(entry.date) }}</span>
+                }
+                @if (entry.slots) {
+                  <span class="date-range">{{ getDateRange(entry) }}</span>
+                  <span class="chevron" [class.open]="expandedEntries.has(i)">›</span>
+                }
+              </span>
+            </button>
 
-            @if (entry.slots) {
+            @if (entry.slots && expandedEntries.has(i)) {
               <div class="match-days">
                 @for (slot of entry.slots; track slot.date.getTime()) {
                   <div class="match-day-slot" [class.slot-past]="isPast(slot.date)">
@@ -192,7 +206,6 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
       color: rgba(227,230,243,0.3);
     }
 
-    /* Division key */
     .division-key {
       display: flex;
       flex-wrap: wrap;
@@ -218,7 +231,6 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
     .key-dot.wed { background: #b45cff; }
     .key-dot.thu { background: #7ecfff; }
 
-    /* List container */
     .schedule-list {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(88,101,242,0.2);
@@ -226,9 +238,7 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
       overflow: hidden;
     }
 
-    /* Week row */
     .week-row {
-      padding: 0.65rem 1.25rem;
       border-bottom: 1px solid rgba(255,255,255,0.05);
       position: relative;
     }
@@ -260,13 +270,31 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
     .is-fully-past { opacity: 0.35; }
     .is-fully-past .week-label { text-decoration: line-through; }
 
-    /* Week header row */
+    .is-expanded { background: rgba(94,108,255,0.04); }
+
+    /* Header button */
     .week-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      margin-bottom: 0.1rem;
+      width: 100%;
+      padding: 0.65rem 1.25rem;
+      background: none;
+      border: none;
+      text-align: left;
+      color: inherit;
+      font-family: inherit;
+    }
+
+    .week-header.clickable {
+      cursor: pointer;
+    }
+    .week-header.clickable:hover {
+      background: rgba(94,108,255,0.06);
+    }
+    .week-header:disabled {
+      cursor: default;
     }
 
     .week-label {
@@ -283,24 +311,46 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
       color: rgba(227,230,243,0.55);
     }
 
-    .single-date {
-      font-size: 0.82rem;
-      color: rgba(227,230,243,0.55);
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-shrink: 0;
     }
 
-    /* Match day slots */
+    .single-date,
+    .date-range {
+      font-size: 0.8rem;
+      color: rgba(227,230,243,0.45);
+      white-space: nowrap;
+    }
+
+    .chevron {
+      font-size: 1rem;
+      color: rgba(227,230,243,0.3);
+      display: inline-block;
+      transform: rotate(0deg);
+      transition: transform 0.2s ease;
+      line-height: 1;
+    }
+    .chevron.open {
+      transform: rotate(90deg);
+    }
+
+    /* Expanded slot list */
     .match-days {
       display: flex;
       flex-direction: column;
       gap: 0.1rem;
-      margin-top: 0.3rem;
+      padding: 0.1rem 1.25rem 0.65rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
     }
 
     .match-day-slot {
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      padding: 0.18rem 0;
+      padding: 0.22rem 0;
     }
 
     .slot-past { opacity: 0.45; }
@@ -343,10 +393,9 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
 
     @media (max-width: 600px) {
       .schedule-widget { padding: 0 1rem; }
-
       .division-key { gap: 0.4rem 1rem; }
-
-      .week-row { padding: 0.6rem 1rem; }
+      .week-header { padding: 0.6rem 1rem; }
+      .match-days { padding: 0.1rem 1rem 0.6rem; }
 
       .match-day-slot {
         flex-wrap: wrap;
@@ -354,13 +403,33 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
       }
 
       .slot-date { min-width: 0; font-size: 0.78rem; }
-      .slot-divisions { flex-basis: 100%; order: 3; padding-left: 0; }
+      .slot-divisions { flex-basis: 100%; order: 3; }
       .slot-time, .slot-completed { order: 2; }
     }
   `]
 })
 export class LeagueScheduleComponent {
   @Input() dates: ScheduleEntry[] = [];
+
+  expandedEntries = new Set<number>();
+
+  toggleEntry(index: number): void {
+    if (this.expandedEntries.has(index)) {
+      this.expandedEntries.delete(index);
+    } else {
+      this.expandedEntries.add(index);
+    }
+  }
+
+  getDateRange(entry: ScheduleEntry): string {
+    if (!entry.slots?.length) return '';
+    const fmt = (d: Date) => new Intl.DateTimeFormat('en-US', {
+      month: 'short', day: 'numeric', timeZone: 'America/New_York',
+    }).format(d);
+    const first = entry.slots[0].date;
+    const last = entry.slots[entry.slots.length - 1].date;
+    return first.toDateString() === last.toDateString() ? fmt(first) : `${fmt(first)} – ${fmt(last)}`;
+  }
 
   isPast(date: Date): boolean {
     return date < new Date();
