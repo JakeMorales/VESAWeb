@@ -213,6 +213,13 @@ export class DivisionComponent implements OnInit {
           }] : [];
 
           this.matches = [...finaleMatches, ...weekMatches, ...upcomingWeeks, ...upcomingFinals];
+
+          // Show the most recently completed regular week in the Current Match section.
+          // Sorted descending by weekNumber so Week 5 comes before Week 4, etc.
+          this.currentMatch = [...weekMatches]
+            .sort((a, b) => b.weekNumber - a.weekNumber)
+            .find(m => m.status === 'completed');
+
           this.loading = false;
         },
         error: () => {

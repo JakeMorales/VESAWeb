@@ -117,6 +117,48 @@
   transform: translateY(-2px);
 }
 
+.last-played-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.last-played-card:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.last-played-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.last-played-label {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.last-played-teams {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.last-played-cta {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-accent-secondary, #2c9cff);
+}
+
 @media (max-width: 768px) {
   .current-match-section {
     padding: 2rem 1rem;
