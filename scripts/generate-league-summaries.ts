@@ -2,7 +2,10 @@
  * Generates _summary.json files for each division in the league archive.
  *
  * Each summary aggregates team standings across all weekly match files in the division,
- * computing total season points and per-week breakdowns.
+ * producing season standings (regular weeks), Match Point finals standings, and the
+ * Match Point champion with their roster.
+ *
+ * Output shape matches the DivisionSummary interface in src/app/services/league.service.ts.
  *
  * Run with: npm run generate-summaries
  *
@@ -22,53 +25,38 @@ const LEAGUE_DIR = path.join(__dirname, '..', 'server', 'divisions_batch');
 
 // ── Interfaces ────────────────────────────────────────────────────────────────
 
-interface TeamWeekResult {
-  week: string;         // filename, e.g. "S4_D1_Week_1.json"
-  label: string;        // display label, e.g. "Week 1"
-  points: number;       // sum of overall_stats.score across all games in this file
-  gamesPlayed: number;  // number of games this team appeared in this week
-  isPlayoffs: boolean;
-}
-
-interface LeagueStanding {
+interface StandingEntry {
+  rank: number;
   teamId: number;
   teamName: string;
-  totalPoints: number;    // sum of points across all regular-season weeks
-  playoffPoints: number;  // sum of points from playoff/finals weeks
-  gamesPlayed: number;    // total games across all weeks
-  weeks: TeamWeekResult[];
+  points: number;
+}
+
+interface MatchPointChampion {
+  teamId: number;
+  teamName: string;
+  players: string[];
 }
 
 interface DivisionSummary {
   season: string;
   division: string;
   generatedAt: string;
-  teams: LeagueStanding[];
+  seasonStandings: StandingEntry[];
+  matchPointFinalsStandings: StandingEntry[];
+  matchPointChampion: MatchPointChampion | null;
+}
+
+// Internal accumulator — not written to disk
+interface TeamAccumulator {
+  teamId: number;
+  teamName: string;
+  regularPoints: number;
+  mpPoints: number;
+  mpPlayers: Set<string>;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-function labelFromFilename(filename: string): string {
-  // e.g. S4_D1_Week_1.json → "Week 1"
-  // e.g. S4_D1_Week_MP.json → "Midseason Playoffs"
-  // e.g. S9_D1_Playoffs_1.json → "Playoffs 1"
-  // e.g. S9_D1_Finals.json → "Finals"
-  const base = filename.replace('.json', '');
-
-  const weekMatch = base.match(/Week_(\d+)$/i);
-  if (weekMatch) return `Week ${weekMatch[1]}`;
-
-  if (/Week_MP/i.test(base)) return 'Midseason Playoffs';
-  if (/Finals/i.test(base)) return 'Finals';
-
-  const playoffsMatch = base.match(/Playoffs_(\d+)/i);
-  if (playoffsMatch) return `Playoffs ${playoffsMatch[1]}`;
-  if (/Playoffs/i.test(base)) return 'Playoffs';
-
-  // Fallback: return last underscore-separated token
-  const parts = base.split('_');
-  return parts[parts.length - 1];
-}
 
 function isPlayoffsFile(filename: string): boolean {
   const lower = filename.toLowerCase();
@@ -89,12 +77,33 @@ function sortMatchFiles(files: string[]): string[] {
   });
 }
 
+function toRankedStandings(
+  accumulators: Map<number, TeamAccumulator>,
+  pointsKey: 'regularPoints' | 'mpPoints',
+  onlyWithPoints: boolean
+): StandingEntry[] {
+  let entries = Array.from(accumulators.values());
+
+  if (onlyWithPoints) {
+    entries = entries.filter(e => e[pointsKey] > 0);
+  }
+
+  return entries
+    .sort((a, b) => b[pointsKey] - a[pointsKey])
+    .map((e, i) => ({
+      rank: i + 1,
+      teamId: e.teamId,
+      teamName: e.teamName,
+      points: e[pointsKey],
+    }));
+}
+
 // ── Core aggregation ──────────────────────────────────────────────────────────
 
 function processWeekFile(
   filePath: string,
   filename: string,
-  standingsMap: Map<number, LeagueStanding>
+  accMap: Map<number, TeamAccumulator>
 ): void {
   let data: any;
   try {
@@ -110,11 +119,7 @@ function processWeekFile(
     return;
   }
 
-  const playoffs = isPlayoffsFile(filename);
-  const label = labelFromFilename(filename);
-
-  // Aggregate per-team scores within this file (across all games)
-  const weekTeamScores = new Map<number, { teamName: string; points: number; gamesPlayed: number }>();
+  const isMP = isPlayoffsFile(filename);
 
   for (const game of games) {
     for (const team of game.teams ?? []) {
@@ -124,46 +129,29 @@ function processWeekFile(
 
       if (teamId == null) continue;
 
-      const existing = weekTeamScores.get(teamId);
-      if (existing) {
-        existing.points += score;
-        existing.gamesPlayed += 1;
-      } else {
-        weekTeamScores.set(teamId, { teamName, points: score, gamesPlayed: 1 });
-      }
-    }
-  }
+      // Collect player names from this game entry
+      const players: string[] = (team.player_stats ?? [])
+        .map((p: any) => p.name ?? p.playerName ?? p.player_name)
+        .filter(Boolean);
 
-  // Merge week results into the season standings map
-  for (const [teamId, weekData] of weekTeamScores) {
-    const weekResult: TeamWeekResult = {
-      week: filename,
-      label,
-      points: weekData.points,
-      gamesPlayed: weekData.gamesPlayed,
-      isPlayoffs: playoffs
-    };
-
-    const standing = standingsMap.get(teamId);
-    if (standing) {
-      standing.weeks.push(weekResult);
-      standing.gamesPlayed += weekData.gamesPlayed;
-      if (playoffs) {
-        standing.playoffPoints += weekData.points;
+      const acc = accMap.get(teamId);
+      if (acc) {
+        acc.teamName = teamName; // keep most recent name
+        if (isMP) {
+          acc.mpPoints += score;
+          players.forEach(p => acc.mpPlayers.add(p));
+        } else {
+          acc.regularPoints += score;
+        }
       } else {
-        standing.totalPoints += weekData.points;
+        accMap.set(teamId, {
+          teamId,
+          teamName,
+          regularPoints: isMP ? 0 : score,
+          mpPoints: isMP ? score : 0,
+          mpPlayers: isMP ? new Set(players) : new Set(),
+        });
       }
-      // Keep most recently seen team name (handles renames)
-      standing.teamName = weekData.teamName;
-    } else {
-      standingsMap.set(teamId, {
-        teamId,
-        teamName: weekData.teamName,
-        totalPoints: playoffs ? 0 : weekData.points,
-        playoffPoints: playoffs ? weekData.points : 0,
-        gamesPlayed: weekData.gamesPlayed,
-        weeks: [weekResult]
-      });
     }
   }
 }
@@ -183,29 +171,43 @@ function generateDivisionSummary(
     return;
   }
 
-  const standingsMap = new Map<number, LeagueStanding>();
+  const accMap = new Map<number, TeamAccumulator>();
 
   for (const filename of matchFiles) {
     console.log(`    Processing ${filename}...`);
-    processWeekFile(path.join(divPath, filename), filename, standingsMap);
+    processWeekFile(path.join(divPath, filename), filename, accMap);
   }
 
-  // Sort teams by total points (regular season) descending, then playoff points
-  const teams = Array.from(standingsMap.values()).sort((a, b) => {
-    if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
-    return b.playoffPoints - a.playoffPoints;
-  });
+  // Season standings: all teams ranked by regular-season points
+  const seasonStandings = toRankedStandings(accMap, 'regularPoints', false);
+
+  // MP standings: only teams that appeared in MP/playoff files (points > 0)
+  const mpStandings = toRankedStandings(accMap, 'mpPoints', true);
+
+  // Match Point champion: top MP team with their roster
+  let matchPointChampion: MatchPointChampion | null = null;
+  if (mpStandings.length > 0) {
+    const champId = mpStandings[0].teamId;
+    const champAcc = accMap.get(champId)!;
+    matchPointChampion = {
+      teamId: champId,
+      teamName: champAcc.teamName,
+      players: Array.from(champAcc.mpPlayers).sort(),
+    };
+  }
 
   const summary: DivisionSummary = {
     season,
     division,
     generatedAt: new Date().toISOString(),
-    teams
+    seasonStandings,
+    matchPointFinalsStandings: mpStandings,
+    matchPointChampion,
   };
 
   const outputPath = path.join(divPath, '_summary.json');
   fs.writeFileSync(outputPath, JSON.stringify(summary, null, 2), 'utf-8');
-  console.log(`  ✓ Written: ${outputPath}`);
+  console.log(`  Written: ${outputPath}`);
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
