@@ -11,7 +11,7 @@ import { DivisionCardComponent, Division } from './division-card.component';
       <div class="divisions-content">
         <h2>League Divisions</h2>
         <p class="divisions-description">
-          Six competitive divisions organized by skill level, each featuring 20 teams competing for championship glory.
+          {{ divisions?.length ?? 0 }} active divisions this season
         </p>
         
         <div class="divisions-grid">
@@ -61,34 +61,34 @@ import { DivisionCardComponent, Division } from './division-card.component';
       margin: 0 auto;
     }
 
-    /* Tablet: 2 columns */
+    /* Tablet: auto-fit up to 2 columns */
     @media (min-width: 768px) and (max-width: 1199px) {
       .divisions-grid {
-        grid-template-columns: repeat(2, 400px);
+        grid-template-columns: repeat(auto-fit, 400px);
         gap: 2.5rem;
         max-width: 850px;
       }
     }
 
-    /* Desktop: 3 columns for optimal 3x2 layout */
+    /* Desktop: auto-fit up to 3 columns */
     @media (min-width: 1200px) {
       .divisions-grid {
-        grid-template-columns: repeat(3, 400px);
+        grid-template-columns: repeat(auto-fit, 400px);
         gap: 2.5rem;
         max-width: 1300px;
       }
     }
 
-    /* Large desktop: maintain 3x2 layout with more space */
+    /* Large desktop: auto-fit up to 4 columns */
     @media (min-width: 1400px) {
       .divisions-content {
         max-width: 1600px;
       }
-      
+
       .divisions-grid {
-        grid-template-columns: repeat(3, 400px);
+        grid-template-columns: repeat(auto-fit, 400px);
         gap: 3rem;
-        max-width: 1400px;
+        max-width: 1700px;
       }
     }
 
