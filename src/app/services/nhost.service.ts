@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NhostClient } from '@nhost/nhost-js';
-import { Observable, from } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
@@ -433,6 +433,40 @@ export class NhostService {
       catchError((error) => {
         console.error('Error fetching player leaderboard stats:', error);
         throw error;
+      })
+    );
+  }
+
+  // NOTE: scrims_aggregate and players_aggregate are not exposed to the anon role in Hasura.
+  // To fix this properly: Hasura dashboard → Data → scrims/players → Permissions → select (anon) → enable "Aggregate queries".
+  // Until then, we fetch the full row list and count client-side.
+  getScrimsSummaryStats(): Observable<{ totalScrims: number; uniquePlayers: number; mostRecentDate: string | null }> {
+    const scrimsQuery = `
+      query GetScrimsSummary {
+        scrims(order_by: { date_time_field: desc }) {
+          id
+          date_time_field
+        }
+        players { id }
+      }
+    `;
+    return from(this.nhost.graphql.request(scrimsQuery)).pipe(
+      map((response: any) => {
+        if (response.error) {
+          console.error('getScrimsSummaryStats GraphQL error:', response.error);
+          throw new Error(JSON.stringify(response.error));
+        }
+        const scrims: any[] = response.data.scrims ?? [];
+        const players: any[] = response.data.players ?? [];
+        return {
+          totalScrims: scrims.length,
+          uniquePlayers: players.length,
+          mostRecentDate: scrims[0]?.date_time_field ?? null
+        };
+      }),
+      catchError((err) => {
+        console.error('getScrimsSummaryStats failed:', err);
+        return of({ totalScrims: 0, uniquePlayers: 0, mostRecentDate: null });
       })
     );
   }

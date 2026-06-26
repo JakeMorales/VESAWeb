@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap, map, catchError } from 'rxjs/operators';
 import { HomeHeroComponent } from '../../components/home/home-hero.component';
 import { DiscordCommunityComponent } from '../../components/home/discord-community.component';
 import { DetailedStatsComponent, StatsData } from '../../components/home/detailed-stats.component';
 import { FeaturesShowcaseComponent } from '../../components/home/features-showcase.component';
 import { RecentActivityComponent, ActivityItem } from '../../components/home/recent-activity.component';
-import { LeagueService, DivisionSummary, MatchPointChampion } from '../../services/league.service';
-import { ScrimsDataService } from '../../services/scrims-data.service';
+import { LeagueService, MatchPointChampion } from '../../services/league.service';
+import { NhostService } from '../../services/nhost.service';
 
 interface DivisionChampion {
   divisionName: string;
@@ -93,7 +93,7 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private leagueService: LeagueService,
-    private scrimsDataService: ScrimsDataService
+    private nhostService: NhostService
   ) {}
 
   ngOnInit(): void {
@@ -102,20 +102,25 @@ export class HomeComponent implements OnInit {
   }
 
   private loadLeagueData(): void {
-    this.leagueService.getDivisions('Season_14').pipe(
-      switchMap(divisions => {
-        if (!divisions.length) {
-          return of([] as Array<{ division: string; summary: DivisionSummary | null; files: string[] }>);
-        }
-        return forkJoin(
-          divisions.map(d =>
-            forkJoin({
-              summary: this.leagueService.getDivisionSummary('Season_14', d),
-              files: this.leagueService.getMatchFiles('Season_14', d)
-            }).pipe(map(r => ({ division: d, ...r })))
+    this.leagueService.getSeasons().pipe(
+      switchMap(seasons => {
+        if (!seasons.length) return of([[] as Array<{ season: string; division: string; summary: any; files: string[] }>]);
+        return forkJoin(seasons.map(season =>
+          this.leagueService.getDivisions(season).pipe(
+            switchMap(divisions => {
+              if (!divisions.length) return of([] as Array<{ season: string; division: string; summary: any; files: string[] }>);
+              return forkJoin(divisions.map(div =>
+                forkJoin({
+                  summary: this.leagueService.getDivisionSummary(season, div).pipe(catchError(() => of(null))),
+                  files: this.leagueService.getMatchFiles(season, div).pipe(catchError(() => of([] as string[])))
+                }).pipe(map(r => ({ season, division: div, ...r })))
+              ));
+            }),
+            catchError(() => of([] as Array<{ season: string; division: string; summary: any; files: string[] }>))
           )
-        );
-      })
+        ));
+      }),
+      map(nested => nested.flat())
     ).subscribe({
       next: results => {
         let totalTeams = 0;
@@ -124,22 +129,21 @@ export class HomeComponent implements OnInit {
         let maxWeekDivision = '';
         const champions: DivisionChampion[] = [];
 
-        for (const { division, summary, files } of results) {
+        for (const { season, division, summary, files } of results) {
           if (summary) {
             totalTeams += summary.seasonStandings.length;
-            if (summary.matchPointChampion) {
+            if (season === 'Season_14' && summary.matchPointChampion) {
               champions.push({ divisionName: `Division ${division}`, champion: summary.matchPointChampion });
             }
           }
-          const weekFiles = files.filter(f => /Week_\d+/i.test(f));
+          const weekFiles = files.filter((f: string) => /Week_\d+/i.test(f));
           totalMatchDays += weekFiles.length;
-          for (const file of weekFiles) {
-            const m = file.match(/Week_(\d+)/i);
-            if (m) {
-              const w = parseInt(m[1], 10);
-              if (w > maxWeek) {
-                maxWeek = w;
-                maxWeekDivision = `Division ${division}`;
+          if (season === 'Season_14') {
+            for (const file of weekFiles) {
+              const m = file.match(/Week_(\d+)/i);
+              if (m) {
+                const w = parseInt(m[1], 10);
+                if (w > maxWeek) { maxWeek = w; maxWeekDivision = `Division ${division}`; }
               }
             }
           }
@@ -156,15 +160,10 @@ export class HomeComponent implements OnInit {
   }
 
   private loadScrimsData(): void {
-    this.scrimsDataService.getScrimsLeaderboard().subscribe({
+    this.nhostService.getScrimsSummaryStats().subscribe({
       next: data => {
-        this.scrimsStats = {
-          matchesPlayed: data.totalScrims,
-          gamesPlayed: 0,
-          uniquePlayers: data.totalPlayers,
-          totalPlaytime: ''
-        };
-        this.scrimsLastUpdated = data.lastUpdated ? new Date(data.lastUpdated) : null;
+        this.scrimsStats = { matchesPlayed: data.totalScrims, gamesPlayed: 0, uniquePlayers: data.uniquePlayers, totalPlaytime: '' };
+        if (data.mostRecentDate) this.scrimsLastUpdated = new Date(data.mostRecentDate);
         this.onDataLoaded();
       },
       error: () => this.onDataLoaded()
