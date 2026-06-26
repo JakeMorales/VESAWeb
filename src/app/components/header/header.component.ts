@@ -12,28 +12,33 @@ import { environment } from '../../../environments/environment';
       <div class="header-content">
         <nav class="nav" [class.nav-open]="isNavOpen">
           <a routerLink="/home" class="nav-logo-link" aria-label="Home">
-            <img 
-              src="WhiteVesaLogoTransparent.png" 
-              alt="VESA Logo Icon" 
+            <img
+              src="WhiteVesaLogoTransparent.png"
+              alt="VESA Logo Icon"
               class="nav-logo-img"
             />
           </a>
-          <div class="nav-dropdown">
-            <a routerLink="/league" routerLinkActive="active" (click)="closeNav()">
+          <div class="nav-dropdown" [class.open]="isLeagueOpen">
+            <a routerLink="/league" routerLinkActive="active"
+               (click)="toggleLeague(); $event.preventDefault()"
+               [attr.aria-haspopup]="true"
+               [attr.aria-expanded]="isLeagueOpen">
               League <span class="dropdown-arrow">▼</span>
             </a>
             <div class="dropdown-menu">
               <a routerLink="/league/current-season" (click)="closeNav()" class="dropdown-featured">Current Season (S14)</a>
               <a routerLink="/league/signup" (click)="closeNav()" class="dropdown-featured">League Signup</a>
               <div class="dropdown-divider"></div>
-              <a routerLink="/league/pinnacle"   (click)="closeNav()">Pinnacle (I)</a>
-              <a routerLink="/league/vanguard"   (click)="closeNav()">Vanguard (II)</a>
-              <a routerLink="/league/ascendant"  (click)="closeNav()">Ascendant (III)</a>
-              <a routerLink="/league/emergent"   (click)="closeNav()">Emergent (IV)</a>
-              <a routerLink="/league/challenger" (click)="closeNav()">Challenger (V)</a>
-              <a routerLink="/league/prospect"   (click)="closeNav()">Prospect (VI)</a>
-              <a routerLink="/league/aspirant"   (click)="closeNav()">Aspirant (VII)</a>
-              <a routerLink="/league/contenders" (click)="closeNav()">Contenders (VIII)</a>
+              <div class="dropdown-divisions">
+                <a routerLink="/league/pinnacle"   (click)="closeNav()">Pinnacle (I)</a>
+                <a routerLink="/league/vanguard"   (click)="closeNav()">Vanguard (II)</a>
+                <a routerLink="/league/ascendant"  (click)="closeNav()">Ascendant (III)</a>
+                <a routerLink="/league/emergent"   (click)="closeNav()">Emergent (IV)</a>
+                <a routerLink="/league/challenger" (click)="closeNav()">Challenger (V)</a>
+                <a routerLink="/league/prospect"   (click)="closeNav()">Prospect (VI)</a>
+                <a routerLink="/league/aspirant"   (click)="closeNav()">Aspirant (VII)</a>
+                <a routerLink="/league/contenders" (click)="closeNav()">Contenders (VIII)</a>
+              </div>
             </div>
           </div>
           <a routerLink="/scrims" routerLinkActive="active" (click)="closeNav()">Scrims</a>
@@ -214,7 +219,6 @@ import { environment } from '../../../environments/environment';
     }
 
 
-    /* General nav link hover styles - but not for dropdown containers */
     .nav > a.active, .nav > a:focus {
       background: linear-gradient(90deg, #5e6cff 0%, #b45cff 100%);
       color: #fff;
@@ -265,7 +269,6 @@ import { environment } from '../../../environments/environment';
   transform: scale(1) rotate(180deg);
     }
 
-    /* Apply hover effects to the dropdown link */
     .nav-dropdown > a.active, .nav-dropdown > a:focus {
       background: linear-gradient(90deg, #5e6cff 0%, #b45cff 100%);
       color: #fff;
@@ -277,12 +280,9 @@ import { environment } from '../../../environments/environment';
       color: #fff;
     }
 
-    /* Also apply hover effects when hovering the dropdown container */
     .nav-dropdown:hover > a {
-      background: linear-gradient(135deg, rgba(255, 44, 92, 0.2), rgba(44, 156, 255, 0.2));
-      border-color: rgba(255, 44, 92, 0.4);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(255, 44, 92, 0.3);
+      background: linear-gradient(90deg, #4a5d7a 0%, #5e6cff 100%);
+      color: #fff;
     }
 
     .dropdown-menu {
@@ -290,20 +290,39 @@ import { environment } from '../../../environments/environment';
       top: 100%;
       left: 50%;
       transform: translateX(-50%) translateY(-10px);
-      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-      min-width: 180px;
-      width: 180px;
+      background: rgba(20, 20, 30, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      min-width: 280px;
+      width: 280px;
       border-radius: 8px;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 44, 92, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       opacity: 0;
       visibility: hidden;
       transition: all 0.3s ease;
       z-index: 1000;
-      backdrop-filter: blur(10px);
+      max-height: 80vh;
+      overflow-y: auto;
     }
 
     .nav-dropdown:hover .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .nav-dropdown.open .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .nav-dropdown.open .dropdown-arrow {
+      transform: scale(1) rotate(180deg);
+    }
+
+    .nav-dropdown:focus-within .dropdown-menu {
       opacity: 1;
       visibility: visible;
       transform: translateX(-50%) translateY(0);
@@ -350,6 +369,30 @@ import { environment } from '../../../environments/environment';
       height: 1px;
       background: rgba(255, 255, 255, 0.1);
       margin: 0.25rem 0;
+    }
+
+    .dropdown-divisions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .dropdown-divisions a {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 0;
+      text-align: center;
+    }
+
+    .dropdown-divisions a:last-child,
+    .dropdown-divisions a:nth-last-child(2):nth-child(odd) {
+      border-bottom: none;
+    }
+
+    .dropdown-divisions a:last-child {
+      border-radius: 0 0 8px 0;
+    }
+
+    .dropdown-divisions a:nth-last-child(2):nth-child(odd) {
+      border-radius: 0 0 0 8px;
     }
 
     .mobile-toggle {
@@ -401,16 +444,26 @@ import { environment } from '../../../environments/environment';
 
       .nav-dropdown .dropdown-menu {
         position: static;
-        opacity: 1;
-        visibility: visible;
+        opacity: 0;
+        visibility: hidden;
+        max-height: 0;
+        overflow: hidden;
         transform: none;
         box-shadow: none;
         border: none;
         background: rgba(255, 255, 255, 0.05);
-        margin-top: 0.5rem;
+        margin-top: 0;
         border-radius: 4px;
         width: 100%;
         min-width: auto;
+        transition: opacity 0.3s ease, max-height 0.3s ease, visibility 0.3s ease;
+      }
+
+      .nav-dropdown.open .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        max-height: 500px;
+        margin-top: 0.5rem;
       }
 
       .nav-dropdown > a {
@@ -420,6 +473,23 @@ import { environment } from '../../../environments/environment';
 
       .nav-dropdown:hover .dropdown-arrow {
         transform: none;
+      }
+
+      .nav-dropdown.open .dropdown-arrow {
+        transform: scale(1) rotate(180deg);
+      }
+
+      .dropdown-divisions {
+        grid-template-columns: 1fr;
+      }
+
+      .dropdown-divisions a:last-child {
+        border-radius: 0 0 4px 4px;
+      }
+
+      .dropdown-divisions a:nth-last-child(2):nth-child(odd) {
+        border-radius: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
       }
 
       .dropdown-menu a {
@@ -449,7 +519,7 @@ import { environment } from '../../../environments/environment';
       .header-content {
         padding: 0.75rem;
       }
-      
+
       .logo-image {
         height: 60px;
       }
@@ -459,12 +529,18 @@ import { environment } from '../../../environments/environment';
 export class HeaderComponent {
   protected readonly environment = environment;
   isNavOpen = false;
+  isLeagueOpen = false;
 
   toggleNav() {
     this.isNavOpen = !this.isNavOpen;
   }
 
+  toggleLeague() {
+    this.isLeagueOpen = !this.isLeagueOpen;
+  }
+
   closeNav() {
     this.isNavOpen = false;
+    this.isLeagueOpen = false;
   }
 }
