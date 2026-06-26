@@ -12,15 +12,7 @@ import { Division } from '../../pages/league/league.component';
         <div class="info-grid">
           <div class="info-card">
             <h3>Season Format</h3>
-            <p>5 weeks of regular season play followed by Match Point Finals. Teams earn points based on placement and eliminations using ALGS scoring.</p>
-          </div>
-          <div class="info-card" *ngIf="division && (division.tier === 1 || division.tier === 2)">
-            <h3>Promotion/Relegation</h3>
-            <p>Active between Divisions I & II only. Top/bottom teams may move between these divisions during the season.</p>
-          </div>
-          <div class="info-card" *ngIf="division && division.tier > 2">
-            <h3>Division Status</h3>
-            <p>Static division for this season. Teams remain in this division unless moved for lobby quality purposes.</p>
+            <p>6 weeks of regular season play followed by Match Point Finals. Teams earn points based on placement each match day using VESA scoring.</p>
           </div>
           <div class="info-card">
             <h3>Match Schedule</h3>

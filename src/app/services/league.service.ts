@@ -38,6 +38,11 @@ export interface StandingEntry {
   teamId: number;
   teamName: string;
   points: number;
+  wins?: number;
+  matchDaysPlayed?: number;
+  kills?: number;
+  trend?: 'up' | 'down' | 'same';
+  trendDelta?: number;
 }
 
 export interface MatchPointChampion {

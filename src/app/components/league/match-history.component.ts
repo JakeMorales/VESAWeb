@@ -10,7 +10,7 @@ import { Match } from '../../pages/league/division/division.component';
   template: `
     <section class="matches-section">
       <div class="matches-content">
-        <h2>Season 11 Matches</h2>
+        <h2>{{ season }} Matches</h2>
         
         <div class="matches-grid">
           <!-- Completed Matches -->
@@ -67,6 +67,7 @@ import { Match } from '../../pages/league/division/division.component';
 })
 export class MatchHistoryComponent {
   @Input() matches: Match[] = [];
+  @Input() season: string = 'Season';
 
   getMatchStatusClass(status: string): string {
     switch (status) {

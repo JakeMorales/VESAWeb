@@ -1,16 +1,12 @@
 /**
  * Generates _summary.json files for each division in the league archive.
  *
- * Each summary aggregates team standings across all weekly match files in the division,
- * producing season standings (regular weeks), Match Point finals standings, and the
- * Match Point champion with their roster.
- *
- * Output shape matches the DivisionSummary interface in src/app/services/league.service.ts.
+ * Points are awarded based on each team's match-day finishing position:
+ * 1st: 25 | 2nd: 21 | 3rd: 18 | 4th: 16 | 5th: 15 | 6th-8th: 14-12 |
+ * 9th-20th: 11 down to 0
  *
  * Run with: npm run generate-summaries
- *
- * After running, upload the generated _summary.json files to HuggingFace alongside
- * the existing weekly match files.
+ * Then upload the generated _summary.json files to HuggingFace.
  */
 
 import fs from 'fs';
@@ -23,6 +19,16 @@ const __dirname = dirname(__filename);
 
 const LEAGUE_DIR = path.join(__dirname, '..', 'server', 'divisions_batch');
 
+const LEAGUE_PLACEMENT_POINTS: Record<number, number> = {
+  1: 25, 2: 21, 3: 18, 4: 16, 5: 15, 6: 14, 7: 13, 8: 12,
+  9: 11, 10: 10, 11: 9, 12: 8, 13: 7, 14: 6, 15: 5,
+  16: 4, 17: 3, 18: 2, 19: 1, 20: 0,
+};
+
+function getLeaguePoints(placement: number): number {
+  return LEAGUE_PLACEMENT_POINTS[placement] ?? 0;
+}
+
 // ── Interfaces ────────────────────────────────────────────────────────────────
 
 interface StandingEntry {
@@ -30,6 +36,11 @@ interface StandingEntry {
   teamId: number;
   teamName: string;
   points: number;
+  wins: number;
+  matchDaysPlayed: number;
+  kills: number;
+  trend: 'up' | 'down' | 'same';
+  trendDelta: number;
 }
 
 interface MatchPointChampion {
@@ -47,12 +58,14 @@ interface DivisionSummary {
   matchPointChampion: MatchPointChampion | null;
 }
 
-// Internal accumulator — not written to disk
 interface TeamAccumulator {
   teamId: number;
   teamName: string;
-  regularPoints: number;
-  mpPoints: number;
+  leaguePoints: number;
+  mpLeaguePoints: number;
+  matchDaysPlayed: number;
+  gameWins: number;
+  totalKills: number;
   mpPlayers: Set<string>;
 }
 
@@ -68,7 +81,6 @@ function sortMatchFiles(files: string[]): string[] {
     const weekA = parseInt(a.match(/Week_(\d+)/i)?.[1] ?? '0');
     const weekB = parseInt(b.match(/Week_(\d+)/i)?.[1] ?? '0');
     if (weekA !== weekB) return weekA - weekB;
-
     const aSpecial = isPlayoffsFile(a);
     const bSpecial = isPlayoffsFile(b);
     if (aSpecial && !bSpecial) return 1;
@@ -79,15 +91,13 @@ function sortMatchFiles(files: string[]): string[] {
 
 function toRankedStandings(
   accumulators: Map<number, TeamAccumulator>,
-  pointsKey: 'regularPoints' | 'mpPoints',
+  pointsKey: 'leaguePoints' | 'mpLeaguePoints',
   onlyWithPoints: boolean
 ): StandingEntry[] {
   let entries = Array.from(accumulators.values());
-
   if (onlyWithPoints) {
     entries = entries.filter(e => e[pointsKey] > 0);
   }
-
   return entries
     .sort((a, b) => b[pointsKey] - a[pointsKey])
     .map((e, i) => ({
@@ -95,6 +105,11 @@ function toRankedStandings(
       teamId: e.teamId,
       teamName: e.teamName,
       points: e[pointsKey],
+      wins: pointsKey === 'leaguePoints' ? e.gameWins : 0,
+      matchDaysPlayed: e.matchDaysPlayed,
+      kills: e.totalKills,
+      trend: 'same' as const,
+      trendDelta: 0,
     }));
 }
 
@@ -121,39 +136,81 @@ function processWeekFile(
 
   const isMP = isPlayoffsFile(filename);
 
+  // Step 1: aggregate in-game score, kills, and individual game wins per team
+  const matchDayTotals = new Map<number, {
+    teamId: number;
+    teamName: string;
+    inGameScore: number;
+    kills: number;
+    gameWins: number;
+    players: Set<string>;
+  }>();
+
   for (const game of games) {
     for (const team of game.teams ?? []) {
       const teamId: number = team.teamId ?? team.overall_stats?.teamId;
       const teamName: string = team.name ?? team.overall_stats?.name ?? `Team ${teamId}`;
       const score: number = team.overall_stats?.score ?? 0;
+      const kills: number = team.overall_stats?.kills ?? 0;
+      const gamePlacement: number = team.overall_stats?.teamPlacement ?? 0;
 
       if (teamId == null) continue;
 
-      // Collect player names from this game entry
       const players: string[] = (team.player_stats ?? [])
         .map((p: any) => p.name ?? p.playerName ?? p.player_name)
         .filter(Boolean);
 
-      const acc = accMap.get(teamId);
-      if (acc) {
-        acc.teamName = teamName; // keep most recent name
-        if (isMP) {
-          acc.mpPoints += score;
-          players.forEach(p => acc.mpPlayers.add(p));
-        } else {
-          acc.regularPoints += score;
-        }
+      if (matchDayTotals.has(teamId)) {
+        const t = matchDayTotals.get(teamId)!;
+        t.teamName = teamName;
+        t.inGameScore += score;
+        t.kills += kills;
+        if (gamePlacement === 1) t.gameWins++;
+        players.forEach(p => t.players.add(p));
       } else {
-        accMap.set(teamId, {
-          teamId,
-          teamName,
-          regularPoints: isMP ? 0 : score,
-          mpPoints: isMP ? score : 0,
-          mpPlayers: isMP ? new Set(players) : new Set(),
+        matchDayTotals.set(teamId, {
+          teamId, teamName, inGameScore: score, kills,
+          gameWins: gamePlacement === 1 ? 1 : 0,
+          players: new Set(players),
         });
       }
     }
   }
+
+  // Step 2: rank teams by in-game score to determine match-day placement
+  const ranked = Array.from(matchDayTotals.values())
+    .sort((a, b) => b.inGameScore - a.inGameScore);
+
+  // Step 3: award VESA league points and update season accumulators
+  ranked.forEach((team, index) => {
+    const placement = index + 1;
+    const leaguePoints = getLeaguePoints(placement);
+
+    const acc = accMap.get(team.teamId);
+    if (acc) {
+      acc.teamName = team.teamName;
+      acc.totalKills += team.kills;
+      if (isMP) {
+        acc.mpLeaguePoints += leaguePoints;
+        team.players.forEach(p => acc.mpPlayers.add(p));
+      } else {
+        acc.leaguePoints += leaguePoints;
+        acc.matchDaysPlayed++;
+        acc.gameWins += team.gameWins;
+      }
+    } else {
+      accMap.set(team.teamId, {
+        teamId: team.teamId,
+        teamName: team.teamName,
+        leaguePoints: isMP ? 0 : leaguePoints,
+        mpLeaguePoints: isMP ? leaguePoints : 0,
+        matchDaysPlayed: isMP ? 0 : 1,
+        gameWins: isMP ? 0 : team.gameWins,
+        totalKills: team.kills,
+        mpPlayers: isMP ? new Set(team.players) : new Set(),
+      });
+    }
+  });
 }
 
 function generateDivisionSummary(
@@ -172,19 +229,39 @@ function generateDivisionSummary(
   }
 
   const accMap = new Map<number, TeamAccumulator>();
+  const weeklyRankSnapshots: Map<number, number>[] = [];
 
   for (const filename of matchFiles) {
     console.log(`    Processing ${filename}...`);
     processWeekFile(path.join(divPath, filename), filename, accMap);
+
+    if (!isPlayoffsFile(filename)) {
+      const snap = new Map<number, number>();
+      toRankedStandings(accMap, 'leaguePoints', false).forEach(e => snap.set(e.teamId, e.rank));
+      weeklyRankSnapshots.push(snap);
+    }
   }
 
-  // Season standings: all teams ranked by regular-season points
-  const seasonStandings = toRankedStandings(accMap, 'regularPoints', false);
+  const seasonStandings = toRankedStandings(accMap, 'leaguePoints', false);
 
-  // MP standings: only teams that appeared in MP/playoff files (points > 0)
-  const mpStandings = toRankedStandings(accMap, 'mpPoints', true);
+  // Compute week-over-week trend from the last two snapshots
+  const lastSnap = weeklyRankSnapshots.at(-1);
+  const prevSnap = weeklyRankSnapshots.at(-2) ?? null;
+  for (const entry of seasonStandings) {
+    const last = lastSnap?.get(entry.teamId);
+    const prev = prevSnap?.get(entry.teamId);
+    if (prev == null || last == null || prev === last) {
+      entry.trend = 'same';
+      entry.trendDelta = 0;
+    } else {
+      const delta = prev - last; // positive = rank number went down = moved up the table
+      entry.trend = delta > 0 ? 'up' : 'down';
+      entry.trendDelta = Math.abs(delta);
+    }
+  }
 
-  // Match Point champion: top MP team with their roster
+  const mpStandings = toRankedStandings(accMap, 'mpLeaguePoints', true);
+
   let matchPointChampion: MatchPointChampion | null = null;
   if (mpStandings.length > 0) {
     const champId = mpStandings[0].teamId;

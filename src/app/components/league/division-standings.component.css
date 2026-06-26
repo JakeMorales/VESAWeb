@@ -141,6 +141,24 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
+.trend-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.trend-dash {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.trend-delta {
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-left: 2px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .standings-section {

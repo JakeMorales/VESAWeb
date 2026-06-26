@@ -37,14 +37,6 @@ import { Division } from '../../pages/league/league.component';
             <span class="stat-value">{{ totalWeeks - currentWeek }}</span>
             <span class="stat-label">Remaining</span>
           </div>
-          <div class="stat-item" *ngIf="division.tier <= 2">
-            <span class="stat-value">Active</span>
-            <span class="stat-label">Promo/Releg</span>
-          </div>
-          <div class="stat-item" *ngIf="division.tier > 2">
-            <span class="stat-value">Static</span>
-            <span class="stat-label">Division</span>
-          </div>
         </div>
       </div>
     </section>
@@ -54,5 +46,5 @@ import { Division } from '../../pages/league/league.component';
 export class DivisionHeaderComponent {
   @Input() division!: Division;
   @Input() currentWeek: number = 2;
-  @Input() totalWeeks: number = 5;
+  @Input() totalWeeks: number = 6;
 }

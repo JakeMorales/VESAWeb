@@ -1,8 +1,12 @@
-<div class="division-container" *ngIf="division" [style.--division-color]="division.color">
+<div class="loading-container" *ngIf="loading">
+  <p>Loading division data...</p>
+</div>
+
+<div class="division-container" *ngIf="!loading && division" [style.--division-color]="division.color">
   <!-- Division Header -->
-  <app-division-header 
-    [division]="division" 
-    [currentWeek]="currentWeek" 
+  <app-division-header
+    [division]="division"
+    [currentWeek]="currentWeek"
     [totalWeeks]="totalWeeks">
   </app-division-header>
 
@@ -13,14 +17,14 @@
   <app-division-standings [teams]="teams"></app-division-standings>
 
   <!-- Match History Section -->
-  <app-match-history [matches]="matches"></app-match-history>
+  <app-match-history [matches]="matches" [season]="'Season 14'"></app-match-history>
 
   <!-- Division Info -->
   <app-division-info [division]="division"></app-division-info>
 </div>
 
-<div class="error-container" *ngIf="!division">
+<div class="error-container" *ngIf="!loading && (error || !division)">
   <h2>Division Not Found</h2>
   <p>The requested division could not be found.</p>
-  <a routerLink="/league" class="back-link">← Back to League</a>
+  <a routerLink="/league/current-season" class="back-link">← Back to League</a>
 </div>

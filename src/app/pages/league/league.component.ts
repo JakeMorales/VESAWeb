@@ -27,7 +27,7 @@ export interface Division {
 })
 export class LeagueComponent implements OnInit {
   currentSeason = 14;
-  totalWeeks = 5;
+  totalWeeks = 6;
   seasonStartDate = new Date('2025-07-21');
   finalsDate = 'September 1, 2025';
 
@@ -36,8 +36,8 @@ export class LeagueComponent implements OnInit {
   error = false;
 
   private readonly DIVISION_META: Record<number, { name: string; romanNumeral: string; color: string; description: string }> = {
-    1: { name: 'Pinnacle',   romanNumeral: 'I',    color: '#ff2c5c', description: 'The elite tier featuring the most skilled teams in VESA. Promotion/relegation active.' },
-    2: { name: 'Vanguard',   romanNumeral: 'II',   color: '#2c9cff', description: 'High-level competitive play with rising stars. Promotion/relegation active.' },
+    1: { name: 'Pinnacle',   romanNumeral: 'I',    color: '#ff2c5c', description: 'The elite tier featuring the most skilled teams in VESA.' },
+    2: { name: 'Vanguard',   romanNumeral: 'II',   color: '#2c9cff', description: 'High-level competitive play with rising stars.' },
     3: { name: 'Ascendant',  romanNumeral: 'III',  color: '#00d4ff', description: 'Competitive teams working towards the next level.' },
     4: { name: 'Emergent',   romanNumeral: 'IV',   color: '#7c3aed', description: 'Developing teams with strong potential.' },
     5: { name: 'Challenger', romanNumeral: 'V',    color: '#f59e0b', description: 'Ambitious teams ready to prove themselves.' },

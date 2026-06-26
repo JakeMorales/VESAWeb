@@ -38,8 +38,17 @@ import { BaseGridComponent, GridConfig } from '../base-grid/base-grid.component'
               <span *ngSwitchCase="'kills'" class="kills-value">{{ value }}</span>
               
               <!-- Trend Column -->
-              <span *ngSwitchCase="'trend'" class="trend-indicator" [class]="getTrendClass(value)">
-                {{ getTrendIcon(value) }}
+              <span *ngSwitchCase="'trend'" class="trend-indicator" [class]="getTrendClass(item.trend)">
+                <ng-container [ngSwitch]="item.trend">
+                  <svg *ngSwitchCase="'up'" class="trend-icon" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polyline points="1,9 6,3 11,9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <svg *ngSwitchCase="'down'" class="trend-icon" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polyline points="1,3 6,9 11,3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span *ngSwitchDefault class="trend-dash">—</span>
+                </ng-container>
+                <span *ngIf="item.trendDelta > 0" class="trend-delta">{{ item.trendDelta }}</span>
               </span>
               
               <!-- Default -->
@@ -61,21 +70,14 @@ export class DivisionStandingsComponent {
       { key: 'name', label: 'Team', width: '2fr', class: 'team-col', sortable: true },
       { key: 'points', label: 'Points', width: '1fr', class: 'points-col', sortable: true },
       { key: 'wins', label: 'Wins', width: '1fr', class: 'wins-col', sortable: true },
-      { key: 'gamesPlayed', label: 'Games', width: '1fr', class: 'games-col', sortable: true },
+      { key: 'gamesPlayed', label: 'Match Days', width: '1fr', class: 'games-col', sortable: true },
       { key: 'kills', label: 'Kills', width: '1fr', class: 'kills-col', sortable: true },
       { key: 'trend', label: 'Trend', width: '100px', class: 'trend-col' }
     ],
     hoverable: true,
-    showHeader: true
+    showHeader: true,
+    showScrollbar: false
   };
-
-  getTrendIcon(trend: string): string {
-    switch (trend) {
-      case 'up': return '↗️';
-      case 'down': return '↘️';
-      default: return '➡️';
-    }
-  }
 
   getTrendClass(trend: string): string {
     switch (trend) {
