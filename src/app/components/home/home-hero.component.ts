@@ -30,10 +30,6 @@ import { RouterModule } from '@angular/router';
             <p>Total Players</p>
           </div>
           <div class="stat-card">
-            <h3>{{ totalGames }}</h3>
-            <p>Total Games</p>
-          </div>
-          <div class="stat-card">
             <h3>{{ totalMatches }}</h3>
             <p>Total Matches</p>
           </div>

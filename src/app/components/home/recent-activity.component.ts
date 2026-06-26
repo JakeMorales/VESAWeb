@@ -5,7 +5,7 @@ export interface ActivityItem {
   icon: string;
   title: string;
   description: string;
-  time: string;
+  time?: string;
 }
 
 @Component({
@@ -22,7 +22,7 @@ export interface ActivityItem {
             <div class="activity-details">
               <h4>{{ activity.title }}</h4>
               <p>{{ activity.description }}</p>
-              <span class="activity-time">{{ activity.time }}</span>
+              <span class="activity-time" *ngIf="activity.time">{{ activity.time }}</span>
             </div>
           </div>
         </div>

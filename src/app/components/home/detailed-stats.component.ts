@@ -25,16 +25,8 @@ export interface StatsData {
                 <span class="stat-label">Matches Played</span>
               </div>
               <div class="stat-item">
-                <span class="stat-number">{{ leagueStats.gamesPlayed }}</span>
-                <span class="stat-label">Games Played</span>
-              </div>
-              <div class="stat-item">
                 <span class="stat-number">{{ leagueStats.uniquePlayers }}</span>
                 <span class="stat-label">Unique Players</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-number">{{ leagueStats.totalPlaytime }}</span>
-                <span class="stat-label">Total Playtime</span>
               </div>
             </div>
           </div>
@@ -46,16 +38,8 @@ export interface StatsData {
                 <span class="stat-label">Matches Played</span>
               </div>
               <div class="stat-item">
-                <span class="stat-number">{{ scrimsStats.gamesPlayed }}</span>
-                <span class="stat-label">Games Played</span>
-              </div>
-              <div class="stat-item">
                 <span class="stat-number">{{ scrimsStats.uniquePlayers }}</span>
                 <span class="stat-label">Unique Players</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-number">{{ scrimsStats.totalPlaytime }}</span>
-                <span class="stat-label">Total Playtime</span>
               </div>
             </div>
           </div>

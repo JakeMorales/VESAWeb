@@ -11,22 +11,22 @@ import { Component } from '@angular/core';
           <div class="feature-card">
             <div class="feature-icon">🏆</div>
             <h3>ALGS League</h3>
-            <p>6 competitive divisions with 5-week seasons and Match Point finals</p>
+            <p>Up to 8 competitive divisions with Match Point finals</p>
           </div>
           <div class="feature-card">
             <div class="feature-icon">📈</div>
-            <h3>Detailed Statistics</h3>
-            <p>Track kills, deaths, damage, and more across all your matches</p>
+            <h3>Live Standings</h3>
+            <p>Season standings and Match Point totals updated after every match day</p>
           </div>
           <div class="feature-card">
             <div class="feature-icon">📊</div>
             <h3>Match History</h3>
-            <p>Review every game with comprehensive match breakdowns</p>
+            <p>Review every game with per-player stats and placement breakdowns</p>
           </div>
           <div class="feature-card">
             <div class="feature-icon">⚡</div>
-            <h3>Real-time Updates</h3>
-            <p>Live match tracking and instant stat updates</p>
+            <h3>Scrims Leaderboard</h3>
+            <p>Ranked player leaderboard tracking kills, damage, and points across all scrim sessions</p>
           </div>
         </div>
       </div>
