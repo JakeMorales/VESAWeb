@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NhostService, Player } from '../../services/nhost.service';
 import { DiscordService } from '../../services/discord.service';
+import { LeagueScheduleComponent, SEASON_14_SCHEDULE } from '../../components/league/league-schedule.component';
 
 interface RosterPlayer {
   discordUsername: string;
@@ -71,7 +72,7 @@ function emptyRosterPlayer(): RosterPlayer {
 @Component({
   selector: 'app-league-signup',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, LeagueScheduleComponent],
   template: `
     <div class="signup-container">
       <div class="signup-header">
@@ -262,6 +263,9 @@ function emptyRosterPlayer(): RosterPlayer {
         </div>
 
       </div>
+
+      <app-league-schedule [dates]="scheduleEntries"></app-league-schedule>
+
     </div>
 
     <!-- Reusable per-player fields template -->
@@ -863,6 +867,7 @@ export class LeagueSignupComponent implements OnInit, OnDestroy {
   readonly ranks = RANKS;
   readonly vesaDivisions = VESA_DIVISIONS;
   readonly platforms = PLATFORMS;
+  readonly scheduleEntries = SEASON_14_SCHEDULE;
 
   form: SignupForm = {
     teamName: '',
