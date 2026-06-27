@@ -80,8 +80,13 @@ export class GamesComponent implements OnInit {
         this.applyFilter();
         this.loading = false;
       },
-      error: () => {
-        this.error = 'Failed to load scrims. Please try again later.';
+      error: (err) => {
+        const msg: string = err?.message ?? String(err);
+        if (msg.includes('not found in type')) {
+          this.error = 'Hasura permissions not yet configured for the anon role — scrims data cannot be loaded. See PR #45 for the required table grants.';
+        } else {
+          this.error = 'Failed to load scrims. Please try again later.';
+        }
         this.loading = false;
       }
     });
