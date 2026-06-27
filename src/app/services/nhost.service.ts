@@ -187,6 +187,67 @@ export class NhostService {
   }
 
   /**
+   * Fetch all scrims using offset-based pagination, sorted newest-first.
+   * Works around the anon-role row limit (typically 10–100 rows).
+   */
+  getAllScrimsPaginated(): Observable<Scrim[]> {
+    const batchSize = 100;
+    const allScrims: Scrim[] = [];
+
+    const fetchBatch = (offset: number): Promise<Scrim[]> => {
+      const query = `
+        query GetScrimsBatch($offset: Int!, $limit: Int!) {
+          scrims(
+            offset: $offset,
+            limit: $limit,
+            order_by: { date_time_field: desc }
+          ) {
+            id
+            active
+            date_time_field
+            discord_channel
+            overstat_link
+            skill
+          }
+        }
+      `;
+      return this.nhost.graphql.request(query, { offset, limit: batchSize }).then((response: any) => {
+        if (response.error) {
+          throw new Error(response.error.message);
+        }
+        return response.data.scrims as Scrim[];
+      });
+    };
+
+    const fetchAll = async (): Promise<Scrim[]> => {
+      let offset = 0;
+      let hasMore = true;
+
+      while (hasMore) {
+        const batch = await fetchBatch(offset);
+        allScrims.push(...batch);
+        hasMore = batch.length === batchSize;
+        offset += batchSize;
+
+        if (offset > 10000) {
+          console.warn('getAllScrimsPaginated: stopped at offset 10000 to prevent infinite loop');
+          break;
+        }
+      }
+
+      console.log(`Fetched ${allScrims.length} total scrims from database`);
+      return allScrims;
+    };
+
+    return from(fetchAll()).pipe(
+      catchError((error) => {
+        console.error('Error fetching all scrims:', error);
+        throw error;
+      })
+    );
+  }
+
+  /**
    * Get all scrims
    */
   getScrims(): Observable<Scrim[]> {

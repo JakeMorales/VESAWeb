@@ -1,9 +1,52 @@
 <div class="scrim-collapsible modern">
   <button class="collapsible-toggle modern" (click)="toggleExpand()">
     <span class="arrow" [class.expanded]="expanded">&#9654;</span>
-    <span class="scrim-date">{{ getScrimDate(file) }}</span>
+    <span class="scrim-date">{{ formattedDate }}</span>
+    <span class="skill-badge" [ngClass]="skillClass">{{ scrim.skill || 'Unknown' }}</span>
+    <a
+      *ngIf="scrim?.overstat_link"
+      [href]="scrim.overstat_link!"
+      target="_blank"
+      rel="noopener"
+      class="overstat-link"
+      (click)="$event.stopPropagation()">
+      Overstat &#8599;
+    </a>
+    <span class="team-count">{{ teamCountLabel }}</span>
   </button>
+
   <div class="collapsible-content modern" *ngIf="expanded">
-    <app-match-day-table [matchResults]="matchResults"></app-match-day-table>
+    <div *ngIf="loadingStats" class="stats-loading">Loading player stats&hellip;</div>
+
+    <table *ngIf="!loadingStats && stats.length > 0" class="stats-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Player</th>
+          <th>Kills</th>
+          <th>Damage</th>
+          <th>KD</th>
+          <th>Assists</th>
+          <th>Score</th>
+          <th>Games</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of stats; let i = index">
+          <td class="rank-col">{{ i + 1 }}</td>
+          <td class="player-col">{{ s.name || '—' }}</td>
+          <td>{{ s.kills ?? '—' }}</td>
+          <td>{{ s.damage_dealt ?? '—' }}</td>
+          <td>{{ s.knockdowns ?? '—' }}</td>
+          <td>{{ s.assists ?? '—' }}</td>
+          <td>{{ s.score ?? '—' }}</td>
+          <td>{{ s.games_played ?? '—' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!loadingStats && stats.length === 0" class="no-stats">
+      No player stats available for this scrim.
+    </div>
   </div>
 </div>

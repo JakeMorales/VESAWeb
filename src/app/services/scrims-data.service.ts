@@ -1,9 +1,26 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { catchError, map, shareReplay } from 'rxjs/operators';
 import { MatchLoaderService } from './match-loader.service';
-// Removed: import { EloAggregationService } from './elo-aggregation.service';
 import { PlayerStatsService } from './player-stats.service';
 import { TeamUtilsService } from './team-utils.service';
 import { DateUtilsService } from './date-utils.service';
+import { NhostService, Scrim, ScrimPlayerStats } from './nhost.service';
+import { MatchDayResults } from '../models/match-day-results.model';
 
+export interface PlayerStats {
+  playerName: string;
+  kills: number;
+  damageDealt: number;
+  downs: number;
+  headshots?: number;
+  assists?: number;
+  shots?: number;
+  hits?: number;
+  revives: number;
+  respawns: number;
+}
 
 export interface ScrimLeaderboardData {
   players: PlayerAggregatedStats[];
@@ -30,21 +47,38 @@ export interface PlayerAggregatedStats {
   estimatedElo: number;
   finalElo?: number;
 }
+
 @Injectable({ providedIn: 'root' })
 export class ScrimsDataService {
 
-  // RatingsComponent should call getPerformanceFactorStats, getAvgUnratedOpponentPct, and getAvgNetEloChangePerGame directly from EloAggregationService.
   constructor(
     private matchLoaderService: MatchLoaderService,
     private playerStatsService: PlayerStatsService,
     private teamUtilsService: TeamUtilsService,
     private dateUtilsService: DateUtilsService,
-    private http: HttpClient
+    private http: HttpClient,
+    private nhostService: NhostService
   ) {}
 
+  // ======== NHOST-BASED METHODS (Games Page) ========
+
   /**
-   * Get list of available scrim batch files from HuggingFace dataset
+   * Fetch the full scrims index from Nhost, sorted by date_time_field DESC.
+   * Uses paginated fetching to overcome server row limits.
    */
+  getAllScrims(): Observable<Scrim[]> {
+    return this.nhostService.getAllScrimsPaginated();
+  }
+
+  /**
+   * Lazy-fetch player stats for a specific scrim by ID.
+   */
+  getScrimPlayerStatsByScrimId(scrimId: string): Observable<ScrimPlayerStats[]> {
+    return this.nhostService.getScrimStats(scrimId);
+  }
+
+  // ======== HUGGINGFACE FILE-BASED METHODS (legacy) ========
+
   /**
    * Get a page of available scrim batch files from HuggingFace dataset
    * @param page 1-based page number
@@ -71,7 +105,6 @@ export class ScrimsDataService {
    * Load a scrim table from a JSON object (from file, API, etc)
    */
   loadScrimTableFromJsonObject(json: any): MatchDayResults {
-    // Use the new generic transformation method from MatchLoaderService
     return this.matchLoaderService.transformMatchJsonToMatchDayResults(json);
   }
 
@@ -94,19 +127,12 @@ export class ScrimsDataService {
   }
 
   /**
-   * Get detailed stats for a specific player
-   */
-  /**
-   * Get detailed stats for a specific player (file-based stub for now)
+   * Get detailed stats for a specific player (file-based stub)
    */
   getPlayerScrimHistory(playerId: string): Observable<PlayerStats[]> {
-    // Not supported with file-only data; return empty array or implement file-based lookup if needed
     return of([]);
   }
 
-  /**
-   * Get all stats for a specific scrim
-   */
   /**
    * Get all stats for a specific scrim (file-based)
    */
@@ -115,7 +141,6 @@ export class ScrimsDataService {
       map(json => {
         const matchDayResults = this.loadScrimTableFromJsonObject(json);
         if (!matchDayResults) return [];
-        // Flatten all player stats from all games and teams
         const allPlayerStats: PlayerStats[] = [];
         Object.values(matchDayResults).forEach((teamResults: any) => {
           teamResults.forEach((team: any) => {
@@ -130,15 +155,8 @@ export class ScrimsDataService {
     );
   }
 
-  // ======== SCRIMS HISTORY METHODS (for Games Page) ========
-
-
-
   /**
-   * Get match day results for a specific scrim session
-   */
-  /**
-   * Loads scrim match data using MatchLoaderService (from file for now)
+   * Loads scrim match data using MatchLoaderService (from file)
    * @param matchId The filename of the scrim JSON file
    */
   getScrimMatchResults(matchId: string): Observable<MatchDayResults> {
@@ -157,8 +175,6 @@ export class ScrimsDataService {
   private transformToMatchDayResultsWithTeams(playerStats: PlayerStats[], scrimSignups: any[], scrimId: number): MatchDayResults {
     return this.teamUtilsService.transformToMatchDayResultsWithTeams(playerStats, scrimSignups, scrimId);
   }
-
-
 
   /**
    * Transform ScrimPlayerStats to MatchDayResults format
@@ -196,31 +212,23 @@ export class ScrimsDataService {
   }
 
   /**
-   * Extract maps from scrim data (placeholder for now)
+   * Extract maps from scrim data (placeholder)
    */
   private extractMapsFromScrim(scrim: any): string[] {
-    // Check if we have any map info in the available fields
     if (scrim.skill) {
-      // Use skill level as a placeholder map indicator
       return [`${scrim.skill} Level Match`];
     }
     if (scrim.discord_channel) {
-      // Use discord channel as map indicator if available
       return [scrim.discord_channel];
     }
     if (scrim.id) {
-      // Generate varied placeholder maps for now
       const maps = ['World\'s Edge', 'Kings Canyon', 'Olympus', 'Storm Point'];
       const randomMap = maps[parseInt(scrim.id) % maps.length];
       return [randomMap];
     }
-    // Fallback: return empty array if no map info is available
     return [];
   }
 
-  /**
-   * Get team information for a player in a specific scrim
-   */
   /**
    * Get team information for a player in a specific scrim (not supported with file-only data)
    */
@@ -232,9 +240,6 @@ export class ScrimsDataService {
     return of(null);
   }
 
-  /**
-   * Get all teams for a specific scrim with player details
-   */
   /**
    * Get all teams for a specific scrim with player details (not supported with file-only data)
    */
@@ -248,14 +253,6 @@ export class ScrimsDataService {
   }
 
   /**
-   * Fallback method to get scrim teams using basic signup data
-   */
-
-
-  /**
-   * Get player's team history across all scrims
-   */
-  /**
    * Get player's team history across all scrims (not supported with file-only data)
    */
   getPlayerTeamHistory(playerId: string): Observable<{
@@ -267,9 +264,6 @@ export class ScrimsDataService {
     return of([]);
   }
 
-  /**
-   * Enhanced player stats with team information
-   */
   /**
    * Enhanced player stats with team information (not supported with file-only data)
    */
@@ -283,24 +277,4 @@ export class ScrimsDataService {
   }> {
     return of({ stats: [], teams: [] });
   }
-}
-
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, of } from 'rxjs';
-import { catchError, map, mergeMap, shareReplay } from 'rxjs/operators';
-// Removed: import { EloCalculatorService } from './elo-calculator.service';
-import { MatchDayResults } from '../models/match-day-results.model';
-
-export interface PlayerStats {
-  playerName: string;
-  kills: number;
-  damageDealt: number;
-  downs: number;
-  headshots?: number;
-  assists?: number;
-  shots?: number;
-  hits?: number;
-  revives: number;
-  respawns: number;
 }
