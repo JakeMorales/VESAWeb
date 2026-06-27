@@ -1,8 +1,4 @@
 {
-  "/leaderboard": {
-    "target": "http://localhost:3001",
-    "secure": false
-  },
   "/hf-api": {
     "target": "https://huggingface.co",
     "secure": true,

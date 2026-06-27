@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RatingsService } from '../../services/ratings.service';
 
 @Component({
   selector: 'app-ratings',
@@ -23,30 +22,15 @@ export class RatingsComponent implements OnInit {
   isLoading = false;
   playerNameSearch: string = '';
 
-  constructor(private ratingsService: RatingsService) {}
+  constructor() {}
 
   ngOnInit(): void {
     this.loadLeaderboardPage(0);
   }
 
   loadLeaderboardPage(page: number): void {
-    this.isLoading = true;
-    this.leaderboardError = '';
-    const offset = page * this.pageSize;
-    this.ratingsService.getLeaderboard(offset, this.pageSize, this.playerNameSearch).subscribe({
-      next: (result) => {
-        this.leaderboard = Array.isArray(result.data) ? result.data : [];
-        this.stats = result.stats || {};
-        this.ratedStats = result.ratedStats || {};
-        this.currentPage = page;
-        this.totalPlayers = result.total || 0;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        this.leaderboardError = 'Failed to load leaderboard';
-        this.isLoading = false;
-      }
-    });
+    // Ratings leaderboard backend has been removed; this page is feature-flagged off.
+    this.leaderboardError = 'Ratings leaderboard is currently unavailable.';
   }
 
   onSearchPlayerName(): void {
