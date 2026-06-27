@@ -191,33 +191,38 @@ export class NhostService {
    * Works around the anon-role row limit (typically 10–100 rows).
    */
   getAllScrimsPaginated(): Observable<Scrim[]> {
+    // The anon role has no direct SELECT on the `scrims` table, so we cannot
+    // query it as a root field.  Instead we paginate through `scrim_player_stats`
+    // (which IS accessible) and pull scrim metadata via the `scrim` object
+    // relation.  We then deduplicate by scrim_id client-side.
     const batchSize = 100;
-    const allScrims: Scrim[] = [];
+    const seen = new Map<string, Scrim>();
 
-    // Note: order_by is omitted here because the Hasura anon role may not grant it.
-    // Sorting is done client-side after all pages are fetched.
-    const fetchBatch = (offset: number): Promise<Scrim[]> => {
+    const fetchBatch = (offset: number): Promise<{ scrim_id: string; scrim: Scrim | null }[]> => {
       const query = `
-        query GetScrimsBatch($offset: Int!, $limit: Int!) {
-          scrims(offset: $offset, limit: $limit) {
-            id
-            active
-            date_time_field
-            discord_channel
-            overstat_link
-            skill
+        query GetScrimsViaStats($offset: Int!, $limit: Int!) {
+          scrim_player_stats(offset: $offset, limit: $limit) {
+            scrim_id
+            scrim {
+              id
+              active
+              date_time_field
+              discord_channel
+              overstat_link
+              skill
+            }
           }
         }
       `;
       return this.nhost.graphql.request(query, { offset, limit: batchSize }).then((response: any) => {
         if (response.error) {
-          const msg = response.error?.message
-            ?? response.error?.error
-            ?? JSON.stringify(response.error);
+          const msg = Array.isArray(response.error)
+            ? JSON.stringify(response.error)
+            : (response.error?.message ?? response.error?.error ?? JSON.stringify(response.error));
           console.error('getAllScrimsPaginated batch error:', response.error);
           throw new Error(msg);
         }
-        return (response.data?.scrims ?? []) as Scrim[];
+        return (response.data?.scrim_player_stats ?? []);
       });
     };
 
@@ -227,25 +232,34 @@ export class NhostService {
 
       while (hasMore) {
         const batch = await fetchBatch(offset);
-        allScrims.push(...batch);
+
+        for (const row of batch) {
+          if (!seen.has(row.scrim_id)) {
+            // Use the relation data if available, otherwise store a minimal stub
+            seen.set(row.scrim_id, row.scrim ?? { id: row.scrim_id });
+          }
+        }
+
         hasMore = batch.length === batchSize;
         offset += batchSize;
 
-        if (offset > 10000) {
-          console.warn('getAllScrimsPaginated: stopped at offset 10000 to prevent infinite loop');
+        if (offset > 50000) {
+          console.warn('getAllScrimsPaginated: stopped at offset 50000 to prevent infinite loop');
           break;
         }
       }
 
-      // Sort newest-first client-side (avoids needing order_by permission from anon role)
-      allScrims.sort((a, b) => {
+      const scrims = Array.from(seen.values());
+
+      // Sort newest-first client-side
+      scrims.sort((a, b) => {
         const dateA = a.date_time_field ? new Date(a.date_time_field).getTime() : 0;
         const dateB = b.date_time_field ? new Date(b.date_time_field).getTime() : 0;
         return dateB - dateA;
       });
 
-      console.log(`Fetched ${allScrims.length} total scrims from database`);
-      return allScrims;
+      console.log(`Found ${scrims.length} unique scrims from ${offset} stat rows`);
+      return scrims;
     };
 
     return from(fetchAll()).pipe(
@@ -257,34 +271,12 @@ export class NhostService {
   }
 
   /**
-   * Get all scrims
+   * Get all scrims.
+   * The `scrims` root field is not accessible to the anon role, so this
+   * delegates to getAllScrimsPaginated() which reads through scrim_player_stats.
    */
   getScrims(): Observable<Scrim[]> {
-    const query = `
-      query GetScrims {
-        scrims {
-          id
-          active
-          date_time_field
-          discord_channel
-          overstat_link
-          skill
-        }
-      }
-    `;
-
-    return from(this.nhost.graphql.request(query)).pipe(
-      map((response: any) => {
-        if (response.error) {
-          throw new Error(response.error.message);
-        }
-        return response.data.scrims;
-      }),
-      catchError((error) => {
-        console.error('Error fetching scrims:', error);
-        throw error;
-      })
-    );
+    return this.getAllScrimsPaginated();
   }
 
   /**
