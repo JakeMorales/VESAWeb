@@ -5,10 +5,9 @@ import { ScrimFiltersComponent } from '../../components/games/scrim-filters.comp
 import { ScoresArchiveComponent } from '../../components/league/scores-archive.component';
 import { ScrimCollapsibleComponent } from '../../components/scrim-collapsible/scrim-collapsible.component';
 import { ModernPaginationComponent } from '../../components/modern-pagination/modern-pagination.component';
-import { MatchDayResults } from '../../models/match-day-results.model';
 import { ScrimsDataService } from '../../services/scrims-data.service';
-import { forkJoin, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { DateUtilsService } from '../../services/date-utils.service';
+import { Scrim, ScrimPlayerStats } from '../../services/nhost.service';
 
 @Component({
   selector: 'app-games',
@@ -38,95 +37,86 @@ export class GamesComponent implements OnInit {
     this.viewMode = val;
   }
 
+  viewMode: 'current' | 'archive' = 'current';
   searchTerm = '';
-  /** Filenames for the current server page (sorted newest first) */
-  scrimFiles: string[] = [];
-  /** Cache of already-loaded match data to avoid re-fetching on page back */
-  private pageCache = new Map<string, MatchDayResults>();
-  /** Data for the currently visible page */
-  pagedScrims: { file: string, matchResults: MatchDayResults }[] = [];
+
+  /** Full in-memory index of all scrims, sorted newest-first */
+  allScrims: Scrim[] = [];
+  /** Filtered subset used for pagination */
+  filteredScrims: Scrim[] = [];
+  /** Current page slice shown in the UI */
+  pagedScrims: Scrim[] = [];
+  /** Cache of lazy-loaded player stats per scrim_id; shared with collapsible components */
+  statsCache = new Map<string, ScrimPlayerStats[]>();
 
   loading = true;
-  loadingPage = false;
   error = '';
-  viewMode: 'current' | 'archive' = 'current';
   page = 1;
-  pageSize = 10;
+  readonly pageSize = 10;
 
-  hasMore = false;
-  get totalPages() {
-    // If there's more, allow one more page; otherwise current page is last
-    return this.hasMore ? this.page + 1 : this.page;
+  get totalItems(): number {
+    return this.filteredScrims.length;
   }
 
-  constructor(private scrimsDataService: ScrimsDataService) {}
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.totalItems / this.pageSize));
+  }
+
+  constructor(
+    private scrimsDataService: ScrimsDataService,
+    private dateUtils: DateUtilsService
+  ) {}
 
   ngOnInit() {
-    // Load first page of filenames from server
-    this.loadPage(1);
+    this.loadAllScrims();
   }
 
-  /** Loads only the files needed for the given page, using cache for already-fetched files. */
-  loadPage(page: number) {
-    this.page = page;
-    this.loadingPage = true;
-    this.scrimsDataService.getScrimFiles(page, this.pageSize).subscribe({
-      next: resp => {
-        this.scrimFiles = resp.files;
-        this.hasMore = resp.hasMore;
-        const pageFiles = this.scrimFiles;
-        const toFetch = pageFiles.filter(f => !this.pageCache.has(f));
-
-        if (toFetch.length === 0) {
-          this.pagedScrims = pageFiles.map(f => ({ file: f, matchResults: this.pageCache.get(f)! }));
-          this.loading = false;
-          this.loadingPage = false;
-          return;
-        }
-
-        forkJoin(
-          toFetch.map(file =>
-            this.scrimsDataService.getScrimMatchResults(file).pipe(
-              map(matchResults => ({ file, matchResults })),
-              catchError(() => of({ file, matchResults: {} as MatchDayResults }))
-            )
-          )
-        ).subscribe({
-          next: results => {
-            results.forEach(r => this.pageCache.set(r.file, r.matchResults));
-            this.pagedScrims = pageFiles.map(f => ({ file: f, matchResults: this.pageCache.get(f) ?? {} as MatchDayResults }));
-            this.loading = false;
-            this.loadingPage = false;
-          },
-          error: () => {
-            this.error = 'Failed to load scrim data.';
-            this.loading = false;
-            this.loadingPage = false;
-          }
-        });
-      },
-      error: () => {
-        this.error = 'Failed to load scrim files.';
+  private loadAllScrims() {
+    this.loading = true;
+    this.error = '';
+    this.scrimsDataService.getAllScrims().subscribe({
+      next: (scrims) => {
+        this.allScrims = scrims;
+        this.applyFilter();
         this.loading = false;
-        this.loadingPage = false;
+      },
+      error: (err) => {
+        const msg: string = err?.message ?? String(err);
+        if (msg.includes('not found in type')) {
+          this.error = 'Hasura permissions not yet configured for the anon role — scrims data cannot be loaded. See PR #45 for the required table grants.';
+        } else {
+          this.error = 'Failed to load scrims. Please try again later.';
+        }
+        this.loading = false;
       }
     });
   }
 
+  /**
+   * Filter allScrims by search term (date string + skill) then re-paginate.
+   */
+  private applyFilter() {
+    const lower = this.searchTerm.toLowerCase().trim();
+    if (!lower) {
+      this.filteredScrims = [...this.allScrims];
+    } else {
+      this.filteredScrims = this.allScrims.filter(s => {
+        const dateStr = this.dateUtils.formatScrimDate(s.date_time_field || '').toLowerCase();
+        const skill = (s.skill || '').toLowerCase();
+        return dateStr.includes(lower) || skill.includes(lower);
+      });
+    }
+    this.setPage(1);
+  }
+
   setPage(page: number) {
-    this.loadPage(page);
+    this.page = page;
+    const start = (page - 1) * this.pageSize;
+    this.pagedScrims = this.filteredScrims.slice(start, start + this.pageSize);
   }
 
   onSearchChange(term: string) {
     this.searchTerm = term;
-    // Search is only applied to current page of filenames
-    if (!term.trim()) {
-      // nothing to do; reload current page
-      this.loadPage(1);
-      return;
-    }
-    const lower = term.toLowerCase();
-    this.scrimFiles = this.scrimFiles.filter(f => f.toLowerCase().includes(lower));
-    this.loadPage(1);
+    this.applyFilter();
   }
 }

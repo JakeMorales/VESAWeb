@@ -1,11 +1,11 @@
 <div class="games-container">
   <div class="header-section">
-    <h1>VESA Scrimmages & League Archive</h1>
+    <h1>VESA Scrimmages &amp; League Archive</h1>
     <p>Pick-up scrimmages and comprehensive league match history</p>
-    
+
     <!-- View Mode Switcher -->
     <div class="view-switcher">
-      <div 
+      <div
         class="sliding-selector"
         [ngClass]="{
           'liquid-anim': selectorAnimating === 'forward',
@@ -13,14 +13,14 @@
         }"
         [style.transform]="viewMode === 'archive' ? 'translateX(100%)' : 'translateX(0)'">
       </div>
-      <button 
-        class="view-btn" 
+      <button
+        class="view-btn"
         [class.active]="viewMode === 'current'"
         (click)="viewModeSetter = 'current'">
         Scrims History
       </button>
-      <button 
-        class="view-btn" 
+      <button
+        class="view-btn"
         [class.active]="viewMode === 'archive'"
         (click)="viewModeSetter = 'archive'">
         League Archive
@@ -31,16 +31,27 @@
   <!-- Scrims History View -->
   <div *ngIf="viewMode === 'current'" class="current-games-view" @fadeSlide>
     <app-scrim-filters (searchChange)="onSearchChange($event)"></app-scrim-filters>
-    <div *ngIf="loading" class="loading">Loading scrim tables...</div>
+
+    <div *ngIf="loading" class="loading">Loading scrims&hellip;</div>
     <div *ngIf="error" class="error">{{ error }}</div>
+
     <div class="scrims-list" *ngIf="!loading && !error">
       <ng-container *ngFor="let scrim of pagedScrims">
-        <app-scrim-collapsible [file]="scrim.file" [matchResults]="scrim.matchResults"></app-scrim-collapsible>
+        <app-scrim-collapsible
+          [scrim]="scrim"
+          [statsCache]="statsCache">
+        </app-scrim-collapsible>
       </ng-container>
-      <app-modern-pagination [page]="page" [totalPages]="totalPages" (pageChange)="setPage($event)"></app-modern-pagination>
+
+      <app-modern-pagination
+        [page]="page"
+        [totalPages]="totalPages"
+        (pageChange)="setPage($event)">
+      </app-modern-pagination>
     </div>
+
     <div class="no-results" *ngIf="!loading && !error && pagedScrims.length === 0">
-      <p>No scrim tables found.</p>
+      <p>No scrims found{{ searchTerm ? ' matching "' + searchTerm + '"' : '' }}.</p>
     </div>
   </div>
 

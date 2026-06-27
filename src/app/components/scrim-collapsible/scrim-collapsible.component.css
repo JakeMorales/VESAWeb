@@ -1,55 +1,194 @@
-/* Modern collapsible scrim container */
+/* Glassmorphism dark card — matches division-card pattern */
 .scrim-collapsible.modern {
-  background: linear-gradient(135deg, rgba(44,156,255,0.10) 0%, rgba(255,44,92,0.10) 100%);
-  border-radius: 16px;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 2px 16px 0 rgba(44,156,255,0.08), 0 1.5px 8px 0 rgba(255,44,92,0.08);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
   overflow: hidden;
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
+
 .scrim-collapsible.modern:hover {
-  box-shadow: 0 4px 24px 0 rgba(44,156,255,0.15), 0 3px 16px 0 rgba(255,44,92,0.12);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.18);
 }
+
+/* Toggle button */
 .collapsible-toggle.modern {
   width: 100%;
   background: none;
   border: none;
   outline: none;
   color: var(--color-text-primary, #fff);
-  font-size: 1.25rem;
-  font-weight: 700;
-  padding: 1.2rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 1rem 1.5rem;
   display: flex;
   align-items: center;
+  gap: 0.75rem;
   cursor: pointer;
-  transition: background 0.2s;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  transition: background 0.15s;
+  text-align: left;
+  flex-wrap: wrap;
 }
+
 .collapsible-toggle.modern:hover {
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
 }
+
+/* Arrow icon */
 .arrow {
   display: inline-block;
-  margin-right: 1.2rem;
-  font-size: 1.3rem;
+  font-size: 0.75rem;
   transition: transform 0.2s;
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
 }
+
 .arrow.expanded {
   transform: rotate(90deg);
 }
+
+/* Date/time label */
 .scrim-date {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  color: var(--color-accent-primary, #2c9cff);
+  color: #fff;
+  letter-spacing: 0.2px;
 }
+
+/* Skill tier badge */
+.skill-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+}
+
+.skill-badge.skill-high {
+  background: rgba(255, 170, 0, 0.18);
+  color: #ffb700;
+  border: 1px solid rgba(255, 170, 0, 0.35);
+}
+
+.skill-badge.skill-medium {
+  background: rgba(44, 156, 255, 0.18);
+  color: #2c9cff;
+  border: 1px solid rgba(44, 156, 255, 0.35);
+}
+
+.skill-badge.skill-low {
+  background: rgba(0, 200, 120, 0.18);
+  color: #00c878;
+  border: 1px solid rgba(0, 200, 120, 0.35);
+}
+
+.skill-badge.skill-default {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Overstat external link */
+.overstat-link {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #2c9cff;
+  text-decoration: none;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(44, 156, 255, 0.3);
+  background: rgba(44, 156, 255, 0.08);
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.overstat-link:hover {
+  background: rgba(44, 156, 255, 0.16);
+  border-color: rgba(44, 156, 255, 0.5);
+  text-decoration: none;
+}
+
+/* Team count indicator */
+.team-count {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.45);
+  white-space: nowrap;
+}
+
+/* Expanded content area */
 .collapsible-content.modern {
-  padding: 1.5rem 2rem 2rem 2rem;
-  background: rgba(255,255,255,0.03);
-  animation: fadeIn 0.3s;
+  padding: 1.25rem 1.5rem 1.5rem;
+  background: rgba(0, 0, 0, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  animation: fadeIn 0.25s ease;
 }
+
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Loading state */
+.stats-loading {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+}
+
+/* No stats placeholder */
+.no-stats {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+/* Player stats table */
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.stats-table th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.45);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stats-table td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.stats-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.stats-table tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.rank-col {
+  color: rgba(255, 255, 255, 0.35);
+  width: 2rem;
+  text-align: center;
+}
+
+.player-col {
+  font-weight: 600;
+  color: #fff;
 }
