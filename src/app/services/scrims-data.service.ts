@@ -64,10 +64,25 @@ export class ScrimsDataService {
 
   /**
    * Fetch the full scrims index from Nhost, sorted by date_time_field DESC.
-   * Uses paginated fetching to overcome server row limits.
+   * Uses paginated fetching to overcome server row limits. Falls back to the
+   * basic getScrims() query (no offset/limit) if pagination is blocked by the
+   * anon-role permission set.
    */
   getAllScrims(): Observable<Scrim[]> {
-    return this.nhostService.getAllScrimsPaginated();
+    return this.nhostService.getAllScrimsPaginated().pipe(
+      catchError((err) => {
+        console.warn('getAllScrimsPaginated failed, falling back to getScrims():', err);
+        return this.nhostService.getScrims().pipe(
+          map((scrims) =>
+            scrims.sort((a, b) => {
+              const dateA = a.date_time_field ? new Date(a.date_time_field).getTime() : 0;
+              const dateB = b.date_time_field ? new Date(b.date_time_field).getTime() : 0;
+              return dateB - dateA;
+            })
+          )
+        );
+      })
+    );
   }
 
   /**

@@ -194,14 +194,12 @@ export class NhostService {
     const batchSize = 100;
     const allScrims: Scrim[] = [];
 
+    // Note: order_by is omitted here because the Hasura anon role may not grant it.
+    // Sorting is done client-side after all pages are fetched.
     const fetchBatch = (offset: number): Promise<Scrim[]> => {
       const query = `
         query GetScrimsBatch($offset: Int!, $limit: Int!) {
-          scrims(
-            offset: $offset,
-            limit: $limit,
-            order_by: { date_time_field: desc }
-          ) {
+          scrims(offset: $offset, limit: $limit) {
             id
             active
             date_time_field
@@ -213,9 +211,13 @@ export class NhostService {
       `;
       return this.nhost.graphql.request(query, { offset, limit: batchSize }).then((response: any) => {
         if (response.error) {
-          throw new Error(response.error.message);
+          const msg = response.error?.message
+            ?? response.error?.error
+            ?? JSON.stringify(response.error);
+          console.error('getAllScrimsPaginated batch error:', response.error);
+          throw new Error(msg);
         }
-        return response.data.scrims as Scrim[];
+        return (response.data?.scrims ?? []) as Scrim[];
       });
     };
 
@@ -234,6 +236,13 @@ export class NhostService {
           break;
         }
       }
+
+      // Sort newest-first client-side (avoids needing order_by permission from anon role)
+      allScrims.sort((a, b) => {
+        const dateA = a.date_time_field ? new Date(a.date_time_field).getTime() : 0;
+        const dateB = b.date_time_field ? new Date(b.date_time_field).getTime() : 0;
+        return dateB - dateA;
+      });
 
       console.log(`Fetched ${allScrims.length} total scrims from database`);
       return allScrims;
