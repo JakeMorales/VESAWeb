@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { map, catchError, shareReplay } from 'rxjs/operators';
 import { MatchLoaderService } from './match-loader.service';
 import { getApexMapDisplayName, APEX_MAP_NAMES } from '../models/apex-map-names';
+import { switchMap, forkJoin } from 'rxjs'; // add switchMap and forkJoin to the rxjs import
 
 export interface LeagueMatch {
   game: number;
@@ -97,6 +98,19 @@ export interface LeagueMatchDay {
       }>;
     }>;
   };
+}
+
+export interface PlayerLeagueAppearance {
+  season: string;
+  division: string;
+  week: string;
+  isPlayoffs: boolean;
+  teamName: string;
+  teamPlacement: number;
+  kills: number;
+  assists: number;
+  damage: number;
+  revives: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -197,6 +211,7 @@ export class LeagueService {
     );
   }
 
+  
   private transformToLeagueMatchDay(data: any, season: string, division: string, filename: string): LeagueMatchDay {
     const statsObj = data?.stats ?? data;
     const weekMatch = filename.match(/Week_(\d+)|Playoffs_(\d+)|Finals/i);
@@ -252,4 +267,59 @@ export class LeagueService {
       }
     };
   }
+
+  // New method to get a player's league history across all divisions for a given season for the player/id page. 
+  getPlayerLeagueHistory(playerName: string, season: string): Observable<PlayerLeagueAppearance[]> {
+    return this.getDivisions(season).pipe(
+      switchMap(divisions => {
+        if (!divisions.length) return of([]);
+        return forkJoin(
+          divisions.map(div =>
+            this.getMatchFiles(season, div).pipe(
+              switchMap(files => {
+                if (!files.length) return of([]);
+                return forkJoin(
+                  files.map(file =>
+                    this.getMatchDay(season, div, file).pipe(
+                      map(matchDay => matchDay ? this.extractPlayerAppearances(matchDay, playerName) : []),
+                      catchError(() => of([]))
+                    )
+                  )
+                ).pipe(map(results => results.flat()));
+              }),
+              catchError(() => of([]))
+            )
+          )
+        ).pipe(map(results => results.flat()));
+      })
+    );
+  }
+
+  private extractPlayerAppearances(matchDay: LeagueMatchDay, playerName: string): PlayerLeagueAppearance[] {
+    const nameLower = playerName.toLowerCase();
+    const appearances: PlayerLeagueAppearance[] = [];
+    for (const game of matchDay.stats.games) {
+      for (const team of game.teams) {
+        const p = team.player_stats.find(ps =>
+          (ps.playerName || ps.name || ps.player_name || '').toLowerCase() === nameLower
+        );
+        if (p) {
+          appearances.push({
+            season: matchDay.season,
+            division: matchDay.division,
+            week: String(matchDay.week),
+            isPlayoffs: matchDay.isPlayoffs,
+            teamName: team.name || '',
+            teamPlacement: team.overall_stats?.teamPlacement ?? 0,
+            kills: p.kills || 0,
+            assists: p.assists || 0,
+            damage: p.damageDealt || p.damage_dealt || 0,
+            revives: p.revivesGiven || p.revives_given || p.revives || 0
+          });
+        }
+      }
+    }
+    return appearances;
+  }
+
 }
