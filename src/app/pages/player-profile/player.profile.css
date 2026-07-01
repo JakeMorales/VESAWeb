@@ -1,0 +1,274 @@
+.profile-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.profile-header {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.avatar,
+.avatar-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.avatar-placeholder {
+  background: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.name-row h1 {
+  margin: 0;
+}
+
+.platform-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 8px;
+  background: #374151;
+  color: #d1d5db;
+  align-self: center;
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+}
+
+.badges {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.badge.elo {
+  background: #2563eb;
+  color: #fff;
+}
+
+
+.overstat-link {
+  font-size: 0.85rem;
+  color: #60a5fa;
+  text-decoration: none;
+}
+
+.summary-heading {
+  margin: 1rem 0 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+}
+
+.league-summary {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 0.5rem 1.5rem;
+}
+
+.summary-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  align-items: flex-start;
+}
+
+.summary-label {
+  font-size: 0.7rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.summary-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.summary-row:nth-child(1) .summary-value { color: #ff2c5c; }
+.summary-row:nth-child(2) .summary-value { color: #d5427d; }
+.summary-row:nth-child(3) .summary-value { color: #ab599d; }
+.summary-row:nth-child(4) .summary-value { color: #806fbe; }
+.summary-row:nth-child(5) .summary-value { color: #5686de; }
+.summary-row:nth-child(6) .summary-value { color: #2c9cff; }
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.section h2 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  border-bottom: 1px solid #374151;
+  padding-bottom: 0.5rem;
+}
+
+.season-tag {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #9ca3af;
+  margin-left: 0.5rem;
+}
+
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  background: #1f2937;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.val {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.lbl {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+}
+
+.scrim-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.scrim-table th,
+.scrim-table td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #374151;
+  font-size: 0.9rem;
+}
+
+.scrim-table th {
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.scrim-table a {
+  color: #60a5fa;
+  text-decoration: none;
+}
+
+.div-link {
+  font-size: 0.8rem;
+  color: #60a5fa;
+  white-space: nowrap;
+}
+
+.season-row {
+  cursor: pointer;
+  user-select: none;
+}
+
+.season-row:hover td {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.expand-arrow {
+  font-size: 0.65rem;
+  color: #9ca3af !important;
+  margin-right: 0.3rem;
+}
+
+.game-row td {
+  background: #111827;
+  font-size: 0.82rem;
+  color: #9ca3af;
+  border-bottom-color: #1f2937;
+}
+
+.game-week {
+  padding-left: 1.75rem !important;
+  color: #6b7280;
+}
+
+.char-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.char-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background: #1f2937;
+  border-radius: 6px;
+}
+
+.char-count {
+  color: #9ca3af;
+  font-size: 0.85rem;
+}
+
+.more-btn {
+  display: block;
+  margin: 0.75rem auto 0;
+  background: linear-gradient(90deg, #ff2c5c, #2c9cff);
+  border: none;
+  color: #fff;
+  padding: 0.45rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 0.9;
+  transition: opacity 0.2s;
+}
+
+.more-btn:hover {
+  opacity: 1;
+}
+
+.no-data {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.state-msg {
+  padding: 4rem;
+  text-align: center;
+  color: #9ca3af;
+}
+
+.state-msg.error {
+  color: #f87171;
+}

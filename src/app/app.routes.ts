@@ -11,6 +11,7 @@ import { DivisionComponent } from './pages/league/division/division.component';
 import { MatchComponent } from './pages/match/match.component';
 import { ScrimsComponent } from './pages/scrims/scrims.component';
 import { RatingsComponent } from './pages/ratings/ratings.component';
+import { PlayerProfileComponent } from './pages/player-profile/player.profile.component';
 
 const playerStatsGuard: CanActivateFn = () => {
   if (environment.features.playerStats) {
@@ -29,6 +30,7 @@ const ratingsLeaderboardGuard: CanActivateFn = () => {
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
+  { path: 'players/:id', component: PlayerProfileComponent },
   { path: 'players', component: PlayerStatsComponent, canActivate: [playerStatsGuard] },
   { path: 'games', component: GamesComponent },
   { path: 'scrims', component: ScrimsComponent },
