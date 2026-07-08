@@ -26,6 +26,14 @@ import { RouterModule } from '@angular/router';
           Electronic Arts Inc. or Respawn Entertainment. Apex Legends is a trademark of
           Electronic Arts Inc.
         </p>
+        <p class="credits">
+          <span>Supreme — Architect & Maintainer</span>
+          <a
+            href="https://github.com/JakeMorales/VESAWeb/graphs/contributors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Contributors</a>
+        </p>
       </div>
     </footer>
   `,
@@ -97,6 +105,27 @@ import { RouterModule } from '@angular/router';
       padding-top: 20px;
       max-width: 720px;
       margin: 0;
+    }
+    .credits {
+      margin: 14px 0 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--vesa-faint);
+    }
+    .credits a {
+      color: var(--vesa-dim);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .credits a:hover,
+    .credits a:focus-visible {
+      color: var(--vesa-text);
     }
   `]
 })
