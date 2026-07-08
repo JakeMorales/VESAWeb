@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseGridComponent, GridConfig } from '../base-grid/base-grid.component';
+import { tierFor } from '../../services/elo/elo-tiers';
 
 export interface ScrimPlayer {
   rank: number;
@@ -152,21 +153,13 @@ export class ScrimsLeaderboardComponent {
     return badgeClasses[badge] || 'badge badge-default';
   }
 
+  // Tier names/colors come from the shared ELO_TIERS definition so this
+  // table always matches the rating-explanation panel.
   getEloTier(elo: number): string {
-    if (elo >= 2700) return 'Elite';
-    if (elo >= 2400) return 'Expert';
-    if (elo >= 2100) return 'Veteran';
-    if (elo >= 1800) return 'Skilled';
-    if (elo >= 1500) return 'Novice';
-    return 'Rookie';
+    return tierFor(elo).name;
   }
 
   getEloTierColor(elo: number): string {
-    if (elo >= 2700) return '#FF2C5C';
-    if (elo >= 2400) return '#00D4FF';
-    if (elo >= 2100) return '#2C9CFF';
-    if (elo >= 1800) return '#FFD700';
-    if (elo >= 1500) return '#C0C0C0';
-    return '#CD7F32';
+    return tierFor(elo).color;
   }
 }
