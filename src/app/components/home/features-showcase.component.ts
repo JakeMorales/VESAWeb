@@ -1,111 +1,114 @@
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { environment } from '../../../environments/environment';
+import { ChipComponent, IconComponent, SectionHeaderComponent } from '../ui';
 
+/**
+ * "Programs" section — the three things VESA runs: League, Scrims, Ratings.
+ */
 @Component({
   selector: 'app-features-showcase',
   standalone: true,
+  imports: [RouterModule, ChipComponent, IconComponent, SectionHeaderComponent],
   template: `
-    <section class="features">
-      <div class="features-content">
-        <h2>League Features</h2>
-        <div class="features-grid">
-          <div class="feature-card">
-            <div class="feature-icon">🏆</div>
-            <h3>ALGS League</h3>
-            <p>6 competitive divisions with 5-week seasons and Match Point finals</p>
+    <section class="wrap block">
+      <app-section-header index="01" title="Programs" />
+      <div class="modules">
+        <a class="module" routerLink="/league">
+          <app-icon name="target" [size]="30" />
+          <h3>League</h3>
+          <p>
+            Six competitive divisions, six-week seasons, and a Match Point
+            finale. Full standings and per-game breakdowns for every match day.
+          </p>
+        </a>
+        <a class="module" routerLink="/scrims">
+          <app-icon name="radar" [size]="30" />
+          <h3>Scrims <app-chip variant="red">Nightly</app-chip></h3>
+          <p>
+            Practice lobbies with the same stat capture as league play.
+            Weekly leaderboards keep every session competitive.
+          </p>
+        </a>
+        @if (environment.features.ratingsLeaderboard) {
+          <a class="module" routerLink="/ratings">
+            <app-icon name="chart" [size]="30" />
+            <h3>Ratings <app-chip>Calibrating</app-chip></h3>
+            <p>
+              An MMR built from every game you play — kills, placement, and
+              strength of lobby. Rolling out across Season 15.
+            </p>
+          </a>
+        } @else {
+          <div class="module">
+            <app-icon name="chart" [size]="30" />
+            <h3>Ratings <app-chip>Calibrating</app-chip></h3>
+            <p>
+              An MMR built from every game you play — kills, placement, and
+              strength of lobby. Rolling out across Season 15.
+            </p>
           </div>
-          <div class="feature-card">
-            <div class="feature-icon">📈</div>
-            <h3>Detailed Statistics</h3>
-            <p>Track kills, deaths, damage, and more across all your matches</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">📊</div>
-            <h3>Match History</h3>
-            <p>Review every game with comprehensive match breakdowns</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">⚡</div>
-            <h3>Real-time Updates</h3>
-            <p>Live match tracking and instant stat updates</p>
-          </div>
-        </div>
+        }
       </div>
     </section>
   `,
   styles: [`
-    .features {
-      padding: 6rem 2rem;
-      background: rgba(0, 0, 0, 0.3);
+    :host {
+      display: block;
     }
-
-    .features-content {
-      max-width: 1200px;
-      margin: 0 auto;
+    .block {
+      padding-top: 88px;
     }
-
-    .features-content h2 {
-      text-align: center;
-      font-size: 3rem;
-      margin-bottom: 3rem;
-      font-weight: 700;
-      color: var(--color-text-primary);
-      background: linear-gradient(45deg, var(--color-text-primary), var(--color-accent-tertiary));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      @supports not (background-clip: text) {
-        color: var(--color-text-primary);
-      }
-    }
-
-    .features-grid {
+    .modules {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--vesa-line);
+      border: 1px solid var(--vesa-line);
+      border-radius: 6px;
+      overflow: hidden;
     }
-
-    .feature-card {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-      padding: 2rem;
-      text-align: center;
+    .module {
+      background: var(--vesa-panel);
+      padding: 28px;
+      text-decoration: none;
+      transition: background 0.15s;
     }
-
-    .feature-card:hover {
-      transform: translateY(-10px);
-      border-color: var(--color-accent-secondary);
-      box-shadow: 0 15px 40px rgba(44, 156, 255, 0.2);
+    a.module:hover,
+    a.module:focus-visible {
+      background: var(--vesa-raised);
     }
-
-    .feature-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+    app-icon {
+      color: var(--vesa-blue);
+      margin-bottom: 18px;
     }
-
-    .feature-card h3 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      color: var(--color-text-primary);
+    h3 {
+      font-family: var(--font-display);
+      font-size: 20px;
       font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--vesa-text);
+      margin: 0 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-
-    .feature-card p {
-      color: var(--color-text-secondary);
-      line-height: 1.6;
+    p {
+      color: var(--vesa-dim);
+      font-size: 14px;
+      margin: 0;
     }
-
-    @media (max-width: 768px) {
-      .features {
-        padding: 4rem 1rem;
-      }
-      .features-grid {
+    @media (max-width: 860px) {
+      .modules {
         grid-template-columns: 1fr;
+      }
+      .block {
+        padding-top: 64px;
       }
     }
   `]
 })
-export class FeaturesShowcaseComponent {}
+export class FeaturesShowcaseComponent {
+  protected readonly environment = environment;
+}

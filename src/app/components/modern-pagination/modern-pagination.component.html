@@ -1,9 +1,9 @@
-<div class="pagination modern" *ngIf="totalPages > 1">
+<div class="pagination" *ngIf="totalPages > 1">
   <button class="pagination-btn" (click)="prev()" [disabled]="page === 1">
-    &#8592; Prev
+    ← Prev
   </button>
-  <span class="pagination-info">Page {{ page }} of {{ totalPages }}</span>
+  <span class="pagination-info">Page {{ page }} / {{ totalPages }}</span>
   <button class="pagination-btn" (click)="next()" [disabled]="page === totalPages">
-    Next &#8594;
+    Next →
   </button>
 </div>

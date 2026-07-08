@@ -1,31 +1,52 @@
-/* Global VESA Brand Styles */
+/* ============================================================
+   VESA Design System — "Mission Control"
+   Rules of the system:
+   - Red means action or priority; blue means data or navigation.
+     They never gradient into each other.
+   - Numbers are always monospaced (font-mono + tabular-nums).
+   - Borders are 1px hairlines on flat panels — no glassmorphism.
+   - Display type is condensed uppercase; body copy stays quiet.
+   ============================================================ */
 
 :root {
-  /* Primary Colors */
-  --color-primary-dark: #000000;
-  --color-primary: #0a0a0a;
-  --color-primary-light: #1a1a1a;
-  
-  /* Accent Colors */
-  --color-accent-primary: #ff2c5c;
-  --color-accent-secondary: #2c9cff;
-  --color-accent-tertiary: #00d4ff;
-  
-  /* Text Colors */
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #b0b0b0;
-  --color-text-muted: #808080;
-  
-  /* Background Colors */
-  --color-bg-primary: #000000;
-  --color-bg-secondary: #0a0a0a;
-  --color-bg-card: rgba(255, 255, 255, 0.05);
-  --color-bg-section: rgba(255, 255, 255, 0.03);
-  --color-bg-content: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
-  
-  /* Border Colors */
-  --color-border: rgba(255, 255, 255, 0.1);
-  --color-border-hover: rgba(255, 255, 255, 0.2);
+  /* Core palette */
+  --vesa-void: #04040a;
+  --vesa-panel: #0b0b14;
+  --vesa-raised: #12121e;
+  --vesa-line: rgba(235, 235, 245, 0.09);
+  --vesa-line-strong: rgba(235, 235, 245, 0.18);
+  --vesa-red: #ff2c5c;
+  --vesa-red-bright: #ff4570;
+  --vesa-red-dim: rgba(255, 44, 92, 0.14);
+  --vesa-blue: #3d9bff;
+  --vesa-blue-dim: rgba(61, 155, 255, 0.13);
+  --vesa-cyan: #00d4ff;
+  --vesa-text: #f2f2f7;
+  --vesa-dim: #9a9aad;
+  --vesa-faint: #62627a;
+
+  /* Type roles */
+  --font-display: 'Saira Condensed', 'Bahnschrift', 'Arial Narrow', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Cascadia Mono', Consolas, ui-monospace, monospace;
+  --font-body: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  /* Legacy aliases — used by pages not yet migrated to the new system */
+  --color-primary-dark: var(--vesa-void);
+  --color-primary: var(--vesa-panel);
+  --color-primary-light: var(--vesa-raised);
+  --color-accent-primary: var(--vesa-red);
+  --color-accent-secondary: var(--vesa-blue);
+  --color-accent-tertiary: var(--vesa-cyan);
+  --color-text-primary: var(--vesa-text);
+  --color-text-secondary: var(--vesa-dim);
+  --color-text-muted: var(--vesa-faint);
+  --color-bg-primary: var(--vesa-void);
+  --color-bg-secondary: var(--vesa-panel);
+  --color-bg-card: var(--vesa-panel);
+  --color-bg-section: rgba(235, 235, 245, 0.03);
+  --color-bg-content: var(--vesa-panel);
+  --color-border: var(--vesa-line);
+  --color-border-hover: var(--vesa-line-strong);
 }
 
 * {
@@ -37,73 +58,79 @@
 html {
   width: 100%;
   height: 100%;
-  margin: 0;
-  padding: 0;
-  background: #000000;
+  background: var(--vesa-void);
 }
 
 app-root {
   display: block;
-  width: 100vw;
+  width: 100%;
   min-height: 100vh;
-  margin: 0;
-  padding: 0;
 }
 
 body {
-  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: var(--font-body);
   line-height: 1.6;
-  color: #ffffff;
-  background: #000000;
+  color: var(--vesa-text);
+  background: var(--vesa-void);
   overflow-x: hidden;
-  margin: 0;
-  padding: 0;
   width: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--vesa-red);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--vesa-cyan);
+  outline-offset: 2px;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: 0.03em;
 }
 
 /* Global dark scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: var(--vesa-void);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, var(--color-accent-primary) 0%, var(--color-accent-secondary) 100%);
+  background: #2a2a3a;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, rgba(255, 44, 92, 0.8) 0%, rgba(44, 156, 255, 0.8) 100%);
+  background: #3a3a4e;
 }
 
 main {
   min-height: 100vh;
-  width: 100vw;
-  background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
-  margin: 0;
-  padding: 0;
+  width: 100%;
+  background: var(--vesa-void);
 }
 
-/* Utility classes */
+/* ---------- Layout utilities ---------- */
+.wrap,
 .container {
-  max-width: 1200px;
+  max-width: 1140px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 24px;
 }
 
 .container-fluid {
   width: 100%;
-  margin: 0;
-  padding: 0;
 }
 
 .container-full {
-  width: 100vw;
-  margin: 0;
-  padding: 0;
+  width: 100%;
   min-height: 100vh;
 }
 
@@ -111,18 +138,10 @@ main {
   text-align: center;
 }
 
-/* Background utility classes */
-.bg-section {
-  background: var(--color-bg-section);
-}
-
-.bg-content {
-  background: var(--color-bg-content);
-}
-
-.bg-card {
-  background: var(--color-bg-card);
-}
+/* Background utility classes (legacy) */
+.bg-section { background: var(--color-bg-section); }
+.bg-content { background: var(--vesa-panel); }
+.bg-card { background: var(--vesa-panel); }
 
 .mb-1 { margin-bottom: 0.5rem; }
 .mb-2 { margin-bottom: 1rem; }
@@ -134,99 +153,147 @@ main {
 .mt-3 { margin-top: 1.5rem; }
 .mt-4 { margin-top: 2rem; }
 
-/* Button styles */
+/* ---------- Type utilities ---------- */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--vesa-dim);
+}
+
+.eyebrow .tick {
+  color: var(--vesa-red);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Buttons ----------
+   .btn.primary / .btn-primary  → solid red, the one action color
+   .btn.ghost   / .btn-secondary → hairline outline, blue on hover */
 .btn {
-  display: inline-block;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 14px;
   font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
   text-align: center;
+  padding: 12px 22px;
+  border-radius: 4px;
+  border: 1px solid transparent;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1rem;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, color 0.15s;
 }
 
+.btn.small {
+  padding: 7px 14px;
+  font-size: 12px;
+}
+
+.btn.primary,
 .btn-primary {
-  background: linear-gradient(135deg, var(--color-accent-primary) 0%, var(--color-accent-secondary) 100%);
-  color: white;
+  background: var(--vesa-red);
+  color: #fff;
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(255, 44, 92, 0.4);
+.btn.primary:hover,
+.btn.primary:focus-visible,
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background: var(--vesa-red-bright);
+  box-shadow: 0 0 24px rgba(255, 44, 92, 0.35);
 }
 
+.btn.ghost,
 .btn-secondary {
-  background: var(--color-bg-content);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
+  border-color: var(--vesa-line-strong);
+  color: var(--vesa-text);
+  background: transparent;
 }
 
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--color-border-hover);
-  transform: translateY(-2px);
+.btn.ghost:hover,
+.btn.ghost:focus-visible,
+.btn-secondary:hover,
+.btn-secondary:focus-visible {
+  border-color: var(--vesa-blue);
+  color: var(--vesa-blue);
 }
 
-/* Card styles */
+/* ---------- Panels ---------- */
+.panel,
 .card {
-  background: var(--color-bg-content);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  background: var(--vesa-panel);
+  border: 1px solid var(--vesa-line);
+  border-radius: 6px;
   padding: 1.5rem;
-  transition: transform 0.3s ease;
-  backdrop-filter: blur(10px);
+  transition: border-color 0.15s, background 0.15s;
 }
 
+.panel:hover,
 .card:hover {
-  transform: translateY(-5px);
+  border-color: var(--vesa-line-strong);
 }
 
-/* Table styles */
+/* ---------- Tables ---------- */
+.table-scroll {
+  overflow-x: auto;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--color-bg-content);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
+  background: var(--vesa-panel);
+  border: 1px solid var(--vesa-line);
+  border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-  backdrop-filter: blur(10px);
 }
 
 .table th,
 .table td {
-  padding: 1rem;
+  padding: 0.8rem 1.25rem;
   text-align: left;
-  border-bottom: 1px solid var(--color-border);
-  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--vesa-line);
+  color: var(--vesa-text);
 }
 
 .table th {
-  background: linear-gradient(135deg, var(--color-accent-primary) 0%, var(--color-accent-secondary) 100%);
-  color: white;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--vesa-faint);
+  background: transparent;
+}
+
+.table td {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  color: var(--vesa-dim);
 }
 
 .table tr:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background: rgba(61, 155, 255, 0.05);
 }
 
-/* Responsive design */
+/* ---------- Responsive ---------- */
 @media (max-width: 768px) {
+  .wrap,
   .container {
-    padding: 0 0.5rem;
-  }
-  
-  main {
-    min-height: calc(100vh - 60px);
+    padding: 0 16px;
   }
 }
 
-/* Animation keyframes */
+/* ---------- Motion ---------- */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -240,4 +307,10 @@ main {
 
 .fade-in {
   animation: fadeIn 0.6s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in {
+    animation: none;
+  }
 }

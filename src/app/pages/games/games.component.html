@@ -1,11 +1,12 @@
 <div class="games-container">
-  <div class="header-section">
-    <h1>VESA Scrimmages & League Archive</h1>
-    <p>Pick-up scrimmages and comprehensive league match history</p>
-    
+  <div class="wrap header-section">
+    <p class="eyebrow"><span class="tick">▸</span> VESA // MATCH RECORDS</p>
+    <h1>The archive<span class="dot">.</span></h1>
+    <p class="lede">Every scrim lobby and every league match day, on record.</p>
+
     <!-- View Mode Switcher -->
     <div class="view-switcher">
-      <div 
+      <div
         class="sliding-selector"
         [ngClass]="{
           'liquid-anim': selectorAnimating === 'forward',
@@ -13,14 +14,14 @@
         }"
         [style.transform]="viewMode === 'archive' ? 'translateX(100%)' : 'translateX(0)'">
       </div>
-      <button 
-        class="view-btn" 
+      <button
+        class="view-btn"
         [class.active]="viewMode === 'current'"
         (click)="viewModeSetter = 'current'">
         Scrims History
       </button>
-      <button 
-        class="view-btn" 
+      <button
+        class="view-btn"
         [class.active]="viewMode === 'archive'"
         (click)="viewModeSetter = 'archive'">
         League Archive
@@ -29,9 +30,9 @@
   </div>
 
   <!-- Scrims History View -->
-  <div *ngIf="viewMode === 'current'" class="current-games-view" @fadeSlide>
+  <div *ngIf="viewMode === 'current'" class="wrap current-games-view" @fadeSlide>
     <app-scrim-filters (searchChange)="onSearchChange($event)"></app-scrim-filters>
-    <div *ngIf="loading" class="loading">Loading scrim tables...</div>
+    <div *ngIf="loading" class="loading">Loading scrim records…</div>
     <div *ngIf="error" class="error">{{ error }}</div>
     <div class="scrims-list" *ngIf="!loading && !error">
       <ng-container *ngFor="let scrim of pagedScrims">
@@ -40,12 +41,12 @@
       <app-modern-pagination [page]="page" [totalPages]="totalPages" (pageChange)="setPage($event)"></app-modern-pagination>
     </div>
     <div class="no-results" *ngIf="!loading && !error && pagedScrims.length === 0">
-      <p>No scrim tables found.</p>
+      <p>No scrim records found.</p>
     </div>
   </div>
 
   <!-- League Archive View -->
-  <div *ngIf="viewMode === 'archive'" class="archive-view" @fadeSlide>
+  <div *ngIf="viewMode === 'archive'" class="wrap archive-view" @fadeSlide>
     <app-scores-archive></app-scores-archive>
   </div>
 </div>

@@ -5,44 +5,31 @@ import { Component } from '@angular/core';
   standalone: true,
   template: `
     <div class="archive-header">
-      <h1>Scores Archive</h1>
-      <p>Complete historical records for all VESA League seasons and divisions</p>
+      <p class="eyebrow"><span class="tick">▸</span> LEAGUE RECORDS · EVERY SEASON ON FILE</p>
+      <h2>League archive</h2>
+      <p class="sub">Complete historical records for every VESA League season and division.</p>
     </div>
   `,
   styles: [`
     .archive-header {
       text-align: center;
-      margin-bottom: 3rem;
+      margin-bottom: 32px;
     }
 
-    .archive-header h1 {
-      font-size: 2.5rem;
+    .archive-header h2 {
+      font-family: var(--font-display);
+      font-size: clamp(26px, 4vw, 38px);
       font-weight: 700;
-      margin-bottom: 1rem;
-      color: var(--color-text-primary);
-      background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--vesa-text);
+      margin: 12px 0 8px;
     }
 
-    .archive-header p {
-      font-size: 1.125rem;
-      color: var(--color-text-secondary);
+    .sub {
+      font-size: 14px;
+      color: var(--vesa-dim);
       margin: 0;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .archive-header h1 {
-        font-size: 2rem;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .archive-header h1 {
-        font-size: 1.75rem;
-      }
     }
   `]
 })

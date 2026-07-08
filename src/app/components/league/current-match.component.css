@@ -1,176 +1,214 @@
 .current-match-section {
-  padding: 2rem;
-  background: linear-gradient(135deg, rgba(255, 44, 92, 0.1) 0%, rgba(44, 156, 255, 0.1) 100%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 40px 0 0;
 }
 
 .current-match-content {
-  max-width: 1200px;
+  max-width: 1140px;
   margin: 0 auto;
+  padding: 0 24px;
 }
 
 .current-match-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 14px;
+  margin-bottom: 20px;
 }
 
 .current-match-header h2 {
-  font-size: 2rem;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   margin: 0;
-  color: var(--color-text-primary);
+  color: var(--vesa-text);
 }
 
 .live-indicator {
-  background: linear-gradient(135deg, #ff2c5c, #ff6b8a);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  background: var(--vesa-red-dim);
+  color: var(--vesa-red);
+  padding: 5px 12px;
+  border-radius: 4px;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--vesa-red);
   animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  50% { opacity: 0.4; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot { animation: none; }
 }
 
 .current-match-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 2rem;
+  background: var(--vesa-panel);
+  border: 1px solid var(--vesa-line);
+  border-radius: 6px;
+  padding: 24px 28px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  backdrop-filter: blur(10px);
+  margin-top: 16px;
 }
 
 .match-info h3 {
-  font-size: 1.5rem;
-  margin: 0 0 1rem 0;
-  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+  color: var(--vesa-text);
 }
 
 .match-details {
   display: flex;
-  gap: 2rem;
-  margin-bottom: 1rem;
-  color: var(--color-text-secondary);
+  gap: 24px;
+  margin-bottom: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--vesa-faint);
 }
 
 .match-progress {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--vesa-dim);
 }
 
 .progress-bar {
   width: 200px;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  height: 4px;
+  background: var(--vesa-line);
+  border-radius: 2px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(135deg, #ff2c5c, #2c9cff);
+  background: var(--vesa-red);
   transition: width 0.3s ease;
 }
 
 .match-actions {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 12px;
 }
 
-.watch-btn, .details-btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  text-decoration: none;
+.watch-btn,
+.details-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 13px;
   font-weight: 600;
-  text-align: center;
-  transition: all 0.3s ease;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 10px 18px;
+  border-radius: 4px;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
 .watch-btn {
-  background: linear-gradient(135deg, #ff2c5c, #ff6b8a);
-  color: white;
+  background: var(--vesa-red);
+  color: #fff;
 }
 
 .watch-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 44, 92, 0.4);
+  background: var(--vesa-red-bright);
 }
 
 .details-btn {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--color-text-primary);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: var(--vesa-text);
+  border: 1px solid var(--vesa-line-strong);
 }
 
 .details-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+  border-color: var(--vesa-blue);
+  color: var(--vesa-blue);
 }
 
 .last-played-card {
   display: flex;
-  margin-top: 1.5rem;
+  margin-top: 16px;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 1.5rem 2rem;
+  background: var(--vesa-panel);
+  border: 1px solid var(--vesa-line);
+  border-radius: 6px;
+  padding: 20px 24px;
   text-decoration: none;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  transition: border-color 0.15s, background 0.15s;
 }
 
 .last-played-card:hover {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
+  background: var(--vesa-raised);
+  border-color: var(--vesa-line-strong);
 }
 
 .last-played-info {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: 4px;
 }
 
 .last-played-label {
-  font-size: 1.25rem;
+  font-family: var(--font-display);
+  font-size: 18px;
   font-weight: 600;
-  color: var(--color-text-primary);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vesa-text);
 }
 
 .last-played-teams {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vesa-faint);
 }
 
 .last-played-cta {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--color-accent-secondary, #2c9cff);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--vesa-blue);
 }
 
 @media (max-width: 768px) {
   .current-match-section {
-    padding: 2rem 1rem;
+    padding-top: 28px;
   }
 
   .current-match-card {
     flex-direction: column;
-    text-align: center;
-  }
-
-  .match-actions {
-    justify-content: center;
+    align-items: flex-start;
+    gap: 16px;
   }
 }

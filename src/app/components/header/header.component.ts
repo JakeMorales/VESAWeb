@@ -2,297 +2,297 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { CURRENT_SEASON, SIGNUPS_OPEN, formatTickerDate } from '../../config/season';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <header class="header">
-      <div class="header-content">
-        <nav class="nav" [class.nav-open]="isNavOpen">
-          <a routerLink="/home" class="nav-logo-link" aria-label="Home">
-            <img
-              src="WhiteVesaLogoTransparent.png"
-              alt="VESA Logo Icon"
-              class="nav-logo-img"
-            />
-          </a>
-          <a routerLink="/league" routerLinkActive="active" (click)="closeNav()">League</a>
-          <a routerLink="/scrims" routerLinkActive="active" (click)="closeNav()">Scrims</a>
+    <div class="ticker">
+      <div class="wrap ticker-row">
+        <span class="ticker-left"><b>VESA</b> // VIRTUAL ESPORTS ASSOCIATION</span>
+        <span class="ticker-right">
+          <span class="live">●</span> SEASON {{ season }} SIGNUPS OPEN <b>{{ signupsOpenDate }}</b>
+        </span>
+      </div>
+    </div>
+
+    <header class="bar">
+      <div class="wrap bar-row">
+        <a routerLink="/home" class="brand" aria-label="VESA home" (click)="closeNav()">
+          <img src="WhiteVesaLogoTransparent.png" alt="" class="brand-logo" />
+          <span class="brand-mark">VES<em>A</em></span>
+          <span class="brand-sub">Apex League</span>
+        </a>
+
+        <nav class="links" aria-label="Primary">
+          <a routerLink="/league" routerLinkActive="active">League</a>
+          <a routerLink="/scrims" routerLinkActive="active">Scrims</a>
           @if (environment.features.playerStats) {
-            <a routerLink="/players" routerLinkActive="active" (click)="closeNav()">Player Stats</a>
+            <a routerLink="/players" routerLinkActive="active">Players</a>
           }
-          <a routerLink="/games" routerLinkActive="active" (click)="closeNav()">Games</a>
+          <a routerLink="/games" routerLinkActive="active">Games</a>
           @if (environment.features.ratingsLeaderboard) {
-            <a routerLink="/ratings" routerLinkActive="active" (click)="closeNav()">Ratings</a>
+            <a routerLink="/ratings" routerLinkActive="active">Ratings</a>
           }
         </nav>
 
-        <button class="mobile-toggle" (click)="toggleNav()" [attr.aria-expanded]="isNavOpen">
+        <a
+          class="btn primary small register"
+          href="https://discord.gg/RyvVJqnXbe"
+          target="_blank"
+          rel="noopener noreferrer"
+        >Register</a>
+
+        <button
+          class="mobile-toggle"
+          type="button"
+          (click)="toggleNav()"
+          [attr.aria-expanded]="isNavOpen"
+          aria-label="Toggle navigation"
+        >
           <span class="hamburger"></span>
           <span class="hamburger"></span>
           <span class="hamburger"></span>
         </button>
       </div>
+
+      <nav class="mobile-menu" [class.open]="isNavOpen" aria-label="Primary mobile">
+        <a routerLink="/league" routerLinkActive="active" (click)="closeNav()">League</a>
+        <a routerLink="/scrims" routerLinkActive="active" (click)="closeNav()">Scrims</a>
+        @if (environment.features.playerStats) {
+          <a routerLink="/players" routerLinkActive="active" (click)="closeNav()">Players</a>
+        }
+        <a routerLink="/games" routerLinkActive="active" (click)="closeNav()">Games</a>
+        @if (environment.features.ratingsLeaderboard) {
+          <a routerLink="/ratings" routerLinkActive="active" (click)="closeNav()">Ratings</a>
+        }
+        <a
+          class="btn primary small"
+          href="https://discord.gg/RyvVJqnXbe"
+          target="_blank"
+          rel="noopener noreferrer"
+          (click)="closeNav()"
+        >Register</a>
+      </nav>
     </header>
   `,
   styles: [`
-    .nav-logo-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 1.2rem;
-    }
-    .header {
-      background: transparent !important;
-      color: white;
+    :host {
+      display: block;
       position: sticky;
       top: 0;
       z-index: 1000;
-      box-shadow: none !important;
-      border: none !important;
-      width: 100vw;
-      min-height: 120px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      pointer-events: none;
-      backdrop-filter: none;
     }
 
-    .header-content {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100vw;
+    .wrap {
+      max-width: 1140px;
       margin: 0 auto;
-      padding: 1.5rem 0 0.5rem 0;
-      flex-direction: column;
-      gap: 1.2rem;
-      background: transparent !important;
-      box-shadow: none !important;
-      pointer-events: auto;
+      padding: 0 24px;
     }
 
-    @media (min-width: 700px) {
-      .header-content {
-        flex-direction: row;
-        gap: 2.5rem;
-        justify-content: center;
-        align-items: center;
-      }
+    /* ---------- ticker ---------- */
+    .ticker {
+      background: var(--vesa-void);
+      border-bottom: 1px solid var(--vesa-line);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: var(--vesa-faint);
+      text-transform: uppercase;
     }
-
-    .nav-logo-link {
+    .ticker-row {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 104px;
-      height: 104px;
-      min-width: 104px;
-      min-height: 104px;
-      border-radius: 50%;
-      background: transparent;
-      text-decoration: none;
-      margin: 0 0.18rem 0 0;
-      padding: 0;
-      border: none;
-      box-shadow: none;
-      transition: box-shadow 0.2s, background 0.2s;
+      justify-content: space-between;
+      gap: 16px;
+      padding-top: 7px;
+      padding-bottom: 7px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .ticker b {
+      color: var(--vesa-dim);
+      font-weight: 400;
+    }
+    .ticker .live {
+      color: var(--vesa-red);
     }
 
-    .nav-logo-img {
-      width: 96px;
-      height: 96px;
-      object-fit: cover;
-      border-radius: 50%;
-      display: block;
-      margin: 0 auto;
-      background: transparent;
-      transition: transform 0.2s;
-    }
-
-    .nav-logo-link:hover .nav-logo-img {
-      transform: scale(1.08);
-      box-shadow: 0 0 12px rgba(44,156,255,0.18);
-    }
-
-    .nav > .nav-logo-link {
-      background: transparent !important;
-      box-shadow: none !important;
-      border: none !important;
-      min-width: unset;
-      margin-left: 0;
-      margin-right: 0.18rem;
-      padding: 0;
-    }
-
-    .logo-section {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    .logo-link {
-      display: block;
-      text-decoration: none;
-      transition: all 0.3s ease;
-    }
-
-    .logo-image {
-      height: 80px;
-      width: auto;
-      filter: drop-shadow(0 0 10px rgba(255, 44, 92, 0.3));
-      transition: all 0.3s ease;
-      display: block;
-    }
-
-    .logo-link:hover .logo-image {
-      filter: drop-shadow(0 0 15px rgba(255, 44, 92, 0.5)) drop-shadow(0 0 15px rgba(44, 156, 255, 0.3));
-      transform: scale(1.02);
-    }
-
-    .nav {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 0.5rem;
-      padding: 0.5rem 2.2rem 0.5rem 1.2rem;
-      background: rgba(20, 20, 30, 0.55);
+    /* ---------- bar ---------- */
+    .bar {
+      position: relative;
+      background: rgba(4, 4, 10, 0.86);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border-radius: 2.5rem;
-      box-shadow: none;
-      border: none;
-      margin: 0 auto;
-      width: fit-content;
-      min-width: 340px;
-      max-width: 95vw;
-      position: relative;
-      z-index: 10;
+      border-bottom: 1px solid var(--vesa-line);
+    }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      height: 60px;
     }
 
-    .nav a {
-      color: #e3e6f3;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       text-decoration: none;
-      padding: 0.5rem 1.5rem;
-      border-radius: 2rem;
-      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
-      font-weight: 500;
-      font-size: 1.08rem;
-      letter-spacing: 0.04em;
-      border: none;
-      position: relative;
-      overflow: visible;
-      background: linear-gradient(90deg, #3e4e6a 0%, #4a5d7a 100%);
-      box-shadow: 0 1px 6px 0 rgba(30,40,60,0.08);
+      flex-shrink: 0;
+    }
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+    }
+    .brand-mark {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 24px;
+      letter-spacing: 0.22em;
+      color: var(--vesa-text);
+      line-height: 1;
+    }
+    .brand-mark em {
+      font-style: normal;
+      color: var(--vesa-red);
+    }
+    .brand-sub {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--vesa-faint);
       text-transform: uppercase;
-      display: inline-block;
-      min-width: 90px;
-      margin: 0 0.1rem;
+      align-self: flex-end;
+      padding-bottom: 2px;
     }
 
-    .nav > a.active, .nav > a:focus {
-      background: linear-gradient(90deg, #5e6cff 0%, #b45cff 100%);
-      color: #fff;
-      box-shadow: 0 2px 12px 0 rgba(90,80,200,0.13);
+    .links {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+    }
+    .links a {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--vesa-dim);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .links a:hover,
+    .links a:focus-visible {
+      color: var(--vesa-text);
+      background: var(--vesa-raised);
+    }
+    .links a.active {
+      color: var(--vesa-text);
+      box-shadow: inset 0 -2px 0 var(--vesa-red);
+      border-radius: 4px 4px 0 0;
     }
 
-    .nav > a:hover:not(.active) {
-      background: linear-gradient(90deg, #4a5d7a 0%, #5e6cff 100%);
-      color: #fff;
+    .register {
+      flex-shrink: 0;
     }
 
+    /* ---------- mobile ---------- */
     .mobile-toggle {
       display: none;
       flex-direction: column;
-      gap: 4px;
+      gap: 5px;
       background: none;
       border: none;
       cursor: pointer;
       padding: 8px;
+      margin-left: auto;
+    }
+    .hamburger {
+      width: 22px;
+      height: 2px;
+      background: var(--vesa-text);
+      border-radius: 1px;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .mobile-toggle[aria-expanded="true"] .hamburger:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .mobile-toggle[aria-expanded="true"] .hamburger:nth-child(2) {
+      opacity: 0;
+    }
+    .mobile-toggle[aria-expanded="true"] .hamburger:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
     }
 
-    .hamburger {
-      width: 25px;
-      height: 3px;
-      background-color: white;
-      transition: all 0.3s ease;
-      border-radius: 2px;
+    .mobile-menu {
+      display: none;
     }
 
     @media (max-width: 768px) {
-      .nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 999;
-        background: rgba(10, 10, 20, 0.97);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        flex-direction: column;
-        align-items: center;
-        padding: 5rem 2rem 2rem;
-        gap: 0.75rem;
-        border-radius: 0 0 1.5rem 1.5rem;
-        min-width: unset;
-        width: 100%;
-        max-width: 100%;
-        transform: translateY(-100%);
-        opacity: 0;
-        visibility: hidden;
-        transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+      .links,
+      .register {
+        display: none;
       }
-
-      .nav.nav-open {
-        transform: translateY(0);
-        opacity: 1;
-        visibility: visible;
+      .ticker-right {
+        display: none;
       }
-
-      .nav a {
-        text-align: center;
-        width: 100%;
-        min-width: unset;
-        padding: 0.875rem 1rem;
-        border-radius: 0.5rem;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-      }
-
       .mobile-toggle {
         display: flex;
       }
 
-      .mobile-toggle[aria-expanded="true"] .hamburger:nth-child(1) {
-        transform: rotate(45deg) translate(6px, 6px);
-      }
-
-      .mobile-toggle[aria-expanded="true"] .hamburger:nth-child(2) {
+      .mobile-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        padding: 12px 16px 16px;
+        background: rgba(4, 4, 10, 0.97);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--vesa-line);
+        transform: translateY(-8px);
         opacity: 0;
+        visibility: hidden;
+        transition: transform 0.22s ease, opacity 0.22s ease, visibility 0.22s;
       }
-
-      .mobile-toggle[aria-expanded="true"] .hamburger:nth-child(3) {
-        transform: rotate(-45deg) translate(6px, -6px);
+      .mobile-menu.open {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
       }
-    }
-
-    @media (max-width: 480px) {
-      .header-content {
-        padding: 0.75rem;
+      .mobile-menu a:not(.btn) {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--vesa-dim);
+        text-decoration: none;
+        padding: 12px 10px;
+        border-bottom: 1px solid var(--vesa-line);
       }
-
-      .logo-image {
-        height: 60px;
+      .mobile-menu a:not(.btn):hover,
+      .mobile-menu a.active {
+        color: var(--vesa-text);
+      }
+      .mobile-menu a.active {
+        box-shadow: inset 2px 0 0 var(--vesa-red);
+      }
+      .mobile-menu .btn {
+        margin-top: 12px;
       }
     }
   `]
 })
 export class HeaderComponent {
   protected readonly environment = environment;
+  protected readonly season = CURRENT_SEASON;
+  protected readonly signupsOpenDate = formatTickerDate(SIGNUPS_OPEN);
   isNavOpen = false;
 
   toggleNav() {

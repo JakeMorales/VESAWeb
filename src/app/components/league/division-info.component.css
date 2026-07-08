@@ -1,41 +1,56 @@
 .info-section {
-  padding: 3rem 2rem;
-  background: rgba(0, 0, 0, 0.2);
+  padding: 48px 0 0;
 }
 
 .info-content {
-  max-width: 1200px;
+  max-width: 1140px;
   margin: 0 auto;
+  padding: 0 24px;
 }
 
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--vesa-line);
+  border: 1px solid var(--vesa-line);
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .info-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 2rem;
-  backdrop-filter: blur(10px);
+  background: var(--vesa-panel);
+  padding: 24px;
+  transition: background 0.15s;
+}
+
+.info-card:hover {
+  background: var(--vesa-raised);
 }
 
 .info-card h3 {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: var(--vesa-text);
 }
 
 .info-card p {
-  color: var(--color-text-secondary);
-  line-height: 1.6;
+  color: var(--vesa-dim);
+  font-size: 14px;
+  line-height: 1.7;
   margin: 0;
 }
 
 @media (max-width: 768px) {
   .info-section {
-    padding: 2rem 1rem;
+    padding-top: 36px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
   }
 }

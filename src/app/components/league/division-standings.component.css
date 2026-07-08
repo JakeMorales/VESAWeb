@@ -1,33 +1,29 @@
 /* Division Standings Section */
 .standings-section {
-  padding: 2rem 0;
-  max-width: 1200px;
+  padding: 48px 0 0;
+  max-width: 1140px;
   margin: 0 auto;
   width: 100%;
 }
 
 .standings-content {
-  padding: 0 1rem;
+  padding: 0 24px;
 }
 
 .standings-content h2 {
-  font-size: 2rem;
+  font-family: var(--font-display);
+  font-size: 28px;
   font-weight: 700;
-  margin-bottom: 2rem;
-  color: var(--color-text-primary);
-  text-align: center;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  color: var(--vesa-text);
 }
 
 /* Division Standings Grid Styling */
 .division-standings-grid {
-  margin: 1rem auto;
-  max-width: 1200px;
-  width: 100%;
-}
-
-.division-standings-grid .grid-container {
-  max-width: 100%;
   margin: 0 auto;
+  width: 100%;
 }
 
 .division-standings-grid .grid-cell {
@@ -41,45 +37,43 @@
   box-sizing: border-box;
 }
 
-.division-standings-grid .rank-col {
-  justify-content: center;
-}
-
+.division-standings-grid .rank-col,
 .division-standings-grid .points-col,
 .division-standings-grid .wins-col,
 .division-standings-grid .games-col,
-.division-standings-grid .kills-col {
-  justify-content: center;
-}
-
+.division-standings-grid .kills-col,
 .division-standings-grid .trend-col {
   justify-content: center;
 }
 
 /* Custom Cell Styling */
 .rank-number {
-  font-weight: 700;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.875rem;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  font-size: 13px;
+  padding: 3px 9px;
+  border-radius: 3px;
+  border: 1px solid transparent;
 }
 
+/* podium ranks: muted metallic tints, no gradients */
 .rank-1 {
-  background: linear-gradient(135deg, #FFD700, #FFA500);
-  color: #000;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+  color: #ffd77a;
+  background: rgba(255, 215, 122, 0.1);
+  border-color: rgba(255, 215, 122, 0.4);
 }
 
 .rank-2 {
-  background: linear-gradient(135deg, #C0C0C0, #A8A8A8);
-  color: #000;
-  box-shadow: 0 0 10px rgba(192, 192, 192, 0.4);
+  color: #cfd4de;
+  background: rgba(207, 212, 222, 0.1);
+  border-color: rgba(207, 212, 222, 0.35);
 }
 
 .rank-3 {
-  background: linear-gradient(135deg, #CD7F32, #B8860B);
-  color: white;
-  box-shadow: 0 0 10px rgba(205, 127, 50, 0.4);
+  color: #e0a570;
+  background: rgba(224, 165, 112, 0.1);
+  border-color: rgba(224, 165, 112, 0.35);
 }
 
 .rank-4,
@@ -89,84 +83,80 @@
 .rank-8,
 .rank-9,
 .rank-10 {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--color-text-primary);
+  color: var(--vesa-faint);
 }
 
 .team-name {
+  font-family: var(--font-body);
   font-weight: 600;
-  font-size: 1rem;
-  color: var(--color-text-primary);
+  font-size: 14px;
+  color: var(--vesa-text);
 }
 
 .points-value {
-  font-weight: 700;
-  font-size: 1.125rem;
-  color: var(--color-accent-primary);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--vesa-text);
 }
 
 .wins-value,
 .games-value,
 .kills-value {
-  font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--vesa-dim);
 }
 
 .trend-indicator {
-  font-size: 1.25rem;
-  font-weight: 600;
-  padding: 0.25rem;
-  border-radius: 4px;
+  font-size: 1rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 32px;
-  min-height: 32px;
+  gap: 2px;
+  min-width: 30px;
+  min-height: 26px;
+  padding: 0.2rem;
+  border-radius: 3px;
 }
 
 .trend-up {
-  color: #10b981;
-  background: rgba(16, 185, 129, 0.1);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+  color: var(--vesa-cyan);
+  background: rgba(0, 212, 255, 0.08);
 }
 
 .trend-down {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
-  box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+  color: var(--vesa-red);
+  background: var(--vesa-red-dim);
 }
 
 .trend-same {
-  color: var(--color-text-secondary);
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--vesa-faint);
 }
 
 .trend-icon {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   flex-shrink: 0;
 }
 
 .trend-dash {
-  font-size: 1rem;
+  font-size: 0.9rem;
   line-height: 1;
 }
 
 .trend-delta {
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
   line-height: 1;
-  margin-left: 2px;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .standings-section {
-    padding: 1.5rem 0;
+    padding-top: 36px;
   }
 
   .standings-content h2 {
-    font-size: 1.5rem;
+    font-size: 22px;
   }
 
   .division-standings-grid .grid-header,
@@ -174,36 +164,21 @@
     grid-template-columns: 60px 2fr 1fr 1fr 1fr 1fr 80px !important;
   }
 
-  .rank-number {
-    font-size: 0.75rem;
-    padding: 0.2rem 0.4rem;
-  }
-
   .team-name {
-    font-size: 0.875rem;
-  }
-
-  .points-value {
-    font-size: 1rem;
-  }
-
-  .trend-indicator {
-    font-size: 1rem;
-    min-width: 28px;
-    min-height: 28px;
+    font-size: 13px;
   }
 }
 
 @media (max-width: 480px) {
   .standings-content h2 {
-    font-size: 1.25rem;
+    font-size: 19px;
   }
-  
+
   .division-standings-grid .grid-header,
   .division-standings-grid .grid-row {
     grid-template-columns: 50px 2fr 1fr 1fr 60px !important;
   }
-  
+
   .division-standings-grid .games-col {
     display: none;
   }

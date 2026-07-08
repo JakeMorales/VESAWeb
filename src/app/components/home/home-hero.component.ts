@@ -1,188 +1,252 @@
-import { Component, Input } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  ViewChild
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { StatStripComponent, StatItem } from '../ui';
+import { CURRENT_SEASON, SIGNUPS_OPEN } from '../../config/season';
+
+interface Star {
+  x: number;
+  y: number;
+  r: number;
+  phase: number;
+  speed: number;
+}
 
 @Component({
   selector: 'app-home-hero',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, StatStripComponent],
   template: `
     <section class="hero">
-      <div class="hero-content">
-        <h1 class="hero-title">Welcome to</h1>
-        <div class="hero-banner">
-          <img src="VesaBannerWhiteRedBlueTransparent.png" alt="VESA Banner" class="vesa-banner-img" />
-        </div>
-        <p class="hero-description">
-          The premier competitive Apex Legends league and scrim server. 
-          Track your performance, climb the ranks, and dominate the arena.
+      <canvas #stars class="stars" aria-hidden="true"></canvas>
+      <div class="glow" aria-hidden="true"></div>
+      <div class="gridfloor" aria-hidden="true"></div>
+      <div class="wrap hero-content">
+        <p class="eyebrow rise"><span class="tick">▸</span> APEX LEGENDS · COMPETITIVE LEAGUE &amp; SCRIMS</p>
+        <h1 class="rise d1">Season 15 is<br />go for launch<span class="dot">.</span></h1>
+        <p class="lede rise d2">
+          Six divisions. Six weeks. Every kill, every placement, and every
+          rating point tracked from lobby to Match Point.
         </p>
-        <div class="hero-actions">
-          <a routerLink="/league" class="cta-button primary">View League</a>
-          <a routerLink="/players" class="cta-button secondary">Player Stats</a>
-          <a routerLink="/games" class="cta-button secondary">Latest Games</a>
-        </div>
-      </div>
-      <div class="hero-visual">
-        <div class="stats-preview">
-          <div class="stat-card">
-            <h3>{{ totalPlayers }}</h3>
-            <p>Total Players</p>
-          </div>
-          <div class="stat-card">
-            <h3>{{ totalGames }}</h3>
-            <p>Total Games</p>
-          </div>
-          <div class="stat-card">
-            <h3>{{ totalMatches }}</h3>
-            <p>Total Matches</p>
-          </div>
+        <div class="actions rise d3">
+          <a
+            class="btn primary"
+            href="https://discord.gg/RyvVJqnXbe"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Register your team</a>
+          <a class="btn ghost" routerLink="/league">Season 14 results</a>
         </div>
       </div>
     </section>
+    <div class="wrap telemetry rise d4">
+      <app-stat-strip [stats]="heroStats" />
+    </div>
   `,
   styles: [`
+    :host {
+      display: block;
+    }
+
     .hero {
-      padding: 4rem 2rem;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      max-width: 1200px;
-      margin: 0 auto;
-      min-height: 80vh;
-      align-items: center;
-      width: 100%;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--vesa-line);
     }
-
-    .hero-content h1 {
-      font-size: 4rem;
-      font-weight: 900;
-      margin: 0 0 1rem 0;
-      color: var(--color-text-primary);
-      background: linear-gradient(45deg, var(--color-accent-primary), var(--color-accent-secondary));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      @supports not (background-clip: text) {
-        color: var(--color-text-primary);
-      }
+    .stars {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
     }
-
-    .hero-subtitle {
-      font-size: 1.5rem;
-      color: var(--color-text-secondary);
-      margin: 0 0 2rem 0;
-      font-weight: 300;
+    .glow {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(560px 300px at 30% 100%, rgba(255, 44, 92, 0.16), transparent 70%),
+        radial-gradient(560px 300px at 70% 100%, rgba(61, 155, 255, 0.14), transparent 70%);
     }
-
-    .hero-description {
-      font-size: 1.125rem;
-      line-height: 1.6;
-      margin-bottom: 2.5rem;
-      color: var(--color-text-secondary);
+    .gridfloor {
+      position: absolute;
+      z-index: 2;
+      left: -20%;
+      right: -20%;
+      bottom: -30px;
+      height: 300px;
+      background:
+        repeating-linear-gradient(90deg, rgba(255, 44, 92, 0.28) 0 1px, transparent 1px 72px),
+        repeating-linear-gradient(0deg, rgba(61, 155, 255, 0.24) 0 1px, transparent 1px 40px);
+      transform: perspective(400px) rotateX(63deg);
+      transform-origin: top center;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 34%, transparent 96%);
+      mask-image: linear-gradient(to bottom, transparent 0%, #000 34%, transparent 96%);
+      pointer-events: none;
     }
-
-    .hero-actions {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .cta-button {
-      padding: 1rem 2rem;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
-    }
-
-    .cta-button.primary {
-      background: linear-gradient(45deg, var(--color-accent-primary), var(--color-accent-secondary));
-      color: white;
-      box-shadow: 0 4px 20px rgba(255, 44, 92, 0.3);
-    }
-
-    .cta-button:hover {
-      transform: translateY(-2px);
-    }
-
-    .cta-button.primary:hover {
-      box-shadow: 0 6px 25px rgba(255, 44, 92, 0.5);
-    }
-
-    .cta-button.secondary {
-      border: 2px solid var(--color-accent-secondary);
-      color: var(--color-accent-secondary);
-      background: rgba(44, 156, 255, 0.1);
-    }
-
-    .cta-button.secondary:hover {
-      background: var(--color-accent-secondary);
-      color: white;
-    }
-
-    .stats-preview {
-      display: grid;
-      gap: 1.5rem;
-      width: 100%;
-      max-width: 300px;
-    }
-
-    .stat-card {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-      padding: 2rem;
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      padding-top: 96px;
+      padding-bottom: 190px;
       text-align: center;
     }
 
-    .stat-card:hover {
-      transform: translateY(-5px);
-      border-color: var(--color-accent-primary);
-      box-shadow: 0 10px 30px rgba(255, 44, 92, 0.2);
-    }
-
-    .stat-card h3 {
-      font-size: 2.5rem;
-      font-weight: 900;
-      margin: 0 0 0.5rem 0;
-      color: var(--color-text-primary);
-      background: linear-gradient(45deg, var(--color-accent-primary), var(--color-accent-secondary));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      @supports not (background-clip: text) {
-        color: var(--color-text-primary);
-      }
-    }
-
-    .stat-card p {
-      color: var(--color-text-secondary);
-      margin: 0;
-      font-size: 0.875rem;
+    h1 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(56px, 9vw, 112px);
+      line-height: 0.96;
+      letter-spacing: 0.01em;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: 500;
+      margin: 20px 0 24px;
+      color: var(--vesa-text);
+      text-wrap: balance;
+    }
+    h1 .dot {
+      color: var(--vesa-red);
+    }
+    .lede {
+      max-width: 560px;
+      margin: 0 auto 36px;
+      color: var(--vesa-dim);
+      font-size: 17px;
+    }
+    .actions {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .telemetry {
+      position: relative;
+      z-index: 4;
+      margin-top: -60px;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .rise {
+        opacity: 0;
+        transform: translateY(16px);
+        animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+      }
+      .rise.d1 { animation-delay: 0.08s; }
+      .rise.d2 { animation-delay: 0.18s; }
+      .rise.d3 { animation-delay: 0.3s; }
+      .rise.d4 { animation-delay: 0.42s; }
+      @keyframes rise {
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
     }
 
     @media (max-width: 768px) {
-      .hero {
-        grid-template-columns: 1fr;
-        gap: 3rem;
-        padding: 3rem 1rem;
-        text-align: center;
+      .hero-content {
+        padding-top: 64px;
+        padding-bottom: 150px;
       }
-      .hero-content h1 {
-        font-size: 3rem;
+      .lede {
+        font-size: 15px;
       }
     }
   `]
 })
-export class HomeHeroComponent {
+export class HomeHeroComponent implements AfterViewInit, OnDestroy {
   @Input() totalPlayers!: number;
   @Input() totalGames!: number;
   @Input() totalMatches!: number;
+
+  @ViewChild('stars') private canvasRef!: ElementRef<HTMLCanvasElement>;
+
+  private stars: Star[] = [];
+  private rafId = 0;
+  private reducedMotion = false;
+  private readonly onResize = () => {
+    this.sizeCanvas();
+    if (this.reducedMotion) {
+      this.draw(0);
+    }
+  };
+
+  get heroStats(): StatItem[] {
+    return [
+      { label: 'Players tracked', value: this.totalPlayers?.toLocaleString() ?? '—' },
+      { label: 'Games logged', value: this.totalGames?.toLocaleString() ?? '—' },
+      { label: 'League matches', value: this.totalMatches?.toLocaleString() ?? '—' },
+      { label: 'Next season', value: `S${CURRENT_SEASON}`, suffix: this.countdown }
+    ];
+  }
+
+  private get countdown(): string {
+    const days = Math.ceil((SIGNUPS_OPEN.getTime() - Date.now()) / 86_400_000);
+    return days > 0 ? `T-${days} DAYS` : 'SIGNUPS OPEN';
+  }
+
+  ngAfterViewInit(): void {
+    this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.sizeCanvas();
+    window.addEventListener('resize', this.onResize);
+    if (this.reducedMotion) {
+      this.draw(0);
+    } else {
+      this.rafId = requestAnimationFrame(t => this.loop(t));
+    }
+  }
+
+  ngOnDestroy(): void {
+    cancelAnimationFrame(this.rafId);
+    window.removeEventListener('resize', this.onResize);
+  }
+
+  private sizeCanvas(): void {
+    const canvas = this.canvasRef.nativeElement;
+    const hero = canvas.parentElement as HTMLElement;
+    canvas.width = hero.offsetWidth;
+    canvas.height = hero.offsetHeight;
+    this.stars = [];
+    const count = Math.floor(canvas.width / 9);
+    for (let i = 0; i < count; i++) {
+      this.stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height * 0.85,
+        r: Math.random() * 1.1 + 0.3,
+        phase: Math.random() * Math.PI * 2,
+        speed: 0.4 + Math.random() * 1.2
+      });
+    }
+  }
+
+  private loop(t: number): void {
+    this.draw(t);
+    this.rafId = requestAnimationFrame(next => this.loop(next));
+  }
+
+  private draw(t: number): void {
+    const canvas = this.canvasRef.nativeElement;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      return;
+    }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    this.stars.forEach((star, i) => {
+      const alpha = this.reducedMotion
+        ? 0.5
+        : 0.3 + 0.35 * (1 + Math.sin(star.phase + t * 0.001 * star.speed));
+      ctx.globalAlpha = Math.min(alpha * 0.8, 1);
+      ctx.fillStyle = i % 7 === 0 ? '#3d9bff' : '#f2f2f7';
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+  }
 }

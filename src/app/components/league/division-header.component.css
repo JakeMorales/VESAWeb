@@ -1,109 +1,125 @@
 .division-header {
-  padding: 2rem;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 40px 0 32px;
+  border-bottom: 1px solid var(--vesa-line);
 }
 
 .header-content {
-  max-width: 1200px;
+  max-width: 1140px;
   margin: 0 auto;
+  padding: 0 24px;
 }
 
 .breadcrumb {
-  margin-bottom: 2rem;
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--vesa-faint);
+  margin-bottom: 28px;
 }
 
 .breadcrumb a {
-  color: var(--color-accent-secondary);
+  color: var(--vesa-blue);
   text-decoration: none;
 }
 
 .breadcrumb a:hover {
-  text-decoration: underline;
+  color: var(--vesa-text);
 }
 
 .division-title-section {
   display: flex;
   align-items: center;
-  gap: 2rem;
-  margin-bottom: 3rem;
+  gap: 24px;
+  margin-bottom: 32px;
 }
 
 .division-badge {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--division-color), rgba(255, 255, 255, 0.2));
+  width: 68px;
+  height: 68px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--division-color) 12%, transparent);
+  border: 1px solid var(--division-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 3px solid var(--division-color);
   flex-shrink: 0;
 }
 
 .roman-numeral {
-  font-size: 2rem;
-  font-weight: 900;
-  color: white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--division-color);
+  line-height: 1;
 }
 
 .division-title {
-  font-size: 3rem;
-  font-weight: 900;
-  margin: 0 0 0.5rem 0;
-  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+  color: var(--vesa-text);
+  line-height: 1;
 }
 
 .division-subtitle {
-  font-size: 1.125rem;
-  color: var(--color-text-secondary);
+  font-size: 14px;
+  color: var(--vesa-dim);
   margin: 0;
 }
 
 .division-stats-bar {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  background: var(--vesa-panel);
+  border: 1px solid var(--vesa-line);
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .stat-item {
-  text-align: center;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 18px 22px;
+  text-align: left;
+  box-shadow: -1px 0 0 0 var(--vesa-line);
 }
 
 .stat-value {
   display: block;
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 24px;
   color: var(--division-color);
-  margin-bottom: 0.25rem;
+  margin-bottom: 4px;
+  line-height: 1.1;
 }
 
 .stat-label {
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  color: var(--vesa-faint);
 }
 
 @media (max-width: 768px) {
-  .division-title-section {
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
-  }
-
-  .division-title {
-    font-size: 2rem;
-  }
-
   .division-header {
-    padding: 2rem 1rem;
+    padding: 28px 0 24px;
+  }
+
+  .division-title-section {
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .division-badge {
+    width: 54px;
+    height: 54px;
+  }
+
+  .roman-numeral {
+    font-size: 24px;
   }
 }
