@@ -35,53 +35,51 @@ export type Season = LeagueSeason;
   `,
   styles: [`
     .filter-section {
-      margin-bottom: 3rem;
+      margin-bottom: 32px;
     }
 
     .filter-row {
       display: flex;
-      gap: 1rem;
+      gap: 10px;
       justify-content: center;
       flex-wrap: wrap;
     }
 
     .filter-select {
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(0, 0, 0, 0.4);
-      color: var(--color-text-primary);
-      font-size: 1rem;
-      font-weight: 500;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-      min-width: 150px;
+      padding: 10px 36px 10px 14px;
+      border-radius: 4px;
+      border: 1px solid var(--vesa-line-strong);
+      background: var(--vesa-raised);
+      color: var(--vesa-text);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: border-color 0.15s, background 0.15s;
+      min-width: 170px;
+      cursor: pointer;
       appearance: none;
-      background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23ffffff" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
+      background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%239a9aad" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
       background-repeat: no-repeat;
-      background-position: right 0.7rem center;
-      background-size: 0.65rem auto;
-      padding-right: 2.5rem;
+      background-position: right 0.8rem center;
+      background-size: 0.55rem auto;
     }
 
     .filter-select:focus {
       outline: none;
-      border-color: var(--color-accent-primary);
-      box-shadow: 0 0 0 2px rgba(var(--color-accent-primary-rgb), 0.2);
-      background: rgba(0, 0, 0, 0.6);
+      border-color: var(--vesa-blue);
+      background-color: var(--vesa-blue-dim);
+    }
+
+    .filter-select:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
     }
 
     .filter-select option {
-      background: #1a1a1a;
-      color: #ffffff;
-      padding: 0.5rem;
-      border: none;
-    }
-
-    .filter-select option:hover,
-    .filter-select option:checked {
-      background: var(--color-accent-primary);
-      color: #ffffff;
+      background: #12121e;
+      color: var(--vesa-text);
+      text-transform: none;
     }
 
     /* Responsive Design */
@@ -93,7 +91,7 @@ export type Season = LeagueSeason;
 
       .filter-select {
         width: 100%;
-        max-width: 300px;
+        max-width: 320px;
       }
     }
   `]

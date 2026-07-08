@@ -1,8 +1,9 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { IconComponent, IconName, SectionHeaderComponent } from '../ui';
 
 export interface ActivityItem {
-  icon: string;
+  icon: IconName;
   title: string;
   description: string;
   time: string;
@@ -11,102 +12,98 @@ export interface ActivityItem {
 @Component({
   selector: 'app-recent-activity',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IconComponent, SectionHeaderComponent],
   template: `
-    <section class="recent-activity">
-      <div class="activity-content">
-        <h2>Latest Activity</h2>
-        <div class="activity-feed">
-          <div class="activity-item" *ngFor="let activity of recentActivity">
-            <div class="activity-icon">{{ activity.icon }}</div>
-            <div class="activity-details">
+    <section class="wrap block">
+      <app-section-header index="04" title="Latest activity" />
+      <div class="feed">
+        @for (activity of recentActivity; track activity.title) {
+          <div class="item">
+            <div class="tile">
+              <app-icon [name]="activity.icon" [size]="20" />
+            </div>
+            <div class="details">
               <h4>{{ activity.title }}</h4>
               <p>{{ activity.description }}</p>
-              <span class="activity-time">{{ activity.time }}</span>
             </div>
+            <span class="time">{{ activity.time }}</span>
           </div>
-        </div>
+        }
       </div>
     </section>
   `,
   styles: [`
-    .recent-activity {
-      padding: 4rem 2rem;
+    :host {
+      display: block;
     }
-
-    .activity-content {
-      max-width: 800px;
-      margin: 0 auto;
+    .block {
+      padding-top: 88px;
     }
-
-    .activity-content h2 {
-      text-align: center;
-      font-size: 2.5rem;
-      margin-bottom: 3rem;
-      color: var(--color-text-primary);
-      font-weight: 700;
+    .feed {
+      background: var(--vesa-panel);
+      border: 1px solid var(--vesa-line);
+      border-radius: 6px;
+      overflow: hidden;
     }
-
-    .activity-feed {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .activity-item {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
+    .item {
       display: flex;
       align-items: center;
-      gap: 1.5rem;
-      padding: 1.5rem;
+      gap: 18px;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--vesa-line);
+      transition: background 0.12s;
     }
-
-    .activity-item:hover {
-      border-color: var(--color-accent-primary);
+    .item:last-child {
+      border-bottom: none;
     }
-
-    .activity-icon {
-      font-size: 2rem;
-      width: 60px;
-      height: 60px;
+    .item:hover {
+      background: rgba(61, 155, 255, 0.05);
+    }
+    .tile {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(45deg, var(--color-accent-primary), var(--color-accent-secondary));
-      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--vesa-line-strong);
+      border-radius: 4px;
+      color: var(--vesa-blue);
       flex-shrink: 0;
     }
-
-    .activity-details h4 {
-      margin: 0 0 0.5rem 0;
-      color: var(--color-text-primary);
-      font-size: 1.125rem;
+    h4 {
+      font-family: var(--font-body);
+      font-size: 15px;
       font-weight: 600;
+      color: var(--vesa-text);
+      margin: 0 0 2px;
     }
-
-    .activity-details p {
-      margin: 0 0 0.5rem 0;
-      color: var(--color-text-secondary);
-      line-height: 1.5;
+    p {
+      color: var(--vesa-dim);
+      font-size: 13px;
+      margin: 0;
     }
-
-    .activity-time {
-      font-size: 0.875rem;
-      color: var(--color-text-muted);
-      font-style: italic;
+    .time {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--vesa-faint);
+      white-space: nowrap;
+      flex-shrink: 0;
     }
-
-    @media (max-width: 768px) {
-      .recent-activity {
-        padding: 3rem 1rem;
+    @media (max-width: 640px) {
+      .block {
+        padding-top: 64px;
       }
-      .activity-item {
-        flex-direction: column;
-        text-align: center;
+      .item {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .time {
+        margin-left: 54px;
+        order: 3;
+        flex-basis: 100%;
       }
     }
   `]

@@ -1,60 +1,42 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ScrimsLeaderboardComponent, ScrimPlayer } from '../scrims-leaderboard/scrims-leaderboard.component';
+import { ChipComponent, SectionHeaderComponent } from '../ui';
 
 @Component({
   selector: 'app-scrims-leaderboard-section',
   standalone: true,
-  imports: [CommonModule, ScrimsLeaderboardComponent],
+  imports: [CommonModule, ScrimsLeaderboardComponent, ChipComponent, SectionHeaderComponent],
   template: `
-    <section class="leaderboard-section">
-      <div class="leaderboard-content">
-        <h2>Scrims Leaderboard</h2>
-        <p class="leaderboard-subtitle">Top 10 performers in the current season</p>
-        <app-scrims-leaderboard [players]="players"></app-scrims-leaderboard>
-      </div>
+    <section class="wrap block">
+      <app-section-header index="03" title="Leaderboard">
+        <app-chip variant="red">Sample data</app-chip>
+      </app-section-header>
+      <p class="calibration-note">
+        The VESA rating is in beta calibration — the table below shows sample data
+        until calibration completes during Season 15.
+      </p>
+      <app-scrims-leaderboard [players]="players"></app-scrims-leaderboard>
     </section>
   `,
   styles: [`
-    .leaderboard-section {
-      padding: 4rem 2rem;
-      background: rgba(255, 255, 255, 0.02);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    :host {
+      display: block;
     }
-
-    .leaderboard-content {
-      max-width: 1200px;
-      margin: 0 auto;
+    .block {
+      padding-top: 88px;
     }
-
-    .leaderboard-content h2 {
-      text-align: center;
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: var(--color-accent-secondary);
+    .calibration-note {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      color: var(--vesa-faint);
+      margin: -16px 0 20px;
+      max-width: 620px;
     }
-
-    .leaderboard-subtitle {
-      text-align: center;
-      font-size: 1.125rem;
-      color: var(--color-text-secondary);
-      margin-bottom: 3rem;
-      opacity: 0.8;
-    }
-
-    @media (max-width: 768px) {
-      .leaderboard-section {
-        padding: 2rem 1rem;
-      }
-
-      .leaderboard-content h2 {
-        font-size: 2rem;
-      }
-
-      .leaderboard-subtitle {
-        font-size: 1rem;
-        margin-bottom: 2rem;
+    @media (max-width: 860px) {
+      .block {
+        padding-top: 64px;
       }
     }
   `]

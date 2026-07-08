@@ -9,19 +9,19 @@ import { FormsModule } from '@angular/forms';
   template: `
     <div class="filter-controls">
       <div class="search-box">
-        <input 
-          type="text" 
-          placeholder="Search by date or match ID (e.g. 2024_07_15)..." 
-          class="search-input"
-          [(ngModel)]="searchTerm"
-          (ngModelChange)="onSearchChange($event)"
-        >
         <div class="search-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
             <circle cx="11" cy="11" r="8"></circle>
             <path d="M21 21l-4.35-4.35"></path>
           </svg>
         </div>
+        <input
+          type="text"
+          placeholder="Search by date or match ID (e.g. 2024_07_15)…"
+          class="search-input"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+        >
       </div>
     </div>
   `,
@@ -29,61 +29,52 @@ import { FormsModule } from '@angular/forms';
     .filter-controls {
       display: flex;
       justify-content: center;
-      align-items: center;
-      padding: 2rem;
-      background: linear-gradient(135deg, rgba(255, 44, 92, 0.05), rgba(44, 156, 255, 0.05));
-      border-radius: 16px;
-      border: 1px solid rgba(255, 44, 92, 0.2);
-      backdrop-filter: blur(20px);
-      margin-bottom: 2rem;
+      margin-bottom: 20px;
     }
 
     .search-box {
       position: relative;
       width: 100%;
-      max-width: 400px;
+      max-width: 440px;
     }
 
     .search-input {
       width: 100%;
-      padding: 1rem 1rem 1rem 3rem;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.05);
-      color: #ffffff;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
+      box-sizing: border-box;
+      padding: 12px 14px 12px 40px;
+      border: 1px solid var(--vesa-line-strong);
+      border-radius: 4px;
+      background: var(--vesa-raised);
+      color: var(--vesa-text);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      transition: border-color 0.15s, background 0.15s;
     }
 
     .search-input:focus {
       outline: none;
-      border-color: #ff2c5c;
-      background: rgba(255, 255, 255, 0.1);
-      box-shadow: 0 0 20px rgba(255, 44, 92, 0.3);
+      border-color: var(--vesa-blue);
+      background: var(--vesa-blue-dim);
     }
 
     .search-input::placeholder {
-      color: rgba(255, 255, 255, 0.6);
+      color: var(--vesa-faint);
     }
 
     .search-icon {
       position: absolute;
-      left: 1rem;
+      left: 13px;
       top: 50%;
       transform: translateY(-50%);
-      color: rgba(255, 255, 255, 0.6);
+      color: var(--vesa-faint);
       pointer-events: none;
-    }
-
-    .search-input:focus + .search-icon {
-      color: #ff2c5c;
+      line-height: 0;
     }
   `]
 })
 export class ScrimFiltersComponent {
   @Output() searchChange = new EventEmitter<string>();
-  
+
   searchTerm = '';
 
   onSearchChange(value: string) {

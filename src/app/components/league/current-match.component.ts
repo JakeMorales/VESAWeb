@@ -16,7 +16,7 @@ import { TwitchEmbedComponent } from './twitch-embed.component';
         <ng-container *ngIf="currentMatch?.status === 'live' || (!currentMatch && streamChannel)">
           <div class="current-match-header">
             <h2>Current Match</h2>
-            <span class="live-indicator">🔴 LIVE</span>
+            <span class="live-indicator"><span class="live-dot"></span> LIVE</span>
           </div>
           <app-twitch-embed *ngIf="streamChannel" [channel]="streamChannel" height="400px"></app-twitch-embed>
           <div class="current-match-card" *ngIf="currentMatch">

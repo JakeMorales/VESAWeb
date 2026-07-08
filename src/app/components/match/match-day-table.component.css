@@ -1,25 +1,21 @@
-/* Match Day Table Main Layout */
+/* Match Day Table Main Layout
+   Rendered inside scrim collapsibles and archive match cards, which
+   provide their own panel chrome — so this stays flat. */
 .match-day-section {
-  background: rgba(17, 25, 40, 0.75);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.125);
-  border-radius: 16px;
-  padding: 2rem;
-  margin: 2rem 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
 }
 
 .match-day-content h2 {
-  color: #00d4ff;
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .match-day-section {
-    padding: 1rem;
-    margin: 1rem 0;
-  }
+  font-family: var(--font-mono);
+  color: var(--vesa-faint);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin: 8px 0 14px;
+  text-align: left;
 }

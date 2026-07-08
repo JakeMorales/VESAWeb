@@ -49,7 +49,7 @@ export class HomeComponent {
     matchesPlayed: 115,
     gamesPlayed: 825,
     uniquePlayers: 644,
-    totalPlaytime: '1yrs 3mo 24d 2h 40m 00s'
+    totalPlaytime: '1y 3mo 24d'
   };
 
   // Scrims Stats
@@ -57,7 +57,7 @@ export class HomeComponent {
     matchesPlayed: 1045,
     gamesPlayed: 5854,
     uniquePlayers: 3896,
-    totalPlaytime: '8yrs 9mo 29d 18h 30m 20s'
+    totalPlaytime: '8y 9mo 29d'
   };
 
   // Combined totals for the hero section
@@ -75,25 +75,25 @@ export class HomeComponent {
 
   recentActivity: ActivityItem[] = [
     {
-      icon: '🏆',
+      icon: 'trophy',
       title: 'Tournament Finals Completed',
       description: 'Team Horizon claimed victory in the Season 3 Championships',
       time: '2 hours ago'
     },
     {
-      icon: '⚡',
+      icon: 'bolt',
       title: 'New High Score',
       description: 'Wraith_Main_BTW achieved a 20-kill game on World\'s Edge',
       time: '4 hours ago'
     },
     {
-      icon: '🎯',
+      icon: 'target',
       title: 'Weekly Rankings Updated',
       description: 'Check out the latest leaderboard standings',
       time: '1 day ago'
     },
     {
-      icon: '📊',
+      icon: 'chart',
       title: 'Match Analysis Available',
       description: 'Detailed breakdown of last night\'s scrimmage matches',
       time: '2 days ago'
