@@ -8,6 +8,7 @@ import { DivisionStandingsComponent } from '../../../components/league/division-
 import { MatchHistoryComponent } from '../../../components/league/match-history.component';
 import { DivisionInfoComponent } from '../../../components/league/division-info.component';
 import { LeagueService } from '../../../services/league.service';
+import { LeagueVodService } from '../../../services/league-vod.service';
 import { forkJoin } from 'rxjs';
 
 export interface Team {
@@ -93,13 +94,15 @@ export class DivisionComponent implements OnInit {
 
   divisionNumber: string = '';
   streamChannel: string = '';
+  lastPlayedVodUrl: string = '';
   teams: Team[] = [];
   matches: Match[] = [];
   currentMatch?: Match;
 
   constructor(
     private route: ActivatedRoute,
-    private leagueService: LeagueService
+    private leagueService: LeagueService,
+    private leagueVodService: LeagueVodService
   ) {}
 
   ngOnInit() {
@@ -219,6 +222,11 @@ export class DivisionComponent implements OnInit {
           this.currentMatch = [...weekMatches]
             .sort((a, b) => b.weekNumber - a.weekNumber)
             .find(m => m.status === 'completed');
+
+          if (this.currentMatch) {
+            this.leagueVodService.getVodUrl(season, divStr, this.currentMatch.filename)
+              .subscribe(url => this.lastPlayedVodUrl = url ?? '');
+          }
 
           this.loading = false;
         },
