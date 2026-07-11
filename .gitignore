@@ -40,3 +40,13 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Secrets — never commit environment files (repo is public)
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+
+# Local tooling state
+.claude/
+scripts/.scrim-cache/
