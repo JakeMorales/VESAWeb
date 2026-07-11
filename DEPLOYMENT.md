@@ -1,8 +1,9 @@
 # Deployment
 
-VESAWeb is deployed as a single **Cloudflare Worker** that serves the Angular
+VESAWeb is deployed as a **Cloudflare Worker** that serves the Angular
 static build and proxies external API calls (see `wrangler.jsonc` and
-`worker/index.js`). Production domain: **https://vesa.gg**.
+`worker/index.js`), in two environments: **https://dev.vesa.gg** (dev) and
+**https://vesa.gg** (prod).
 
 ## Architecture
 
@@ -18,29 +19,53 @@ static build and proxies external API calls (see `wrangler.jsonc` and
 > migration (#39) makes Nhost the primary data source. When that lands, delete
 > the HF entries from `worker/index.js` and `proxy.conf.json`.
 
-## How deploys happen
+## Environments and branch flow
 
-Cloudflare **Workers Builds** is connected to this GitHub repo:
+| Environment | Worker | Domain | Deploys from |
+|---|---|---|---|
+| dev | `vesaweb-dev` | dev.vesa.gg | `main` (every merge) |
+| prod | `vesaweb` | vesa.gg, www.vesa.gg | `release` (manual promotion) |
 
-- Push to `main` → production deploy to vesa.gg.
-- PR branches → preview URL posted on the PR (no production impact).
+- **Feature branches are local-only** (`npm start`). Nothing deploys until the
+  branch merges to `main`.
+- **Merge to `main`** → Workers Builds auto-deploys to **dev.vesa.gg**.
+- **Promote to prod** by fast-forwarding `release` to `main`:
+
+  ```sh
+  git checkout release
+  git merge --ff-only main
+  git push
+  ```
+
+  The push triggers the prod build → **vesa.gg**. Nothing else ever deploys
+  to prod, and `--ff-only` guarantees `release` never diverges from `main`.
 
 ### One-time setup (Cloudflare dashboard)
 
 1. **Clean up DNS first**: in the vesa.gg zone → DNS, delete any placeholder
-   A/CNAME records on `vesa.gg` (apex) and `www`. The Worker's custom domains
+   A/CNAME records on `vesa.gg` (apex) and `www`. The Workers' custom domains
    create their own records and the deploy fails if conflicting records exist.
    (Cloudflare is the authoritative DNS, so proxied records update near-instantly;
    low TTLs only matter for unproxied records you manage manually.)
-2. **Workers & Pages → Create → Import a repository**, select `VESAWeb`.
-   - Build command: `npm ci && npm run build`
-   - Deploy command: `npx wrangler deploy`
-   - Everything else (name, assets dir, custom domains) comes from `wrangler.jsonc`.
-3. **Secrets**: on the `vesaweb` Worker → Settings → Variables and Secrets, add
+2. **Create the `release` branch** from the commit considered prod-ready:
+   `git checkout -b release main && git push -u origin release`. Consider a
+   GitHub branch protection rule restricting who can push to it.
+3. **Connect the repo twice** under Compute (Workers) → Create → Import a
+   repository — once per environment:
+   - Worker **`vesaweb-dev`** — production branch `main`,
+     build command `npm ci && npm run build`,
+     deploy command `npx wrangler deploy --env dev`.
+   - Worker **`vesaweb`** — production branch `release`,
+     build command `npm ci && npm run build`,
+     deploy command `npx wrangler deploy`.
+   - Disable non-production branch builds on both (feature branches are local-only).
+   - Everything else (assets dir, custom domains) comes from `wrangler.jsonc`.
+4. **Secrets**: on **each** Worker → Settings → Variables and Secrets, add
    `DISCORD_BOT_TOKEN` (used by the `/discord-api` proxy for avatar lookups).
    Without it the proxy still runs, just unauthenticated. Never commit the token.
-4. After the first deploy, confirm **vesa.gg** and **www.vesa.gg** appear under
-   the Worker's Domains & Routes with active certificates.
+5. After the first deploys, confirm **dev.vesa.gg** (on `vesaweb-dev`) and
+   **vesa.gg** + **www.vesa.gg** (on `vesaweb`) appear under each Worker's
+   Domains & Routes with active certificates.
 
 ## Local deploys / debugging
 
@@ -49,8 +74,9 @@ Angular; both work with Angular 18). With Node 22 installed:
 
 ```sh
 npm run build
-npx wrangler dev      # serve the production build + proxy locally
-npx wrangler deploy   # manual production deploy (normally not needed)
+npx wrangler dev                 # serve the production build + proxy locally
+npx wrangler deploy --env dev    # manual deploy to dev.vesa.gg (normally not needed)
+npx wrangler deploy              # manual deploy to PROD vesa.gg (avoid; promote via release branch)
 ```
 
 ## Related follow-ups
