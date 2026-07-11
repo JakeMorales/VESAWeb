@@ -1,0 +1,23 @@
+// Cloudflare Worker config: serves the Angular build + API proxy (see worker/index.js).
+// Deployed by Cloudflare Workers Builds on push to main; see DEPLOYMENT.md.
+{
+  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
+  "name": "vesaweb",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-07-01",
+  "assets": {
+    "directory": "./dist/angular-app/browser",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  // Custom domains: wrangler creates the DNS records and certs on deploy.
+  // The vesa.gg zone must not already have conflicting A/CNAME records on
+  // the apex or www (delete any registrar placeholder records first).
+  "routes": [
+    { "pattern": "vesa.gg", "custom_domain": true },
+    { "pattern": "www.vesa.gg", "custom_domain": true }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}
