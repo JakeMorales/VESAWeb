@@ -1,5 +1,8 @@
 // Cloudflare Worker config: serves the Angular build + API proxy (see worker/index.js).
-// Deployed by Cloudflare Workers Builds on push to main; see DEPLOYMENT.md.
+//
+// Two environments, both deployed by Cloudflare Workers Builds (see DEPLOYMENT.md):
+//   - top-level (prod):  worker "vesaweb",     vesa.gg + www.vesa.gg,  deploys from `release`
+//   - env.dev:           worker "vesaweb-dev", dev.vesa.gg,            deploys from `main`
 {
   "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
   "name": "vesaweb",
@@ -19,5 +22,14 @@
   ],
   "observability": {
     "enabled": true
+  },
+  // Deployed as worker "vesaweb-dev". Inherits main/assets/compatibility_date;
+  // routes are intentionally not inherited, so this env only claims dev.vesa.gg.
+  "env": {
+    "dev": {
+      "routes": [
+        { "pattern": "dev.vesa.gg", "custom_domain": true }
+      ]
+    }
   }
 }
