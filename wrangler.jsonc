@@ -29,7 +29,7 @@
     "dev": {
       "routes": [
         { "pattern": "dev.vesa.gg", "custom_domain": true }
-      ]
+      ],"name": "vesaweb-dev"
     }
   }
 }
