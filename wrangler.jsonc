@@ -5,7 +5,7 @@
 //   - env.dev:           worker "vesaweb-dev", dev.vesa.gg,            deploys from `main`
 {
   "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
-  "name": "vesaweb",
+  "name": "vesaweb-dev",
   "main": "worker/index.js",
   "compatibility_date": "2026-07-01",
   "assets": {
