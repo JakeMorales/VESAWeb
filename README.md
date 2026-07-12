@@ -192,7 +192,6 @@ The dev server requires `proxy.conf.json` to reach HuggingFace and the local lea
 | Testing | Karma + Jasmine |
 
 ---
-
 ## Contributing
 
 1. Follow Angular standalone component conventions — no NgModules
