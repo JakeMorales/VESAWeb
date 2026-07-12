@@ -38,6 +38,18 @@
   border-radius: 4px;
 }
 
+.vod-indicator {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  background: var(--vesa-blue-dim);
+  color: var(--vesa-blue);
+  padding: 5px 12px;
+  border-radius: 4px;
+}
+
 .live-dot {
   width: 7px;
   height: 7px;

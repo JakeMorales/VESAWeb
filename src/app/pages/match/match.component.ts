@@ -7,7 +7,9 @@ import { MatchDayTableComponent } from '../../components/match/match-day-table.c
 import { MatchDayResults } from '../../models/match-day-results.model';
 import { MatchLiveSectionComponent } from '../../components/match/match-live-section.component';
 import { MatchUpcomingSectionComponent } from '../../components/match/match-upcoming-section.component';
+import { MatchVodSectionComponent } from '../../components/match/match-vod-section.component';
 import { LeagueMatchDataService } from '../../services/league-match-data.service';
+import { LeagueVodService } from '../../services/league-vod.service';
 import { MatchDetail } from '../../services/match-data.service';
 
 const DIVISION_NAMES: Record<number, string> = {
@@ -24,13 +26,21 @@ const DIVISION_NAMES: Record<number, string> = {
     MatchHeaderComponent, 
     MatchResultsComponent,
     MatchDayTableComponent,
-    MatchLiveSectionComponent, 
-    MatchUpcomingSectionComponent
+    MatchLiveSectionComponent,
+    MatchUpcomingSectionComponent,
+    MatchVodSectionComponent
   ],
   template: `
     <div class="match-container" *ngIf="match">
       <!-- Match Header -->
       <app-match-header [match]="match"></app-match-header>
+
+      <!-- Match VOD Player -->
+      <app-match-vod-section
+        *ngIf="match.status === 'completed'"
+        [vodUrl]="vodUrl"
+        [label]="match.matchDay + ' — ' + match.division">
+      </app-match-vod-section>
 
       <!-- Enhanced Match Day Results Table -->
       <app-match-day-table 
@@ -69,10 +79,12 @@ export class MatchComponent implements OnInit {
   match: MatchDetail | null = null;
   matchDayResults: MatchDayResults | null = null;
   gameResults: MatchResults | null = null;
+  vodUrl: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
-  private leagueMatchDataService: LeagueMatchDataService
+    private leagueMatchDataService: LeagueMatchDataService,
+    private leagueVodService: LeagueVodService
   ) {}
 
   ngOnInit() {
@@ -105,6 +117,9 @@ export class MatchComponent implements OnInit {
       totalGames: 0,
       description: `${season.replace(/_/g, ' ')} · ${divisionName} Division`
     };
+
+    this.leagueVodService.getVodUrl(season, division, filename)
+      .subscribe(url => this.vodUrl = url);
 
     this.leagueMatchDataService.getLeagueMatchResults(matchId).subscribe({
       next: (results: MatchDayResults | null) => {
