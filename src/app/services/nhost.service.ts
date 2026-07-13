@@ -11,6 +11,8 @@ export interface Player {
   display_name?: string;
   elo?: number;
   overstat_id?: string;
+  avatar_url?: string;
+  platform?: "PC" | "PSN" | "XBOX";
 }
 
 export interface Scrim {
@@ -394,6 +396,65 @@ export class NhostService {
       catchError((error) => {
         console.error('Error fetching player stats:', error);
         throw error;
+      })
+    );
+  }
+
+  // Get a player by their ID 
+   getPlayerById(id: string): Observable<Player | null> {
+    const query = `
+      query GetPlayerById($id: uuid!) {
+        players_by_pk(id: $id) {
+          id
+          discord_id
+          display_name
+          elo
+          overstat_id
+          avatar_url
+          platform
+        }
+      }
+    `;
+    return from(
+      this.nhost.graphql.request(query, { id }).then((response: any) => {
+        if (response.error || !response.data?.players_by_pk) return null;
+        return response.data.players_by_pk as Player;
+      })
+    );
+  }
+
+  // Get a players scrims history by their ID
+  getPlayerScrimHistory(playerId: string): Observable<ScrimPlayerStats[]> {
+    const query = `
+      query GetPlayerScrimHistory($playerId: uuid!) {
+        scrim_player_stats(
+          where: { player_id: { _eq: $playerId } }
+          order_by: { scrim: { date_time_field: desc } }
+        ) {
+          id
+          scrim_id
+          kills
+          damage_dealt
+          knockdowns
+          assists
+          revives_given
+          respawns_given
+          score
+          games_played
+          characters
+          scrim {
+            id
+            date_time_field
+            overstat_link
+            skill
+          }
+        }
+      }
+    `;
+    return from(
+      this.nhost.graphql.request(query, { playerId }).then((response: any) => {
+        if (response.error) throw new Error(response.error.message);
+        return response.data.scrim_player_stats as ScrimPlayerStats[];
       })
     );
   }
