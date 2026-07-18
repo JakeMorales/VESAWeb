@@ -51,9 +51,24 @@ export class MatchLoaderService {
           const id = parseInt(s.match(/_id_(\d+)/)?.[1] ?? '0', 10);
           return [date, id];
         };
+        // The uploader renamed files from scrim_ to scrims_ in Dec 2025;
+        // sessions from Dec 2025 through Jan 2026 exist under both names (the
+        // scrims_ copy dated one day later), so drop the scrim_ copy when a
+        // scrims_ file exists for the same session id. Only cross-scheme
+        // duplicates are removed — the dataset also has same-scheme duplicate
+        // ids, which are kept as-is pending a dataset-side cleanup.
+        const isScrimJson = (e: HFTreeEntry) =>
+          e.type === 'file' && /^scrims?_/.test(e.path) && e.path.endsWith('.json');
+        const renamedIds = new Set(
+          entries
+            .filter(e => isScrimJson(e) && e.path.startsWith('scrims_'))
+            .map(e => e.path.match(/_id_(\d+)/)?.[1])
+            .filter((id): id is string => !!id)
+        );
         return entries
-          .filter(e => e.type === 'file' && e.path.startsWith('scrim_') && e.path.endsWith('.json'))
+          .filter(isScrimJson)
           .map(e => e.path)
+          .filter(p => p.startsWith('scrims_') || !renamedIds.has(p.match(/_id_(\d+)/)?.[1] ?? ''))
           .sort((a, b) => {
             const [dateA, idA] = sortKey(a);
             const [dateB, idB] = sortKey(b);
