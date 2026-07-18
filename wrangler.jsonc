@@ -5,7 +5,12 @@
 //   - env.dev:           worker "vesaweb-dev", dev.vesa.gg,            deploys from `main`
 {
   "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
-  "name": "vesaweb-dev",
+  // Top-level name MUST stay "vesaweb" (the prod worker). Cloudflare's
+  // config-sync bot (PRs #54/#55) renames it to "vesaweb-dev" because its
+  // name check ignores --env; close those PRs, never merge them — merging
+  // makes release deploys land on the dev worker and drag the vesa.gg
+  // custom domains with them.
+  "name": "vesaweb",
   "main": "worker/index.js",
   "compatibility_date": "2026-07-01",
   "assets": {
