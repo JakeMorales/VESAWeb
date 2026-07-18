@@ -16,7 +16,7 @@ export class ScrimCollapsibleComponent {
   expanded = false;
 
   getScrimDate(file: string): string {
-    const match = file.match(/scrim_(\d{4})_(\d{2})_(\d{2})/);
+    const match = file.match(/scrims?_(\d{4})_(\d{2})_(\d{2})/);
     if (match) {
       return `${match[1]}-${match[2]}-${match[3]}`;
     }
