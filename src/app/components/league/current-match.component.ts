@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Match } from '../../pages/league/division/division.component';
 import { TwitchEmbedComponent } from './twitch-embed.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-current-match',
@@ -18,7 +19,7 @@ import { TwitchEmbedComponent } from './twitch-embed.component';
             <h2>Current Match</h2>
             <span class="live-indicator"><span class="live-dot"></span> LIVE</span>
           </div>
-          <app-twitch-embed *ngIf="streamChannel" [channel]="streamChannel" height="400px"></app-twitch-embed>
+          <app-twitch-embed *ngIf="streamChannel && showTwitchEmbeds" [channel]="streamChannel" height="400px"></app-twitch-embed>
           <div class="current-match-card" *ngIf="currentMatch">
             <div class="match-info">
               <h3>{{ currentMatch.matchDay }}</h3>
@@ -43,7 +44,7 @@ import { TwitchEmbedComponent } from './twitch-embed.component';
           <div class="current-match-header">
             <h2>Last Played</h2>
           </div>
-          <app-twitch-embed *ngIf="streamChannel" [channel]="streamChannel" height="400px"></app-twitch-embed>
+          <app-twitch-embed *ngIf="streamChannel && showTwitchEmbeds" [channel]="streamChannel" height="400px"></app-twitch-embed>
           <a [routerLink]="['/match', currentMatch!.id]" class="last-played-card">
             <div class="last-played-info">
               <span class="last-played-label">{{ currentMatch!.matchDay }}</span>
@@ -61,4 +62,6 @@ import { TwitchEmbedComponent } from './twitch-embed.component';
 export class CurrentMatchComponent {
   @Input() currentMatch?: Match;
   @Input() streamChannel: string = '';
+
+  readonly showTwitchEmbeds = environment.features.leagueTwitchEmbeds;
 }

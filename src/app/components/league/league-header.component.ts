@@ -22,7 +22,7 @@ import { StatStripComponent, StatItem } from '../ui';
           <div class="progress-bar">
             <div class="progress-fill" [style.width.%]="progressPercentage"></div>
           </div>
-          <span class="progress-text">{{ weeksRemaining }} weeks remaining</span>
+          <span class="progress-text">{{ progressLabel }}</span>
         </div>
       </div>
     </section>
@@ -116,14 +116,15 @@ export class LeagueHeaderComponent {
   @Input() currentSeason!: number;
   @Input() currentWeek!: number;
   @Input() totalWeeks!: number;
+  @Input() startDate!: string;
   @Input() finalsDate!: string;
   @Input() progressPercentage!: number;
-  @Input() weeksRemaining!: number;
+  @Input() progressLabel!: string;
 
   get stats(): StatItem[] {
     return [
       { label: 'Week', value: `${this.currentWeek}/${this.totalWeeks}` },
-      { label: 'Started', value: 'July 21, 2025' },
+      { label: 'Started', value: this.startDate },
       { label: 'Finals', value: this.finalsDate }
     ];
   }

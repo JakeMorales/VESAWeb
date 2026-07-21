@@ -34,8 +34,8 @@ import { Division } from '../../pages/league/league.component';
             <span class="stat-label">Weeks</span>
           </div>
           <div class="stat-item">
-            <span class="stat-value">{{ totalWeeks - currentWeek }}</span>
-            <span class="stat-label">Remaining</span>
+            <span class="stat-value">{{ remainingValue }}</span>
+            <span class="stat-label">{{ currentWeek < totalWeeks ? 'Remaining' : 'MP Finals' }}</span>
           </div>
         </div>
       </div>
@@ -47,4 +47,12 @@ export class DivisionHeaderComponent {
   @Input() division!: Division;
   @Input() currentWeek: number = 2;
   @Input() totalWeeks: number = 6;
+  @Input() mpPlayed: boolean = false;
+
+  get remainingValue(): string {
+    if (this.currentWeek < this.totalWeeks) {
+      return String(this.totalWeeks - this.currentWeek);
+    }
+    return this.mpPlayed ? 'Played' : 'Upcoming';
+  }
 }
