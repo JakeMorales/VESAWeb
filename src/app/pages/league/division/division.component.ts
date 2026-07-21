@@ -88,6 +88,7 @@ export class DivisionComponent implements OnInit {
   division: Division | null = null;
   currentWeek = 0;
   totalWeeks = 6;
+  mpPlayed = false;
   loading = true;
   error = false;
 
@@ -122,6 +123,7 @@ export class DivisionComponent implements OnInit {
         description: meta.description,
         teamCount: 0,
         currentWeek: 0,
+        mpPlayed: false,
         color: meta.color
       };
 
@@ -150,11 +152,13 @@ export class DivisionComponent implements OnInit {
           const weekFiles = files.filter(f => /Week_\d+\.json$/i.test(f) && !isFinalsFile(f));
           const finalsFiles = files.filter(isFinalsFile);
           this.currentWeek = weekFiles.length;
+          this.mpPlayed = finalsFiles.length > 0;
 
           this.division = {
             ...this.division!,
             teamCount: this.teams.length,
-            currentWeek: this.currentWeek
+            currentWeek: this.currentWeek,
+            mpPlayed: this.mpPlayed
           };
 
           const weekMatches: Match[] = weekFiles.map(filename => {
@@ -214,11 +218,13 @@ export class DivisionComponent implements OnInit {
 
           this.matches = [...finaleMatches, ...weekMatches, ...upcomingWeeks, ...upcomingFinals];
 
-          // Show the most recently completed regular week in the Current Match section.
-          // Sorted descending by weekNumber so Week 5 comes before Week 4, etc.
-          this.currentMatch = [...weekMatches]
-            .sort((a, b) => b.weekNumber - a.weekNumber)
-            .find(m => m.status === 'completed');
+          // Show the most recently completed match in the Current Match section.
+          // Match Point Finals is chronologically last, so it takes priority once played;
+          // otherwise fall back to the latest completed regular week (Week 5 before Week 4, etc.).
+          this.currentMatch = finaleMatches.find(m => m.status === 'completed')
+            ?? [...weekMatches]
+              .sort((a, b) => b.weekNumber - a.weekNumber)
+              .find(m => m.status === 'completed');
 
           this.loading = false;
         },
