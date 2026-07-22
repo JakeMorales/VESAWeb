@@ -20,7 +20,7 @@
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.16em;
-  grid-template-columns: 56px 1fr 110px 100px 110px 100px 50px;
+  grid-template-columns: 56px minmax(0, 1fr) 110px 100px 110px 100px 50px;
 }
 
 .header-cell {
@@ -36,7 +36,7 @@
   display: grid;
   transition: background 0.12s;
   border-bottom: 1px solid var(--vesa-line);
-  grid-template-columns: 56px 1fr 110px 100px 110px 100px 50px;
+  grid-template-columns: 56px minmax(0, 1fr) 110px 100px 110px 100px 50px;
 }
 
 .table-row:last-child {
@@ -75,7 +75,10 @@
   font-weight: 600;
   font-size: 14px;
   color: var(--vesa-text);
-  flex-shrink: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .team-col app-game-indicators {
@@ -174,7 +177,7 @@
 @media (max-width: 768px) {
   .table-header,
   .table-row {
-    grid-template-columns: 44px 1fr 85px 75px 85px 75px 40px;
+    grid-template-columns: 44px minmax(0, 1fr) 85px 75px 85px 75px 40px;
   }
 
   .cell {
@@ -193,9 +196,54 @@
   }
 }
 
-@media (max-width: 480px) {
-  .table-header,
-  .table-row {
-    grid-template-columns: 36px 1fr 75px 65px 75px 65px 32px;
+/* Below this, five-column-plus-pips doesn't fit on a phone at any px budget
+   — reflow each row into a compact two-line card instead of squeezing
+   columns further (that's what caused names/pips/stats to overlap). Column
+   headers are replaced with inline labels on the stat row. */
+@media (max-width: 600px) {
+  .table-header {
+    display: none;
   }
+
+  .table-row {
+    grid-template-columns: 28px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 26px;
+    grid-template-areas:
+      "rank team  team  team  team  expand"
+      "rank points won   avg   kills expand";
+    row-gap: 6px;
+    padding: 10px 0;
+  }
+
+  .cell {
+    padding: 0 4px;
+    min-height: 0;
+    font-size: 11px;
+  }
+
+  .rank-number { grid-area: rank; }
+  .cell.team-col { grid-area: team; padding-left: 10px; padding-right: 4px; }
+  .total-points { grid-area: points; }
+  .games-won { grid-area: won; }
+  .avg-placement { grid-area: avg; }
+  .total-kills { grid-area: kills; }
+  .expand-arrow { grid-area: expand; }
+
+  .team-name {
+    font-size: 13px;
+  }
+
+  .total-points::before,
+  .games-won::before,
+  .avg-placement::before,
+  .total-kills::before {
+    color: var(--vesa-faint);
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    margin-right: 3px;
+  }
+
+  .total-points::before { content: 'PTS'; }
+  .games-won::before { content: 'W'; }
+  .avg-placement::before { content: 'AVG'; }
+  .total-kills::before { content: 'K'; }
 }
