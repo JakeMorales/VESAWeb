@@ -1,7 +1,7 @@
 {
   "season": "Season_14",
   "division": "6",
-  "generatedAt": "2026-07-22T01:09:41.686Z",
+  "generatedAt": "2026-07-22T01:34:18.920Z",
   "seasonStandings": [
     {
       "rank": 1,
@@ -11,8 +11,8 @@
       "wins": 2,
       "matchDaysPlayed": 6,
       "kills": 210,
-      "trend": "same",
-      "trendDelta": 0
+      "trend": "up",
+      "trendDelta": 1
     },
     {
       "rank": 2,
@@ -45,7 +45,7 @@
       "matchDaysPlayed": 6,
       "kills": 189,
       "trend": "down",
-      "trendDelta": 2
+      "trendDelta": 3
     },
     {
       "rank": 5,
@@ -137,17 +137,6 @@
     },
     {
       "rank": 13,
-      "teamId": 7,
-      "teamName": "Tarzans Bush Patrol",
-      "points": 48,
-      "wins": 2,
-      "matchDaysPlayed": 5,
-      "kills": 139,
-      "trend": "same",
-      "trendDelta": 0
-    },
-    {
-      "rank": 14,
       "teamId": 15,
       "teamName": "Valor Esports",
       "points": 48,
@@ -155,7 +144,18 @@
       "matchDaysPlayed": 6,
       "kills": 138,
       "trend": "up",
-      "trendDelta": 2
+      "trendDelta": 3
+    },
+    {
+      "rank": 14,
+      "teamId": 7,
+      "teamName": "Tarzans Bush Patrol",
+      "points": 48,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 139,
+      "trend": "down",
+      "trendDelta": 1
     },
     {
       "rank": 15,

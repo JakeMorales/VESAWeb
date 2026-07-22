@@ -1,32 +1,43 @@
 {
   "season": "Season_14",
   "division": "5",
-  "generatedAt": "2026-07-22T01:09:41.669Z",
+  "generatedAt": "2026-07-22T01:34:18.904Z",
   "seasonStandings": [
     {
       "rank": 1,
-      "teamId": 9,
-      "teamName": "TGUN West",
-      "points": 92,
-      "wins": 3,
-      "matchDaysPlayed": 6,
-      "kills": 178,
-      "trend": "same",
-      "trendDelta": 0
-    },
-    {
-      "rank": 2,
       "teamId": 14,
       "teamName": "Chudder Cheese",
       "points": 92,
       "wins": 2,
       "matchDaysPlayed": 6,
       "kills": 183,
+      "trend": "up",
+      "trendDelta": 1
+    },
+    {
+      "rank": 2,
+      "teamId": 9,
+      "teamName": "TGUN West",
+      "points": 92,
+      "wins": 3,
+      "matchDaysPlayed": 6,
+      "kills": 178,
+      "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 3,
+      "teamId": 16,
+      "teamName": "Gravity",
+      "points": 88,
+      "wins": 2,
+      "matchDaysPlayed": 6,
+      "kills": 193,
       "trend": "same",
       "trendDelta": 0
     },
     {
-      "rank": 3,
+      "rank": 4,
       "teamId": 1,
       "teamName": "SkyRisers",
       "points": 88,
@@ -35,17 +46,6 @@
       "kills": 165,
       "trend": "up",
       "trendDelta": 3
-    },
-    {
-      "rank": 4,
-      "teamId": 16,
-      "teamName": "Gravity",
-      "points": 88,
-      "wins": 2,
-      "matchDaysPlayed": 6,
-      "kills": 193,
-      "trend": "down",
-      "trendDelta": 1
     },
     {
       "rank": 5,
@@ -66,8 +66,8 @@
       "wins": 3,
       "matchDaysPlayed": 6,
       "kills": 174,
-      "trend": "up",
-      "trendDelta": 1
+      "trend": "same",
+      "trendDelta": 0
     },
     {
       "rank": 7,
@@ -126,17 +126,6 @@
     },
     {
       "rank": 12,
-      "teamId": 10,
-      "teamName": "JESTERMAXING",
-      "points": 53,
-      "wins": 1,
-      "matchDaysPlayed": 6,
-      "kills": 111,
-      "trend": "same",
-      "trendDelta": 0
-    },
-    {
-      "rank": 13,
       "teamId": 17,
       "teamName": "Hangin’ Brain",
       "points": 53,
@@ -144,6 +133,17 @@
       "matchDaysPlayed": 6,
       "kills": 113,
       "trend": "up",
+      "trendDelta": 1
+    },
+    {
+      "rank": 13,
+      "teamId": 10,
+      "teamName": "JESTERMAXING",
+      "points": 53,
+      "wins": 1,
+      "matchDaysPlayed": 6,
+      "kills": 111,
+      "trend": "down",
       "trendDelta": 1
     },
     {
@@ -177,7 +177,7 @@
       "matchDaysPlayed": 6,
       "kills": 73,
       "trend": "down",
-      "trendDelta": 3
+      "trendDelta": 2
     },
     {
       "rank": 17,

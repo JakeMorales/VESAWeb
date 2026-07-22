@@ -108,6 +108,8 @@ interface TeamAccumulator {
   matchDaysPlayed: number;
   gameWins: number;
   totalKills: number;
+  totalScore: number;    // sum of raw in-game score across the season — tiebreaks a season-total points tie
+  mpTotalScore: number;  // same, for MP Finals
   mpPlayers: Set<string>;
 }
 
@@ -142,12 +144,15 @@ function toRankedStandings(
   pointsKey: 'leaguePoints' | 'mpLeaguePoints',
   onlyWithPoints: boolean
 ): StandingEntry[] {
+  const scoreKey = pointsKey === 'leaguePoints' ? 'totalScore' : 'mpTotalScore';
   let entries = Array.from(accumulators.values());
   if (onlyWithPoints) {
     entries = entries.filter(e => e[pointsKey] > 0);
   }
   return entries
-    .sort((a, b) => b[pointsKey] - a[pointsKey])
+    // A tie on total league points is broken by total in-game Match Score, same
+    // principle as the ALGS per-week tiebreak, just aggregated over the season.
+    .sort((a, b) => (b[pointsKey] - a[pointsKey]) || (b[scoreKey] - a[scoreKey]))
     .map((e, i) => ({
       rank: i + 1,
       teamId: e.teamId,
@@ -271,9 +276,11 @@ function processWeekFile(
       acc.totalKills += team.kills;
       if (isMP) {
         acc.mpLeaguePoints += leaguePoints;
+        acc.mpTotalScore += team.inGameScore;
         team.players.forEach(p => acc.mpPlayers.add(p));
       } else {
         acc.leaguePoints += leaguePoints;
+        acc.totalScore += team.inGameScore;
         acc.matchDaysPlayed++;
         acc.gameWins += team.gameWins;
       }
@@ -286,6 +293,8 @@ function processWeekFile(
         matchDaysPlayed: isMP ? 0 : 1,
         gameWins: isMP ? 0 : team.gameWins,
         totalKills: team.kills,
+        totalScore: isMP ? 0 : team.inGameScore,
+        mpTotalScore: isMP ? team.inGameScore : 0,
         mpPlayers: isMP ? new Set(team.players) : new Set(),
       });
     }
@@ -313,7 +322,6 @@ function generateDivisionSummary(
   resetSyntheticIds();
   const accMap = new Map<string, TeamAccumulator>();
   const weeklyRankSnapshots: Map<string, number>[] = [];
-  let activeTeamKeys = new Set<string>(); // teams from the most recent regular week
 
   // Manual admin overrides (attendance multipliers, penalty adjustments, DQs) from
   // the season-adjustments config — can't be derived from raw Overstat game files.
@@ -329,10 +337,9 @@ function generateDivisionSummary(
     const isMP = isPlayoffsFile(filename);
     // DQ'd/excluded teams are dropped before ranking (not just zeroed after) so
     // everyone else's placement — and therefore points — shifts up correctly.
-    const seenKeys = processWeekFile(path.join(divPath, filename), filename, accMap, isMP ? mpExclusions : undefined);
+    processWeekFile(path.join(divPath, filename), filename, accMap, isMP ? mpExclusions : undefined);
 
     if (!isMP) {
-      if (seenKeys.size > 0) activeTeamKeys = seenKeys;
       const snap = new Map<string, number>();
       toRankedStandings(accMap, 'leaguePoints', false).forEach(e => snap.set(normalizeTeamName(e.teamName), e.rank));
       weeklyRankSnapshots.push(snap);

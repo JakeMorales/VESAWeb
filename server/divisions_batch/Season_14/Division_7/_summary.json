@@ -1,7 +1,7 @@
 {
   "season": "Season_14",
   "division": "7",
-  "generatedAt": "2026-07-22T01:09:41.698Z",
+  "generatedAt": "2026-07-22T01:34:18.935Z",
   "seasonStandings": [
     {
       "rank": 1,
@@ -88,8 +88,8 @@
       "wins": 2,
       "matchDaysPlayed": 6,
       "kills": 144,
-      "trend": "up",
-      "trendDelta": 1
+      "trend": "same",
+      "trendDelta": 0
     },
     {
       "rank": 9,
@@ -99,8 +99,8 @@
       "wins": 2,
       "matchDaysPlayed": 6,
       "kills": 132,
-      "trend": "down",
-      "trendDelta": 1
+      "trend": "same",
+      "trendDelta": 0
     },
     {
       "rank": 10,
@@ -177,7 +177,7 @@
       "matchDaysPlayed": 4,
       "kills": 59,
       "trend": "up",
-      "trendDelta": 1
+      "trendDelta": 2
     },
     {
       "rank": 17,
@@ -198,8 +198,8 @@
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 70,
-      "trend": "same",
-      "trendDelta": 0
+      "trend": "down",
+      "trendDelta": 1
     },
     {
       "rank": 19,
