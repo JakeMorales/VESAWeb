@@ -68,6 +68,12 @@ import { IconComponent, SectionHeaderComponent } from '../ui';
       flex-shrink: 0;
       margin-top: 2px;
     }
+    .info {
+      display: flex;
+      flex-direction: column;
+      align-self: stretch;
+      flex: 1;
+    }
     h3 {
       font-family: var(--font-display);
       font-size: 20px;
@@ -81,6 +87,10 @@ import { IconComponent, SectionHeaderComponent } from '../ui';
       color: var(--vesa-dim);
       font-size: 14px;
       margin: 0 0 18px;
+    }
+    .info .btn {
+      margin-top: auto;
+      align-self: flex-start;
     }
     @media (max-width: 860px) {
       .servers {
