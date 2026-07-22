@@ -1,7 +1,7 @@
 {
   "season": "Season_14",
   "division": "4",
-  "generatedAt": "2026-07-22T01:09:41.649Z",
+  "generatedAt": "2026-07-22T01:34:18.882Z",
   "seasonStandings": [
     {
       "rank": 1,
@@ -11,8 +11,8 @@
       "wins": 5,
       "matchDaysPlayed": 6,
       "kills": 193,
-      "trend": "same",
-      "trendDelta": 0
+      "trend": "up",
+      "trendDelta": 1
     },
     {
       "rank": 2,
@@ -22,8 +22,8 @@
       "wins": 3,
       "matchDaysPlayed": 6,
       "kills": 195,
-      "trend": "same",
-      "trendDelta": 0
+      "trend": "down",
+      "trendDelta": 1
     },
     {
       "rank": 3,
@@ -192,6 +192,17 @@
     },
     {
       "rank": 18,
+      "teamId": 6,
+      "teamName": "KiMK",
+      "points": 32,
+      "wins": 0,
+      "matchDaysPlayed": 6,
+      "kills": 98,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 19,
       "teamId": 1,
       "teamName": "Project Hibiscus",
       "points": 32,
@@ -199,18 +210,7 @@
       "matchDaysPlayed": 4,
       "kills": 82,
       "trend": "down",
-      "trendDelta": 1
-    },
-    {
-      "rank": 19,
-      "teamId": 6,
-      "teamName": "KiMK",
-      "points": 32,
-      "wins": 0,
-      "matchDaysPlayed": 6,
-      "kills": 98,
-      "trend": "down",
-      "trendDelta": 1
+      "trendDelta": 2
     },
     {
       "rank": 20,

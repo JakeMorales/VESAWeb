@@ -1,7 +1,7 @@
 {
   "season": "Season_14",
   "division": "8",
-  "generatedAt": "2026-07-22T01:09:41.716Z",
+  "generatedAt": "2026-07-22T01:34:18.951Z",
   "seasonStandings": [
     {
       "rank": 1,
@@ -66,8 +66,8 @@
       "wins": 2,
       "matchDaysPlayed": 4,
       "kills": 141,
-      "trend": "same",
-      "trendDelta": 0
+      "trend": "down",
+      "trendDelta": 2
     },
     {
       "rank": 7,
@@ -99,7 +99,7 @@
       "wins": 1,
       "matchDaysPlayed": 6,
       "kills": 124,
-      "trend": "down",
+      "trend": "up",
       "trendDelta": 1
     },
     {
@@ -115,17 +115,6 @@
     },
     {
       "rank": 11,
-      "teamId": 4,
-      "teamName": "Bush Enthusiasts",
-      "points": 56,
-      "wins": 1,
-      "matchDaysPlayed": 6,
-      "kills": 130,
-      "trend": "up",
-      "trendDelta": 3
-    },
-    {
-      "rank": 12,
       "teamId": 7,
       "teamName": "Vortex Legacy",
       "points": 56,
@@ -133,6 +122,17 @@
       "matchDaysPlayed": 6,
       "kills": 129,
       "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 12,
+      "teamId": 4,
+      "teamName": "Bush Enthusiasts",
+      "points": 56,
+      "wins": 1,
+      "matchDaysPlayed": 6,
+      "kills": 130,
+      "trend": "up",
       "trendDelta": 2
     },
     {
