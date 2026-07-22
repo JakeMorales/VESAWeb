@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChipComponent, SectionHeaderComponent } from '../ui';
+import { ELO_TIERS, tierRangeLabel } from '../../services/elo/elo-tiers';
 
 @Component({
   selector: 'app-elo-system',
@@ -8,60 +9,40 @@ import { ChipComponent, SectionHeaderComponent } from '../ui';
   imports: [CommonModule, ChipComponent, SectionHeaderComponent],
   template: `
     <section class="wrap block">
-      <app-section-header index="01" title="VESA Rating">
-        <app-chip>Beta · Calibrating</app-chip>
+      <app-section-header index="02" title="VESA Rating">
+        <app-chip variant="red">Beta</app-chip>
+        <app-chip>Live · Seasonal</app-chip>
       </app-section-header>
 
       <div class="rating-grid">
         <div class="explanation panel-cell">
           <h3>How it works</h3>
           <p>
-            The VESA rating tracks individual performance beyond wins and losses.
-            Your rating is influenced by kills, damage, placement, team performance,
-            and the strength of your lobby. It is currently in beta and calibrating
-            across Season 15 — expect movement as the system settles.
+            The VESA rating scores every game by how you performed against the
+            whole lobby — then moves your rating only when you do better or
+            worse than your rating predicted. Beating a stacked lobby pays more
+            than farming a weak one, and playing more games doesn't inflate
+            your number. Ratings reset each Apex season; your first ~10 games
+            place you, carrying momentum from previous seasons. The system is
+            in beta — tier bands and scoring may still be tuned, and ratings
+            can shift when they are.
           </p>
           <ul class="factors">
-            <li><strong>Placement</strong> Higher placement, bigger gains</li>
+            <li><strong>Placement</strong> Tiered like ALGS — the biggest single factor</li>
             <li><strong>Kills &amp; assists</strong> Combat performance matters</li>
             <li><strong>Damage dealt</strong> Consistent output is rewarded</li>
-            <li><strong>Lobby strength</strong> Beating higher-rated players pays more</li>
-            <li><strong>Team performance</strong> Supporting your squad counts</li>
+            <li><strong>Revives</strong> Supporting your squad counts</li>
+            <li><strong>Lobby strength</strong> Expectations come from every opponent's rating</li>
           </ul>
         </div>
 
         <div class="tiers panel-cell">
           <h3>Rating tiers</h3>
           <div class="tier-list">
-            <div class="tier-item">
-              <span class="tier-dot" style="--tier-color:#ffd77a"></span>
-              <span class="tier-name" style="color:#ffd77a">Elite</span>
-              <span class="tier-range">2700+</span>
-            </div>
-            <div class="tier-item">
-              <span class="tier-dot" style="--tier-color:#b48aff"></span>
-              <span class="tier-name" style="color:#b48aff">Expert</span>
-              <span class="tier-range">2400–2699</span>
-            </div>
-            <div class="tier-item">
-              <span class="tier-dot" style="--tier-color:#ff2c5c"></span>
-              <span class="tier-name" style="color:#ff2c5c">Veteran</span>
-              <span class="tier-range">2100–2399</span>
-            </div>
-            <div class="tier-item">
-              <span class="tier-dot" style="--tier-color:#3d9bff"></span>
-              <span class="tier-name" style="color:#3d9bff">Skilled</span>
-              <span class="tier-range">1800–2099</span>
-            </div>
-            <div class="tier-item">
-              <span class="tier-dot" style="--tier-color:#00d4ff"></span>
-              <span class="tier-name" style="color:#00d4ff">Novice</span>
-              <span class="tier-range">1500–1799</span>
-            </div>
-            <div class="tier-item">
-              <span class="tier-dot" style="--tier-color:#9a9aad"></span>
-              <span class="tier-name" style="color:#9a9aad">Rookie</span>
-              <span class="tier-range">0–1499</span>
+            <div class="tier-item" *ngFor="let tier of tiers">
+              <span class="tier-dot" [style.background]="tier.color"></span>
+              <span class="tier-name" [style.color]="tier.color">{{ tier.name }}</span>
+              <span class="tier-range">{{ rangeLabel(tier) }}</span>
             </div>
           </div>
         </div>
@@ -152,7 +133,6 @@ import { ChipComponent, SectionHeaderComponent } from '../ui';
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--tier-color);
       flex-shrink: 0;
     }
     .tier-name {
@@ -184,4 +164,6 @@ import { ChipComponent, SectionHeaderComponent } from '../ui';
   `]
 })
 export class EloSystemComponent {
+  readonly tiers = ELO_TIERS;
+  readonly rangeLabel = tierRangeLabel;
 }

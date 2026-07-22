@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-join-scrims',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule],
   template: `
     <section class="wrap block">
       <div class="join-panel">
@@ -22,8 +21,13 @@ import { Router, RouterModule } from '@angular/router';
             rel="noopener noreferrer"
             class="btn primary"
           >Join Scrims Discord</a>
-          <button type="button" (click)="navigateToLeaderboard()" class="btn ghost">
-            View full leaderboard
+          <button
+            type="button"
+            class="btn ghost"
+            disabled
+            title="Full leaderboard — coming soon"
+          >
+            View full leaderboard <span class="soon">(Coming soon)</span>
           </button>
         </div>
       </div>
@@ -81,6 +85,15 @@ import { Router, RouterModule } from '@angular/router';
       justify-content: center;
       flex-wrap: wrap;
     }
+    .btn.ghost:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .soon {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      opacity: 0.8;
+    }
     @media (max-width: 860px) {
       .block {
         padding-top: 64px;
@@ -91,12 +104,4 @@ import { Router, RouterModule } from '@angular/router';
     }
   `]
 })
-export class JoinScrimsComponent {
-  constructor(private router: Router) {}
-
-  navigateToLeaderboard(): void {
-    this.router.navigate(['/players']).then(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
-}
+export class JoinScrimsComponent {}

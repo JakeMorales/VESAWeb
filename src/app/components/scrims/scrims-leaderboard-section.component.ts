@@ -9,12 +9,15 @@ import { ChipComponent, SectionHeaderComponent } from '../ui';
   imports: [CommonModule, ScrimsLeaderboardComponent, ChipComponent, SectionHeaderComponent],
   template: `
     <section class="wrap block">
-      <app-section-header index="03" title="Leaderboard">
-        <app-chip variant="red">Sample data</app-chip>
+      <app-section-header index="01" title="Leaderboard">
+        <app-chip variant="red">Beta</app-chip>
+        <app-chip variant="blue">{{ seasonLabel || 'Live' }}</app-chip>
       </app-section-header>
       <p class="calibration-note">
-        The VESA rating is in beta calibration — the table below shows sample data
-        until calibration completes during Season 15.
+        VESA Rating v2 (beta) — computed from every {{ seasonLabel || 'season' }} scrim
+        game and refreshed after each scrim night. Ratings are real but the system is
+        still being calibrated, so numbers may shift as it tunes. Players with fewer
+        than 10 season games are still placing and not shown.
       </p>
       <app-scrims-leaderboard [players]="players"></app-scrims-leaderboard>
     </section>
@@ -43,4 +46,5 @@ import { ChipComponent, SectionHeaderComponent } from '../ui';
 })
 export class ScrimsLeaderboardSectionComponent {
   @Input() players!: ScrimPlayer[];
+  @Input() seasonLabel = '';
 }
