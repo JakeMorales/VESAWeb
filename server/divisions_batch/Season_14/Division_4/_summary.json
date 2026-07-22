@@ -1,7 +1,7 @@
 {
   "season": "Season_14",
   "division": "4",
-  "generatedAt": "2026-07-21T23:04:23.414Z",
+  "generatedAt": "2026-07-22T01:09:41.649Z",
   "seasonStandings": [
     {
       "rank": 1,
@@ -18,7 +18,7 @@
       "rank": 2,
       "teamId": 18,
       "teamName": "Kissing Your Dads Toes",
-      "points": 96,
+      "points": 98,
       "wins": 3,
       "matchDaysPlayed": 6,
       "kills": 195,
@@ -73,7 +73,7 @@
       "rank": 7,
       "teamId": 13,
       "teamName": "Wagon Station",
-      "points": 62,
+      "points": 61,
       "wins": 2,
       "matchDaysPlayed": 6,
       "kills": 150,
@@ -89,13 +89,24 @@
       "matchDaysPlayed": 6,
       "kills": 80,
       "trend": "up",
-      "trendDelta": 2
+      "trendDelta": 3
     },
     {
       "rank": 9,
+      "teamId": 10,
+      "teamName": "Echolalia",
+      "points": 55,
+      "wins": 3,
+      "matchDaysPlayed": 5,
+      "kills": 113,
+      "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 10,
       "teamId": 16,
       "teamName": "Hunting Chuds Bungus",
-      "points": 57,
+      "points": 55,
       "wins": 2,
       "matchDaysPlayed": 6,
       "kills": 93,
@@ -103,18 +114,18 @@
       "trendDelta": 3
     },
     {
-      "rank": 10,
+      "rank": 11,
       "teamId": 2,
       "teamName": "Genesis",
-      "points": 51,
+      "points": 52,
       "wins": 2,
       "matchDaysPlayed": 6,
       "kills": 143,
-      "trend": "up",
+      "trend": "down",
       "trendDelta": 1
     },
     {
-      "rank": 11,
+      "rank": 12,
       "teamId": 7,
       "teamName": "kf-even-lighter",
       "points": 49,
@@ -125,18 +136,29 @@
       "trendDelta": 3
     },
     {
-      "rank": 12,
+      "rank": 13,
+      "teamId": 8,
+      "teamName": "TGUN Diabetes",
+      "points": 46,
+      "wins": 5,
+      "matchDaysPlayed": 2,
+      "kills": 121,
+      "trend": "down",
+      "trendDelta": 2
+    },
+    {
+      "rank": 14,
       "teamId": 3,
       "teamName": "Impotent",
-      "points": 46,
+      "points": 45,
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 135,
-      "trend": "up",
-      "trendDelta": 1
+      "trend": "same",
+      "trendDelta": 0
     },
     {
-      "rank": 13,
+      "rank": 15,
       "teamId": 19,
       "teamName": "TGUN",
       "points": 43,
@@ -147,7 +169,7 @@
       "trendDelta": 0
     },
     {
-      "rank": 14,
+      "rank": 16,
       "teamId": 14,
       "teamName": "Dino Nugs",
       "points": 39,
@@ -158,10 +180,10 @@
       "trendDelta": 0
     },
     {
-      "rank": 15,
+      "rank": 17,
       "teamId": 20,
       "teamName": "Gexshu",
-      "points": 34,
+      "points": 35,
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 75,
@@ -169,48 +191,37 @@
       "trendDelta": 3
     },
     {
-      "rank": 16,
+      "rank": 18,
+      "teamId": 1,
+      "teamName": "Project Hibiscus",
+      "points": 32,
+      "wins": 1,
+      "matchDaysPlayed": 4,
+      "kills": 82,
+      "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 19,
       "teamId": 6,
       "teamName": "KiMK",
       "points": 32,
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 98,
-      "trend": "same",
-      "trendDelta": 0
-    },
-    {
-      "rank": 17,
-      "teamId": 1,
-      "teamName": "Project Hibiscus",
-      "points": 31,
-      "wins": 1,
-      "matchDaysPlayed": 4,
-      "kills": 82,
       "trend": "down",
-      "trendDelta": 2
+      "trendDelta": 1
     },
     {
-      "rank": 18,
+      "rank": 20,
       "teamId": 17,
       "teamName": "SHH",
-      "points": 30,
+      "points": 31,
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 68,
       "trend": "down",
       "trendDelta": 1
-    },
-    {
-      "rank": 19,
-      "teamId": 22,
-      "teamName": "Getting Active",
-      "points": 5,
-      "wins": 0,
-      "matchDaysPlayed": 2,
-      "kills": 7,
-      "trend": "same",
-      "trendDelta": 0
     }
   ],
   "matchPointFinalsStandings": [

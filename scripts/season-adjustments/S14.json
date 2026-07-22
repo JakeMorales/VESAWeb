@@ -1,0 +1,41 @@
+{
+  "_comment": "Manual admin overrides from the 'Live Standings' Google Sheet (Adj / (x) columns) that can't be derived from raw Overstat game files. Applied once to the regular-season (Weeks 1-6) league point total; never re-applied to MP Finals points. Re-export this per season from the sheet if values change.",
+  "Division_1": {
+    "hakistat.com": { "seasonAdj": 0, "seasonMult": 1.2 }
+  },
+  "Division_2": {
+    "New Alliance": { "seasonAdj": 0, "seasonMult": 1.2 },
+    "Mile High": { "excludeFromMp": true }
+  },
+  "Division_3": {
+    "Jedi Mind Tricks": { "seasonAdj": 0, "seasonMult": 1.2 },
+    "TGUN Diabetes": { "seasonAdj": 0, "seasonMult": 1.2 },
+    "Bee Happy": { "seasonAdj": 0, "seasonMult": 1.2 }
+  },
+  "Division_4": {
+    "Echolalia": { "seasonAdj": -10, "seasonMult": 1 }
+  },
+  "Division_5": {
+    "_note": "Sway GG transferred Division_5 -> Division_6 mid-season (admin discretion); recomputing from this division's raw week files alone can't reconstruct their official total, so seasonOverride is taken directly from the sheet. Taiwanese Mornings' gap vs. our raw computation is unexplained (not a confirmed transfer) but overridden to the sheet value per 'sheet is source of truth for overall standings.'",
+    "Taiwanese Mornings": { "seasonOverride": 38.4 },
+    "Sway GG": { "seasonOverride": 18, "hideFromMpDisplay": true },
+    "SUS Krew": { "_note": "Division_6 (Prospect) team whose games are mixed into this division's Week_MP.json in the HF source — a data error, not a real Division_5 competitor. Their placement is real though, so other teams still need to rank around them (hideFromMpDisplay), not have them stripped pre-ranking.", "hideFromMpDisplay": true }
+  },
+  "Division_6": {
+    "The Fruity Bunch": { "seasonAdj": 0, "seasonMult": 1.2 },
+    "Sway GG": { "seasonAdj": 0, "seasonMult": 1.2, "excludeFromMp": true },
+    "Huskies": { "_note": "Roster slot now belongs to Arkansas State per the sheet (rename/replacement) — Huskies' old games would otherwise crowd Arkansas State out of the top-20 cutoff.", "excludeFromSeasonStandings": true }
+  },
+  "Division_7": {
+    "Purple Cobras": { "seasonAdj": 0, "seasonMult": 1.3 },
+    "3 Blind Mice": { "seasonAdj": 0, "seasonMult": 1.2 },
+    "Time2Eat": { "_note": "Roster slot now belongs to 3 Blind Mice per the sheet.", "excludeFromSeasonStandings": true },
+    "VTX Floaters": { "_note": "Division_8 (Contenders) team whose games are mixed into this division's week files in the HF source — a data error, not a real Division_7 competitor.", "excludeFromSeasonStandings": true }
+  },
+  "Division_8": {
+    "VTX Floaters": { "seasonAdj": 0, "seasonMult": 1.2 },
+    "Day Ones": { "seasonAdj": 0, "seasonMult": 1.2 },
+    "The 3 Lordz": { "_note": "Roster slot now belongs to Lucky Ladies per the sheet.", "excludeFromSeasonStandings": true },
+    "Lucky Ladies": { "_note": "1pt below the sheet after a fully-exhausted ALGS tiebreak cascade (score, then per-game scores, then per-game kills all tied) in one week's ranking — can't reproduce the sheet's call from raw data, so corrected directly.", "seasonAdj": 1, "seasonMult": 1 }
+  }
+}

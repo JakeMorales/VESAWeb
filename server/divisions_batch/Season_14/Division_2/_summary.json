@@ -1,44 +1,44 @@
 {
   "season": "Season_14",
   "division": "2",
-  "generatedAt": "2026-07-21T23:04:23.372Z",
+  "generatedAt": "2026-07-22T01:09:41.614Z",
   "seasonStandings": [
     {
       "rank": 1,
-      "teamId": 1,
+      "teamId": 20,
       "teamName": "Mile High",
       "points": 109,
       "wins": 4,
       "matchDaysPlayed": 6,
-      "kills": 258,
+      "kills": 220,
       "trend": "same",
       "trendDelta": 0
     },
     {
       "rank": 2,
       "teamId": 11,
-      "teamName": "Horse Hermanos Esports",
-      "points": 88,
-      "wins": 4,
-      "matchDaysPlayed": 6,
-      "kills": 168,
-      "trend": "up",
-      "trendDelta": 1
-    },
-    {
-      "rank": 3,
-      "teamId": 12,
       "teamName": "Interceptors",
       "points": 88,
       "wins": 3,
       "matchDaysPlayed": 6,
       "kills": 138,
-      "trend": "down",
-      "trendDelta": 1
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 3,
+      "teamId": 10,
+      "teamName": "Horse Hermanos Esports",
+      "points": 87,
+      "wins": 4,
+      "matchDaysPlayed": 6,
+      "kills": 168,
+      "trend": "same",
+      "trendDelta": 0
     },
     {
       "rank": 4,
-      "teamId": 14,
+      "teamId": 13,
       "teamName": "RIP JDAWG",
       "points": 81,
       "wins": 2,
@@ -56,33 +56,44 @@
       "matchDaysPlayed": 6,
       "kills": 119,
       "trend": "up",
-      "trendDelta": 4
+      "trendDelta": 6
     },
     {
       "rank": 6,
-      "teamId": 6,
+      "teamId": 5,
       "teamName": "Mad Moggers",
-      "points": 72,
+      "points": 69,
       "wins": 1,
       "matchDaysPlayed": 6,
       "kills": 111,
-      "trend": "down",
-      "trendDelta": 1
+      "trend": "same",
+      "trendDelta": 0
     },
     {
       "rank": 7,
-      "teamId": 16,
+      "teamId": 15,
       "teamName": "SCREWS",
       "points": 69,
       "wins": 1,
       "matchDaysPlayed": 6,
       "kills": 156,
       "trend": "down",
-      "trendDelta": 1
+      "trendDelta": 2
     },
     {
       "rank": 8,
-      "teamId": 13,
+      "teamId": 2,
+      "teamName": "New Alliance",
+      "points": 63.6,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 127,
+      "trend": "down",
+      "trendDelta": 2
+    },
+    {
+      "rank": 9,
+      "teamId": 12,
       "teamName": "TGUN Superiors",
       "points": 61,
       "wins": 1,
@@ -92,8 +103,8 @@
       "trendDelta": 0
     },
     {
-      "rank": 9,
-      "teamId": 20,
+      "rank": 10,
+      "teamId": 19,
       "teamName": "tf is a placement",
       "points": 59,
       "wins": 4,
@@ -103,8 +114,8 @@
       "trendDelta": 2
     },
     {
-      "rank": 10,
-      "teamId": 2,
+      "rank": 11,
+      "teamId": 1,
       "teamName": "OM1 eSports",
       "points": 55,
       "wins": 2,
@@ -114,7 +125,7 @@
       "trendDelta": 4
     },
     {
-      "rank": 11,
+      "rank": 12,
       "teamId": 3,
       "teamName": "Bandit Beaters",
       "points": 55,
@@ -125,41 +136,52 @@
       "trendDelta": 1
     },
     {
-      "rank": 12,
-      "teamId": 4,
-      "teamName": "New Alliance",
-      "points": 52,
-      "wins": 1,
-      "matchDaysPlayed": 5,
-      "kills": 127,
-      "trend": "down",
-      "trendDelta": 1
-    },
-    {
       "rank": 13,
-      "teamId": 19,
-      "teamName": "Cleveland Forge",
-      "points": 44,
+      "teamId": 7,
+      "teamName": "3 Mice 0 Rats",
+      "points": 49,
       "wins": 1,
       "matchDaysPlayed": 5,
-      "kills": 70,
-      "trend": "up",
-      "trendDelta": 1
+      "kills": 128,
+      "trend": "down",
+      "trendDelta": 4
     },
     {
       "rank": 14,
-      "teamId": 10,
+      "teamId": 9,
       "teamName": "norf norf",
       "points": 43,
       "wins": 2,
       "matchDaysPlayed": 5,
       "kills": 96,
       "trend": "up",
-      "trendDelta": 4
+      "trendDelta": 5
     },
     {
       "rank": 15,
-      "teamId": 15,
+      "teamId": 18,
+      "teamName": "Cleveland Forge",
+      "points": 43,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 70,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 16,
+      "teamId": 6,
+      "teamName": "MOTL Gaming",
+      "points": 41,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 116,
+      "trend": "down",
+      "trendDelta": 3
+    },
+    {
+      "rank": 17,
+      "teamId": 14,
       "teamName": "Inertia",
       "points": 37,
       "wins": 0,
@@ -169,21 +191,21 @@
       "trendDelta": 1
     },
     {
-      "rank": 16,
-      "teamId": 18,
+      "rank": 18,
+      "teamId": 17,
       "teamName": "Love island",
-      "points": 36,
+      "points": 37,
       "wins": 1,
       "matchDaysPlayed": 6,
       "kills": 47,
       "trend": "down",
-      "trendDelta": 1
+      "trendDelta": 2
     },
     {
-      "rank": 17,
-      "teamId": 17,
+      "rank": 19,
+      "teamId": 16,
       "teamName": "3G1B",
-      "points": 35,
+      "points": 36,
       "wins": 1,
       "matchDaysPlayed": 6,
       "kills": 80,
@@ -191,59 +213,37 @@
       "trendDelta": 1
     },
     {
-      "rank": 18,
-      "teamId": 22,
-      "teamName": "Equinox",
-      "points": 11,
-      "wins": 1,
-      "matchDaysPlayed": 1,
-      "kills": 19,
-      "trend": "same",
-      "trendDelta": 0
-    },
-    {
-      "rank": 19,
-      "teamId": 23,
-      "teamName": "12 stinks",
-      "points": 7,
-      "wins": 0,
-      "matchDaysPlayed": 1,
-      "kills": 14,
-      "trend": "same",
-      "trendDelta": 0
-    },
-    {
       "rank": 20,
-      "teamId": 24,
-      "teamName": "Mike",
-      "points": 0,
+      "teamId": 4,
+      "teamName": "Waffle Cone",
+      "points": 33,
       "wins": 0,
-      "matchDaysPlayed": 1,
-      "kills": 1,
-      "trend": "same",
-      "trendDelta": 0
+      "matchDaysPlayed": 5,
+      "kills": 75,
+      "trend": "down",
+      "trendDelta": 3
     }
   ],
   "matchPointFinalsStandings": [
     {
       "rank": 1,
       "teamId": 1,
-      "teamName": "Mile High",
+      "teamName": "OM1 eSports",
       "points": 25,
       "wins": 0,
       "matchDaysPlayed": 6,
-      "kills": 258,
+      "kills": 126,
       "trend": "same",
       "trendDelta": 0
     },
     {
       "rank": 2,
       "teamId": 2,
-      "teamName": "OM1 eSports",
+      "teamName": "New Alliance",
       "points": 21,
       "wins": 0,
-      "matchDaysPlayed": 6,
-      "kills": 126,
+      "matchDaysPlayed": 5,
+      "kills": 127,
       "trend": "same",
       "trendDelta": 0
     },
@@ -261,19 +261,8 @@
     {
       "rank": 4,
       "teamId": 4,
-      "teamName": "New Alliance",
-      "points": 16,
-      "wins": 0,
-      "matchDaysPlayed": 5,
-      "kills": 127,
-      "trend": "same",
-      "trendDelta": 0
-    },
-    {
-      "rank": 5,
-      "teamId": 5,
       "teamName": "Waffle Cone",
-      "points": 15,
+      "points": 16,
       "wins": 0,
       "matchDaysPlayed": 5,
       "kills": 75,
@@ -281,10 +270,10 @@
       "trendDelta": 0
     },
     {
-      "rank": 6,
-      "teamId": 6,
+      "rank": 5,
+      "teamId": 5,
       "teamName": "Mad Moggers",
-      "points": 14,
+      "points": 15,
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 111,
@@ -292,13 +281,24 @@
       "trendDelta": 0
     },
     {
-      "rank": 7,
-      "teamId": 7,
+      "rank": 6,
+      "teamId": 6,
       "teamName": "MOTL Gaming",
-      "points": 13,
+      "points": 14,
       "wins": 0,
       "matchDaysPlayed": 5,
       "kills": 116,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 7,
+      "teamId": 7,
+      "teamName": "3 Mice 0 Rats",
+      "points": 13,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 128,
       "trend": "same",
       "trendDelta": 0
     },
@@ -316,19 +316,8 @@
     {
       "rank": 9,
       "teamId": 9,
-      "teamName": "3 Mice 0 Rats",
-      "points": 11,
-      "wins": 0,
-      "matchDaysPlayed": 5,
-      "kills": 128,
-      "trend": "same",
-      "trendDelta": 0
-    },
-    {
-      "rank": 10,
-      "teamId": 10,
       "teamName": "norf norf",
-      "points": 10,
+      "points": 11,
       "wins": 0,
       "matchDaysPlayed": 5,
       "kills": 96,
@@ -336,10 +325,10 @@
       "trendDelta": 0
     },
     {
-      "rank": 11,
-      "teamId": 11,
+      "rank": 10,
+      "teamId": 10,
       "teamName": "Horse Hermanos Esports",
-      "points": 9,
+      "points": 10,
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 168,
@@ -347,10 +336,10 @@
       "trendDelta": 0
     },
     {
-      "rank": 12,
-      "teamId": 12,
+      "rank": 11,
+      "teamId": 11,
       "teamName": "Interceptors",
-      "points": 8,
+      "points": 9,
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 138,
@@ -358,10 +347,10 @@
       "trendDelta": 0
     },
     {
-      "rank": 13,
-      "teamId": 13,
+      "rank": 12,
+      "teamId": 12,
       "teamName": "TGUN Superiors",
-      "points": 7,
+      "points": 8,
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 124,
@@ -369,10 +358,10 @@
       "trendDelta": 0
     },
     {
-      "rank": 14,
-      "teamId": 14,
+      "rank": 13,
+      "teamId": 13,
       "teamName": "RIP JDAWG",
-      "points": 6,
+      "points": 7,
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 172,
@@ -380,10 +369,10 @@
       "trendDelta": 0
     },
     {
-      "rank": 15,
-      "teamId": 15,
+      "rank": 14,
+      "teamId": 14,
       "teamName": "Inertia",
-      "points": 5,
+      "points": 6,
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 85,
@@ -391,10 +380,10 @@
       "trendDelta": 0
     },
     {
-      "rank": 16,
-      "teamId": 16,
+      "rank": 15,
+      "teamId": 15,
       "teamName": "SCREWS",
-      "points": 4,
+      "points": 5,
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 156,
@@ -402,10 +391,10 @@
       "trendDelta": 0
     },
     {
-      "rank": 17,
-      "teamId": 17,
+      "rank": 16,
+      "teamId": 16,
       "teamName": "3G1B",
-      "points": 3,
+      "points": 4,
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 80,
@@ -413,10 +402,10 @@
       "trendDelta": 0
     },
     {
-      "rank": 18,
-      "teamId": 18,
+      "rank": 17,
+      "teamId": 17,
       "teamName": "Love island",
-      "points": 2,
+      "points": 3,
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 47,
@@ -424,10 +413,10 @@
       "trendDelta": 0
     },
     {
-      "rank": 19,
-      "teamId": 19,
+      "rank": 18,
+      "teamId": 18,
       "teamName": "Cleveland Forge",
-      "points": 1,
+      "points": 2,
       "wins": 0,
       "matchDaysPlayed": 5,
       "kills": 70,
@@ -437,11 +426,11 @@
   ],
   "matchPointChampion": {
     "teamId": 1,
-    "teamName": "Mile High",
+    "teamName": "OM1 eSports",
     "players": [
-      "Colo",
-      "Rv0",
-      "earthy"
+      "Jack",
+      "XI PuGz",
+      "smik"
     ]
   }
 }
