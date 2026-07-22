@@ -137,7 +137,11 @@ async function handleLeagueSignup(request, env) {
     const sheetsData = await sheetsResponse.json();
     if (!sheetsResponse.ok) {
       console.error('Sheets append failed', sheetsData);
-      return jsonResponse({ success: false, error: 'Failed to write signup to sheet' }, 502);
+      // TODO(launch-debug): revert to a generic message once the Sheets write is confirmed working.
+      return jsonResponse(
+        { success: false, error: `Failed to write signup to sheet: ${sheetsData?.error?.status ?? ''} ${sheetsData?.error?.message ?? JSON.stringify(sheetsData)}` },
+        502,
+      );
     }
     return jsonResponse({ success: true });
   } catch (err) {
