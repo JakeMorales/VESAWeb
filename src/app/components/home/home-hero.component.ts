@@ -32,8 +32,8 @@ interface Star {
         <p class="eyebrow rise"><span class="tick">▸</span> APEX LEGENDS · COMPETITIVE LEAGUE &amp; SCRIMS</p>
         <h1 class="rise d1">Season 15 is<br />go for launch<span class="dot">.</span></h1>
         <p class="lede rise d2">
-          Six divisions. Six weeks. Every kill, every placement, and every
-          rating point tracked from lobby to Match Point.
+          {{ divisionCount ?? '—' }} divisions. Six weeks. Every kill, every
+          placement, and every rating point tracked from lobby to Match Point.
         </p>
         <div class="actions rise d3">
           <a
@@ -164,6 +164,7 @@ export class HomeHeroComponent implements AfterViewInit, OnDestroy {
   @Input() totalPlayers!: number;
   @Input() totalGames!: number;
   @Input() totalMatches!: number;
+  @Input() divisionCount: number | null = null;
 
   @ViewChild('stars') private canvasRef!: ElementRef<HTMLCanvasElement>;
 

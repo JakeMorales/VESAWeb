@@ -1,0 +1,62 @@
+{
+  "generatedAt": "2026-07-22T04:55:07.722Z",
+  "league": {
+    "currentSeason": "Season_14",
+    "currentDivisionCount": 8,
+    "matchesPlayed": 344,
+    "gamesPlayed": 2115,
+    "uniquePlayers": 1780,
+    "totalPlaytime": "3y 3mo 26d"
+  },
+  "scrims": {
+    "matchesPlayed": 735,
+    "gamesPlayed": 4389,
+    "uniquePlayers": 4389,
+    "totalPlaytime": "6y 6mo 19d"
+  },
+  "totalUniquePlayers": 4821,
+  "recentActivity": [
+    {
+      "type": "scrim_block",
+      "icon": "bolt",
+      "title": "Scrim Block Completed",
+      "description": "6 games played — VESA Scrim Lobby 1 7/21/2026",
+      "occurredAt": "2026-07-22T02:01:12.000Z"
+    },
+    {
+      "type": "scrim_block",
+      "icon": "bolt",
+      "title": "Scrim Block Completed",
+      "description": "6 games played — VESA Scrim Lobby 1 7/20/2026",
+      "occurredAt": "2026-07-21T01:59:05.000Z"
+    },
+    {
+      "type": "scrim_block",
+      "icon": "bolt",
+      "title": "Scrim Block Completed",
+      "description": "6 games played — VESA Scrim Lobby 2 7/20/2026",
+      "occurredAt": "2026-07-21T01:59:04.000Z"
+    },
+    {
+      "type": "scrim_block",
+      "icon": "bolt",
+      "title": "Scrim Block Completed",
+      "description": "6 games played — VESA Scrim Lobby 2 7/19/2026",
+      "occurredAt": "2026-07-20T02:09:07.000Z"
+    },
+    {
+      "type": "match_point_champion",
+      "icon": "trophy",
+      "title": "Match Point Champion Crowned",
+      "description": "Semi-Retired (Indie, TipsyFefe, obi-ron kenobi) won Season 14 Division 6",
+      "occurredAt": "2026-07-03T03:41:18.000Z"
+    },
+    {
+      "type": "match_point_champion",
+      "icon": "trophy",
+      "title": "Match Point Champion Crowned",
+      "description": "Greasy Boyz (Noxums, Zboy5z5, ntROZE) won Season 14 Division 1",
+      "occurredAt": "2026-07-03T02:21:58.000Z"
+    }
+  ]
+}

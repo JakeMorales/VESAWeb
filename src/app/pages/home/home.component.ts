@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HomeHeroComponent } from '../../components/home/home-hero.component';
@@ -6,6 +6,14 @@ import { DiscordCommunityComponent } from '../../components/home/discord-communi
 import { DetailedStatsComponent, StatsData } from '../../components/home/detailed-stats.component';
 import { FeaturesShowcaseComponent } from '../../components/home/features-showcase.component';
 import { RecentActivityComponent, ActivityItem } from '../../components/home/recent-activity.component';
+import { HomeStatsService } from '../../services/home-stats.service';
+
+const EMPTY_STATS: StatsData = {
+  matchesPlayed: 0,
+  gamesPlayed: 0,
+  uniquePlayers: 0,
+  totalPlaytime: '—'
+};
 
 @Component({
   selector: 'app-home',
@@ -24,7 +32,8 @@ import { RecentActivityComponent, ActivityItem } from '../../components/home/rec
       <app-home-hero
         [totalPlayers]="totalPlayers"
         [totalGames]="totalGames"
-        [totalMatches]="totalMatches">
+        [totalMatches]="totalMatches"
+        [divisionCount]="divisionCount">
       </app-home-hero>
 
       <app-discord-community></app-discord-community>
@@ -34,7 +43,7 @@ import { RecentActivityComponent, ActivityItem } from '../../components/home/rec
         [scrimsStats]="scrimsStats">
       </app-detailed-stats>
 
-      <app-features-showcase></app-features-showcase>
+      <app-features-showcase [divisionCount]="divisionCount"></app-features-showcase>
 
       <app-recent-activity
         [recentActivity]="recentActivity">
@@ -43,60 +52,44 @@ import { RecentActivityComponent, ActivityItem } from '../../components/home/rec
   `,
   styleUrl: './home.component.css'
 })
-export class HomeComponent {
-  // League Stats
-  leagueStats: StatsData = {
-    matchesPlayed: 115,
-    gamesPlayed: 825,
-    uniquePlayers: 644,
-    totalPlaytime: '1y 3mo 24d'
-  };
+export class HomeComponent implements OnInit {
+  leagueStats: StatsData = EMPTY_STATS;
+  scrimsStats: StatsData = EMPTY_STATS;
+  recentActivity: ActivityItem[] = [];
+  divisionCount: number | null = null;
 
-  // Scrims Stats
-  scrimsStats: StatsData = {
-    matchesPlayed: 1045,
-    gamesPlayed: 5854,
-    uniquePlayers: 3896,
-    totalPlaytime: '8y 9mo 29d'
-  };
+  /** Deduplicated (league ∪ scrims) count once real data loads; naive sum until then. */
+  totalPlayers = 0;
+  totalGames = 0;
+  totalMatches = 0;
 
-  // Combined totals for the hero section
-  get totalPlayers() {
-    return this.leagueStats.uniquePlayers + this.scrimsStats.uniquePlayers;
+  constructor(private homeStats: HomeStatsService) {}
+
+  ngOnInit(): void {
+    this.homeStats.getStats().subscribe(stats => {
+      if (!stats) return;
+      this.leagueStats = {
+        matchesPlayed: stats.league.matchesPlayed,
+        gamesPlayed: stats.league.gamesPlayed,
+        uniquePlayers: stats.league.uniquePlayers,
+        totalPlaytime: stats.league.totalPlaytime
+      };
+      this.scrimsStats = {
+        matchesPlayed: stats.scrims.matchesPlayed,
+        gamesPlayed: stats.scrims.gamesPlayed,
+        uniquePlayers: stats.scrims.uniquePlayers,
+        totalPlaytime: stats.scrims.totalPlaytime
+      };
+      this.divisionCount = stats.league.currentDivisionCount;
+      this.totalPlayers = stats.totalUniquePlayers;
+      this.totalGames = stats.league.gamesPlayed + stats.scrims.gamesPlayed;
+      this.totalMatches = stats.league.matchesPlayed + stats.scrims.matchesPlayed;
+      this.recentActivity = stats.recentActivity.map(a => ({
+        icon: a.icon,
+        title: a.title,
+        description: a.description,
+        occurredAt: a.occurredAt
+      }));
+    });
   }
-
-  get totalGames() {
-    return this.leagueStats.gamesPlayed + this.scrimsStats.gamesPlayed;
-  }
-
-  get totalMatches() {
-    return this.leagueStats.matchesPlayed + this.scrimsStats.matchesPlayed;
-  }
-
-  recentActivity: ActivityItem[] = [
-    {
-      icon: 'trophy',
-      title: 'Tournament Finals Completed',
-      description: 'Team Horizon claimed victory in the Season 3 Championships',
-      time: '2 hours ago'
-    },
-    {
-      icon: 'bolt',
-      title: 'New High Score',
-      description: 'Wraith_Main_BTW achieved a 20-kill game on World\'s Edge',
-      time: '4 hours ago'
-    },
-    {
-      icon: 'target',
-      title: 'Weekly Rankings Updated',
-      description: 'Check out the latest leaderboard standings',
-      time: '1 day ago'
-    },
-    {
-      icon: 'chart',
-      title: 'Match Analysis Available',
-      description: 'Detailed breakdown of last night\'s scrimmage matches',
-      time: '2 days ago'
-    }
-  ];
 }

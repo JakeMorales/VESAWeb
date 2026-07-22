@@ -9,7 +9,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "generate-summaries": "node --loader ts-node/esm scripts/generate-league-summaries.ts",
-    "generate-elo": "node --loader ts-node/esm scripts/generate-seasonal-elo.ts"
+    "generate-elo": "node --loader ts-node/esm scripts/generate-seasonal-elo.ts",
+    "generate-home-stats": "node --loader ts-node/esm scripts/generate-home-stats.ts"
   },
   "private": true,
   "dependencies": {
