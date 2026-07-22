@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { ChipComponent, IconComponent, SectionHeaderComponent } from '../ui';
@@ -18,8 +18,9 @@ import { ChipComponent, IconComponent, SectionHeaderComponent } from '../ui';
           <app-icon name="target" [size]="30" />
           <h3>League</h3>
           <p>
-            Six competitive divisions, six-week seasons, and a Match Point
-            finale. Full standings and per-game breakdowns for every match day.
+            {{ divisionCount ?? '—' }} competitive divisions, six-week
+            seasons, and a Match Point finale. Full standings and per-game
+            breakdowns for every match day.
           </p>
         </a>
         <a class="module" routerLink="/scrims">
@@ -110,5 +111,7 @@ import { ChipComponent, IconComponent, SectionHeaderComponent } from '../ui';
   `]
 })
 export class FeaturesShowcaseComponent {
+  @Input() divisionCount: number | null = null;
+
   protected readonly environment = environment;
 }

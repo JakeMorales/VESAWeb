@@ -6,7 +6,8 @@ export interface ActivityItem {
   icon: IconName;
   title: string;
   description: string;
-  time: string;
+  /** ISO timestamp — relative "time ago" text is computed at render time. */
+  occurredAt: string;
 }
 
 @Component({
@@ -17,7 +18,7 @@ export interface ActivityItem {
     <section class="wrap block">
       <app-section-header index="04" title="Latest activity" />
       <div class="feed">
-        @for (activity of recentActivity; track activity.title) {
+        @for (activity of recentActivity; track activity.occurredAt + activity.title) {
           <div class="item">
             <div class="tile">
               <app-icon [name]="activity.icon" [size]="20" />
@@ -26,7 +27,7 @@ export interface ActivityItem {
               <h4>{{ activity.title }}</h4>
               <p>{{ activity.description }}</p>
             </div>
-            <span class="time">{{ activity.time }}</span>
+            <span class="time">{{ timeAgo(activity.occurredAt) }}</span>
           </div>
         }
       </div>
@@ -110,4 +111,19 @@ export interface ActivityItem {
 })
 export class RecentActivityComponent {
   @Input() recentActivity: ActivityItem[] = [];
+
+  timeAgo(occurredAt: string): string {
+    const diffMs = Date.now() - new Date(occurredAt).getTime();
+    const minutes = Math.floor(diffMs / 60_000);
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 30) return `${days} day${days === 1 ? '' : 's'} ago`;
+    const months = Math.floor(days / 30.44);
+    if (months < 12) return `${months} month${months === 1 ? '' : 's'} ago`;
+    const years = Math.floor(days / 365.25);
+    return `${years} year${years === 1 ? '' : 's'} ago`;
+  }
 }
