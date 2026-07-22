@@ -815,6 +815,12 @@ export class LeagueSignupComponent implements OnInit {
 
   onDiscordBlur(playerIdx: number) {
     this.scheduleHideSearch(playerIdx);
+    // Selecting a dropdown result removes this input from the DOM (swapped for
+    // the chip), which fires a native blur on the element being removed.
+    // selectPlayer() already ran the lookup for that click - running it again
+    // here races the two requests and can leave the Overstat field's
+    // loading/empty state flickering while the user tries to type into it.
+    if (this.playerSelections[playerIdx]) return;
     const name = this.form.players[playerIdx].discordUsername;
     this.playerMeta[playerIdx] = { overstatLocked: false, overstatLoading: false };
     this.form.players[playerIdx].overstatLink = '';
@@ -822,8 +828,13 @@ export class LeagueSignupComponent implements OnInit {
   }
 
   onOverstatBlur(playerIdx: number) {
-    const link = this.form.players[playerIdx].overstatLink.trim();
     this.overstatErrors[playerIdx] = null;
+    // A locked/LINKED value came from the players table as a bare overstat ID,
+    // not a URL - validating it as one throws, and since the URL input is
+    // hidden while locked, that error had nowhere to render. onSubmit() was
+    // silently bailing out on every team with a linked player as a result.
+    if (this.playerMeta[playerIdx].overstatLocked) return;
+    const link = this.form.players[playerIdx].overstatLink.trim();
     if (!link || link.toLowerCase() === 'none') return;
     try {
       validateOverstatLink(link);
