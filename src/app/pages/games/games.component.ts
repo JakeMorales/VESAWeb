@@ -9,6 +9,7 @@ import { MatchDayResults } from '../../models/match-day-results.model';
 import { ScrimsDataService } from '../../services/scrims-data.service';
 import { forkJoin, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-games',
@@ -29,8 +30,13 @@ import { map, catchError } from 'rxjs/operators';
   ]
 })
 export class GamesComponent implements OnInit {
+  readonly archiveEnabled = environment.features.leagueArchive;
+
   selectorAnimating: 'none' | 'forward' | 'reverse' = 'none';
   set viewModeSetter(val: 'current' | 'archive') {
+    if (val === 'archive' && !this.archiveEnabled) {
+      return;
+    }
     if (this.viewMode !== val) {
       this.selectorAnimating = (val === 'archive') ? 'forward' : 'reverse';
       setTimeout(() => this.selectorAnimating = 'none', 450);

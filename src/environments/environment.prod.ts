@@ -7,6 +7,7 @@ export const environment = {
   features: {
     playerStats: false,
     ratingsLeaderboard: false,
-    leagueTwitchEmbeds: false
+    leagueTwitchEmbeds: false,
+    leagueArchive: false
   }
 };

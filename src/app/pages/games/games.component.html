@@ -23,8 +23,10 @@
       <button
         class="view-btn"
         [class.active]="viewMode === 'archive'"
+        [disabled]="!archiveEnabled"
+        [title]="archiveEnabled ? '' : 'League Archive — coming soon'"
         (click)="viewModeSetter = 'archive'">
-        League Archive
+        League Archive <span *ngIf="!archiveEnabled" class="soon">(Coming soon)</span>
       </button>
     </div>
   </div>
@@ -46,7 +48,7 @@
   </div>
 
   <!-- League Archive View -->
-  <div *ngIf="viewMode === 'archive'" class="wrap archive-view" @fadeSlide>
+  <div *ngIf="viewMode === 'archive' && archiveEnabled" class="wrap archive-view" @fadeSlide>
     <app-scores-archive></app-scores-archive>
   </div>
 </div>
