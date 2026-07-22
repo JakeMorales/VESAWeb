@@ -321,6 +321,24 @@ async function main(): Promise<void> {
     const outputPath = path.join(OUTPUT_DIR, `${season.key}.json`);
     fs.writeFileSync(outputPath, JSON.stringify(output, null, 2), 'utf-8');
     console.log(`Written: ${outputPath}`);
+
+    // Small standalone top-10 file for the public site's leaderboard/hero
+    // sections, so they don't need to download the full per-season file
+    // (which carries every rated + provisional player, growing all season).
+    if (verbose) {
+      const leaderboard = {
+        season: season.key,
+        label: season.label,
+        generatedAt: new Date().toISOString(),
+        ratedPlayerCount: rated.length,
+        averageElo: Math.round(mean(elos)),
+        highestElo: Math.round(elos[0] ?? 0),
+        players: rated.slice(0, 10),
+      };
+      const leaderboardPath = path.join(OUTPUT_DIR, 'leaderboard.json');
+      fs.writeFileSync(leaderboardPath, JSON.stringify(leaderboard, null, 2), 'utf-8');
+      console.log(`Written: ${leaderboardPath} (top ${leaderboard.players.length} of ${rated.length} rated players)`);
+    }
   }
 
   // ── Current priors for every player ever seen ────────────────────────────

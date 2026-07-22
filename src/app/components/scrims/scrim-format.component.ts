@@ -8,7 +8,7 @@ import { IconComponent, SectionHeaderComponent } from '../ui';
   imports: [CommonModule, IconComponent, SectionHeaderComponent],
   template: `
     <section class="wrap block">
-      <app-section-header index="02" title="Format &amp; rules" />
+      <app-section-header index="03" title="Format &amp; rules" />
       <div class="modules">
         <div class="module">
           <app-icon name="target" [size]="30" />

@@ -18,6 +18,24 @@ export interface SeasonEloFile {
   players: PlayerSeasonResult[];
 }
 
+/**
+ * Shape of public/data/elo/leaderboard.json — a small standalone file with
+ * just the current season's top 10 rated players plus season summary stats,
+ * written alongside the full <season>.json by generate-seasonal-elo.ts.
+ * Fetching this instead of the full season file keeps the public scrims
+ * page's leaderboard load small and constant-size regardless of how many
+ * players have been rated this season.
+ */
+export interface LeaderboardFile {
+  season: string;
+  label: string;
+  generatedAt: string;
+  ratedPlayerCount: number;
+  averageElo: number;
+  highestElo: number;
+  players: PlayerSeasonResult[];
+}
+
 /** Shape of public/data/elo/ratings-current.json (all-time career priors). */
 export interface CurrentRatingsFile {
   generatedAt: string;
@@ -65,17 +83,52 @@ export class EloDataService {
     return this.seasonCache.get(seasonKey)!;
   }
 
-  /** Top rated (non-provisional) players mapped for the scrims leaderboard. */
+  private leaderboardFile$?: Observable<LeaderboardFile | null>;
+
+  /** Current season's pre-computed top-10 file (see LeaderboardFile). */
+  getLeaderboardFile(): Observable<LeaderboardFile | null> {
+    if (!this.leaderboardFile$) {
+      this.leaderboardFile$ = this.http.get<LeaderboardFile>('/data/elo/leaderboard.json').pipe(
+        catchError(error => {
+          console.error('Error loading leaderboard.json:', error);
+          return of(null);
+        }),
+        shareReplay(1)
+      );
+    }
+    return this.leaderboardFile$;
+  }
+
+  /**
+   * Top rated (non-provisional) players mapped for the scrims leaderboard.
+   * For the current season (the common case — no seasonKey given) this
+   * reads the small pre-sliced leaderboard.json rather than the full
+   * per-season file. A specific past seasonKey still loads its full file,
+   * since only the ongoing season gets a standalone top-10 file.
+   */
   getLeaderboard(count = 10, seasonKey?: string): Observable<ScrimPlayer[]> {
-    return this.getSeason(seasonKey).pipe(
-      map(season => {
-        if (!season) return [];
-        return season.players
-          .filter(p => !p.provisional)
-          .slice(0, count)
-          .map((p, i) => this.toScrimPlayer(p, i + 1));
+    if (seasonKey && seasonKey !== this.currentSeasonKey) {
+      return this.getSeason(seasonKey).pipe(
+        map(season => {
+          if (!season) return [];
+          return season.players
+            .filter(p => !p.provisional)
+            .slice(0, count)
+            .map((p, i) => this.toScrimPlayer(p, i + 1));
+        })
+      );
+    }
+    return this.getLeaderboardFile().pipe(
+      map(file => {
+        if (!file) return [];
+        return file.players.slice(0, count).map((p, i) => this.toScrimPlayer(p, i + 1));
       })
     );
+  }
+
+  /** Current season's label (e.g. "Season 29"), from leaderboard.json. */
+  getSeasonLabel(): Observable<string> {
+    return this.getLeaderboardFile().pipe(map(file => file?.label ?? 'Season'));
   }
 
   private currentRatings$?: Observable<CurrentRatingsFile | null>;
@@ -99,20 +152,19 @@ export class EloDataService {
    * began in 2024), with average/highest elo from the current season.
    */
   getScrimStats(): Observable<ScrimStats | null> {
-    return combineLatest([this.getCurrentRatings(), this.getSeason()]).pipe(
-      map(([allTime, season]) => {
+    return combineLatest([this.getCurrentRatings(), this.getLeaderboardFile()]).pipe(
+      map(([allTime, leaderboard]) => {
         if (!allTime) return null;
         const weekAgo = new Date(new Date(allTime.generatedAt).getTime() - 7 * 24 * 3600 * 1000)
           .toISOString()
           .slice(0, 10);
-        const rated = season?.players.filter(p => !p.provisional) ?? [];
         return {
           totalPlayers: allTime.totals.players,
           activeThisWeek: allTime.players.filter(p => p.lastPlayed >= weekAgo).length,
           totalGames: allTime.totals.games,
           totalMatches: allTime.totals.sessions,
-          averageElo: Math.round(rated.reduce((s, p) => s + p.elo, 0) / (rated.length || 1)),
-          highestElo: Math.round(rated[0]?.elo ?? 0),
+          averageElo: leaderboard?.averageElo ?? 0,
+          highestElo: leaderboard?.highestElo ?? 0,
         };
       })
     );

@@ -9,7 +9,7 @@ import { ELO_TIERS, tierRangeLabel } from '../../services/elo/elo-tiers';
   imports: [CommonModule, ChipComponent, SectionHeaderComponent],
   template: `
     <section class="wrap block">
-      <app-section-header index="01" title="VESA Rating">
+      <app-section-header index="02" title="VESA Rating">
         <app-chip variant="red">Beta</app-chip>
         <app-chip>Live · Seasonal</app-chip>
       </app-section-header>

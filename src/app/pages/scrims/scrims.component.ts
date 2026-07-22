@@ -45,6 +45,6 @@ export class ScrimsComponent {
   constructor(eloData: EloDataService) {
     this.leaderboard$ = eloData.getLeaderboard(10);
     this.scrimStats$ = eloData.getScrimStats().pipe(map(s => s ?? EMPTY_STATS));
-    this.seasonLabel$ = eloData.getSeason().pipe(map(s => s?.label ?? 'Season'));
+    this.seasonLabel$ = eloData.getSeasonLabel();
   }
 }

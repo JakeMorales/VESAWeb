@@ -9,7 +9,7 @@ import { ChipComponent, SectionHeaderComponent } from '../ui';
   imports: [CommonModule, ScrimsLeaderboardComponent, ChipComponent, SectionHeaderComponent],
   template: `
     <section class="wrap block">
-      <app-section-header index="03" title="Leaderboard">
+      <app-section-header index="01" title="Leaderboard">
         <app-chip variant="red">Beta</app-chip>
         <app-chip variant="blue">{{ seasonLabel || 'Live' }}</app-chip>
       </app-section-header>
