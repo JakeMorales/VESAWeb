@@ -38,9 +38,7 @@ interface Star {
         <div class="actions rise d3">
           <a
             class="btn primary"
-            href="https://discord.gg/RyvVJqnXbe"
-            target="_blank"
-            rel="noopener noreferrer"
+            routerLink="/league/signup"
           >Register your team</a>
           <a class="btn ghost" routerLink="/league">Season 14 results</a>
         </div>

@@ -89,7 +89,7 @@ import { IconComponent, SectionHeaderComponent } from '../../components/ui';
               <h3>League Discord</h3>
               <p>Announcements, scheduling, rule updates, and the full VESA League community.</p>
             </div>
-            <a href="https://discord.gg/RyvVJqnXbe" target="_blank" rel="noopener noreferrer" class="btn primary small">
+            <a href="https://discord.gg/vesaleague" target="_blank" rel="noopener noreferrer" class="btn primary small">
               Join Discord
             </a>
           </div>

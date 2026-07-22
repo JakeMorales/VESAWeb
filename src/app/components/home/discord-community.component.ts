@@ -16,7 +16,7 @@ import { IconComponent, SectionHeaderComponent } from '../ui';
             <p>Official league matches, tournaments, and competitive announcements.</p>
             <a
               class="btn primary small"
-              href="https://discord.gg/RyvVJqnXbe"
+              href="https://discord.gg/vesaleague"
               target="_blank"
               rel="noopener noreferrer"
             >Join League Discord</a>
@@ -29,7 +29,7 @@ import { IconComponent, SectionHeaderComponent } from '../ui';
             <p>Practice matches, pickup games, and community scrimmages.</p>
             <a
               class="btn ghost small"
-              href="https://discord.gg/xsAH38Jazz"
+              href="https://discord.gg/vesa"
               target="_blank"
               rel="noopener noreferrer"
             >Join Scrims Discord</a>
@@ -68,6 +68,12 @@ import { IconComponent, SectionHeaderComponent } from '../ui';
       flex-shrink: 0;
       margin-top: 2px;
     }
+    .info {
+      display: flex;
+      flex-direction: column;
+      align-self: stretch;
+      flex: 1;
+    }
     h3 {
       font-family: var(--font-display);
       font-size: 20px;
@@ -81,6 +87,10 @@ import { IconComponent, SectionHeaderComponent } from '../ui';
       color: var(--vesa-dim);
       font-size: 14px;
       margin: 0 0 18px;
+    }
+    .info .btn {
+      margin-top: auto;
+      align-self: flex-start;
     }
     @media (max-width: 860px) {
       .servers {

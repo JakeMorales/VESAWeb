@@ -98,6 +98,69 @@ function isPlayoffsFile(filename: string): boolean {
   return lower.includes('playoffs') || lower.includes('finals') || lower.includes('_mp');
 }
 
+// ── Match Point champion ─────────────────────────────────────────────────────
+// VESA's Match Point format is a race, not a cumulative-score tournament: once
+// a team crosses the point threshold, the set ends the moment they win a
+// game. So the champion is always whoever placed 1st in the LAST game of the
+// MP file — never a points/tiebreak computation. (Confirmed against raw S14
+// data: a naive cumulative-score tiebreak — matching scripts/generate-league-
+// summaries.ts's own algorithm, and the matchPointChampion already published
+// in HuggingFace's _summary.json — gets 3 of Season 14's 8 divisions wrong.)
+
+const ADJUSTMENTS_DIR = path.join(__dirname, 'season-adjustments');
+
+interface TeamAdjustment {
+  excludeFromMp?: boolean;
+  hideFromMpDisplay?: boolean;
+}
+type SeasonAdjustments = Record<string, Record<string, TeamAdjustment>>;
+
+function normalizeTeamName(name: string): string {
+  return name.replace(/(?:\s*[@#]\S+)+$/g, '').trim().toLowerCase();
+}
+
+/** "Season_14" -> scripts/season-adjustments/S14.json, if it exists. */
+function loadSeasonAdjustments(season: string): SeasonAdjustments {
+  const shortName = season.replace(/^Season_/, 'S');
+  const filePath = path.join(ADJUSTMENTS_DIR, `${shortName}.json`);
+  if (!fs.existsSync(filePath)) return {};
+  const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  delete raw._comment;
+  return raw;
+}
+
+interface Champion {
+  teamName: string;
+  players: string[];
+}
+
+/**
+ * The real MP champion: 1st place in the last game, skipping teams that
+ * never really competed (excludeFromMp — a confirmed DQ/no-show) and teams
+ * whose placement is real but shouldn't be publicly credited
+ * (hideFromMpDisplay — e.g. a data-source mixup from another division).
+ */
+function findMatchPointChampion(games: any[], divisionAdjustments: Record<string, TeamAdjustment>): Champion | null {
+  if (!games.length) return null;
+  const lastGame = [...games].sort((a, b) => (a.game ?? 0) - (b.game ?? 0)).at(-1);
+  const excluded = new Set(
+    Object.entries(divisionAdjustments).filter(([, a]) => a.excludeFromMp).map(([name]) => normalizeTeamName(name))
+  );
+  const hidden = new Set(
+    Object.entries(divisionAdjustments).filter(([, a]) => a.hideFromMpDisplay).map(([name]) => normalizeTeamName(name))
+  );
+  const eligible = (lastGame.teams ?? [])
+    .map((t: any) => ({ team: t, name: t.name ?? t.overall_stats?.name ?? '', placement: t.overall_stats?.teamPlacement ?? 999 }))
+    .filter((e: any) => e.name && !excluded.has(normalizeTeamName(e.name)))
+    .sort((a: any, b: any) => a.placement - b.placement);
+  const champion = eligible.find((e: any) => !hidden.has(normalizeTeamName(e.name)));
+  if (!champion) return null;
+  return {
+    teamName: champion.name,
+    players: (champion.team.player_stats ?? []).map((p: any) => p.name).filter(Boolean).sort(),
+  };
+}
+
 /** Latest real `match_start` (unix seconds) across a file's games, as an ISO timestamp. */
 function latestMatchStart(games: any[]): string | null {
   let latest = 0;
@@ -168,6 +231,8 @@ async function processLeague() {
     if (season === currentSeason) currentDivisionCount = divisions.length;
     console.log(`\n${season} — ${divisions.length} division(s)`);
 
+    const seasonAdjustments = loadSeasonAdjustments(season);
+
     for (const divDir of divisions) {
       const divPath = `${season}/${divDir}`;
       const divEntries = await fetchTree(`${HF_LEAGUE_TREE_BASE}/${encodeURIComponent(divPath)}`);
@@ -182,11 +247,13 @@ async function processLeague() {
       const files = await downloadAllWithCache(jobs, LEAGUE_CACHE_DIR, divPath);
 
       // The MP/Playoffs file's own game telemetry (match_start) is the real
-      // time the champion was decided — far more accurate than the
-      // _summary.json's generatedAt, which just reflects whenever that
-      // summary file was last (re)computed and can cluster many divisions'
-      // "champion crowned" moments onto the same regeneration run.
+      // time the champion was decided — far more accurate than a summary
+      // file's generatedAt, which just reflects whenever it was last
+      // (re)computed and can cluster many divisions' "champion crowned"
+      // moments onto the same regeneration run.
       let mpOccurredAt: string | null = null;
+      let mpChampion: Champion | null = null;
+      const divisionAdjustments = seasonAdjustments[divDir] ?? {};
 
       for (const [cacheKey, json] of files) {
         const games = json?.stats?.games ?? json?.games;
@@ -196,31 +263,20 @@ async function processLeague() {
         survivalSeconds += sumPlaytimeAndPlayers(games, playerIds);
         if (isPlayoffsFile(cacheKey)) {
           mpOccurredAt = latestMatchStart(games) ?? mpOccurredAt;
+          mpChampion = findMatchPointChampion(games, divisionAdjustments) ?? mpChampion;
         }
       }
-      console.log(`  ${divDir}: ${files.size} match-day file(s) processed`);
+      console.log(`  ${divDir}: ${files.size} match-day file(s) processed` +
+        (mpChampion ? ` — MP champion: ${mpChampion.teamName}` : ''));
 
-      // Small precomputed summary — cheap fetch, gives us the real match point
-      // champion (name/roster) without re-deriving standings ourselves.
-      if (divEntries.some(e => e.path.endsWith('_summary.json'))) {
-        try {
-          const summary = await downloadWithCache(
-            `${HF_LEAGUE_RESOLVE_BASE}/${encodeURIComponent(divPath)}/_summary.json`,
-            LEAGUE_CACHE_DIR,
-            `${season}_${divDir}_summary.json`
-          );
-          if (summary?.matchPointChampion) {
-            champions.push({
-              season,
-              division: divDir.replace('Division_', ''),
-              teamName: summary.matchPointChampion.teamName,
-              players: summary.matchPointChampion.players ?? [],
-              occurredAt: mpOccurredAt ?? summary.generatedAt ?? new Date(0).toISOString(),
-            });
-          }
-        } catch (e) {
-          console.warn(`  Skipping summary for ${divPath}: ${e}`);
-        }
+      if (mpChampion) {
+        champions.push({
+          season,
+          division: divDir.replace('Division_', ''),
+          teamName: mpChampion.teamName,
+          players: mpChampion.players,
+          occurredAt: mpOccurredAt ?? new Date(0).toISOString(),
+        });
       }
     }
   }

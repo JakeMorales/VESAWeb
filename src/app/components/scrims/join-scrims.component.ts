@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common';
         </p>
         <div class="actions">
           <a
-            href="https://discord.gg/xsAH38Jazz"
+            href="https://discord.gg/vesa"
             target="_blank"
             rel="noopener noreferrer"
             class="btn primary"

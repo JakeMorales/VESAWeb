@@ -17,8 +17,8 @@ import { RouterModule } from '@angular/router';
             <a routerLink="/league">League</a>
             <a routerLink="/scrims">Scrims</a>
             <a routerLink="/games">Games</a>
-            <a href="https://discord.gg/RyvVJqnXbe" target="_blank" rel="noopener noreferrer">League Discord</a>
-            <a href="https://discord.gg/xsAH38Jazz" target="_blank" rel="noopener noreferrer">Scrims Discord</a>
+            <a href="https://discord.gg/vesaleague" target="_blank" rel="noopener noreferrer">League Discord</a>
+            <a href="https://discord.gg/vesa" target="_blank" rel="noopener noreferrer">Scrims Discord</a>
           </nav>
         </div>
         <p class="disclaimer">
