@@ -60,12 +60,55 @@ static build and proxies external API calls (see `wrangler.jsonc` and
      deploy command `npx wrangler deploy`.
    - Disable non-production branch builds on both (feature branches are local-only).
    - Everything else (assets dir, custom domains) comes from `wrangler.jsonc`.
-4. **Secrets**: on **each** Worker → Settings → Variables and Secrets, add
-   `DISCORD_BOT_TOKEN` (used by the `/discord-api` proxy for avatar lookups).
-   Without it the proxy still runs, just unauthenticated. Never commit the token.
+4. **Secrets**: on **each** Worker → Settings → Variables and Secrets, add:
+   - `DISCORD_BOT_TOKEN` (used by the `/discord-api` proxy for avatar lookups).
+     Without it the proxy still runs, just unauthenticated.
+   - `GOOGLE_SERVICE_ACCOUNT_KEY` — see "League signup → Google Sheet" below.
+     Without it, `/api/league-signup` returns a 503 and the signup form shows
+     an error instead of silently losing data.
+
+   Never commit either value.
 5. After the first deploys, confirm **dev.vesa.gg** (on `vesaweb-dev`) and
    **vesa.gg** + **www.vesa.gg** (on `vesaweb`) appear under each Worker's
    Domains & Routes with active certificates.
+
+## League signup → Google Sheet
+
+`/api/league-signup` (`worker/index.js`) appends a row to the "Discord
+Submittals" tab of the league signup sheet, in the exact column order the
+Discord bot's `/league-signup` command uses — see
+`src/app/services/league-signup.service.ts` for the row-building code. This
+exists because the bot's Nhost `league_seasons` gating row isn't set up yet;
+until it is, the website is the only working signup path, so it writes
+straight to the sheet the bot would have used instead of going through an
+intermediary (Discord webhook, Apps Script, etc.) that could lose or
+desync data. The service-account credential lives only in the Worker secret
+— it never reaches the browser.
+
+**One-time GCP setup** (do this once; the same service account can be reused
+if the sheet ever needs to change):
+
+1. In a Google Cloud project (new or existing), enable the **Google Sheets
+   API** (APIs & Services → Library).
+2. **IAM & Admin → Service Accounts → Create Service Account.** Name it
+   something like `vesaweb-league-signup`. No project roles needed — it only
+   needs access to the one sheet, granted in the next step.
+3. On the new service account, **Keys → Add Key → Create new key → JSON**.
+   Download it — this is the only copy of the private key.
+4. Open the signup sheet, click **Share**, and share it with the service
+   account's `client_email` (from the JSON) as **Editor**.
+5. On **both** Cloudflare Workers (`vesaweb` and `vesaweb-dev`) → Settings →
+   Variables and Secrets, add `GOOGLE_SERVICE_ACCOUNT_KEY` with the **entire
+   contents of the downloaded JSON file** as the value (not just the
+   private key — the Worker reads `client_email` and `private_key` out of it).
+6. `LEAGUE_SIGNUP_SHEET_ID` and `LEAGUE_SIGNUP_SHEET_TAB` are already set as
+   non-secret `vars` in `wrangler.jsonc`. Only change them if the target
+   sheet or tab name changes.
+
+**Optional hardening** (not required for launch, worth doing after): add a
+Cloudflare **Rate Limiting Rule** (Security → WAF) on `POST /api/league-signup`
+— e.g. 5 requests/minute per IP — to blunt spam without any code changes,
+since the endpoint has no other abuse protection.
 
 ## Local deploys / debugging
 
@@ -78,6 +121,12 @@ npx wrangler dev                 # serve the production build + proxy locally
 npx wrangler deploy --env dev    # manual deploy to dev.vesa.gg (normally not needed)
 npx wrangler deploy              # manual deploy to PROD vesa.gg (avoid; promote via release branch)
 ```
+
+`/api/league-signup` only exists inside the Worker — unlike the HF/Discord
+routes, `proxy.conf.json` has no external upstream to forward it to for plain
+`ng serve` local dev. To test the signup form locally, run `wrangler dev`
+(needs Node 22 and `GOOGLE_SERVICE_ACCOUNT_KEY` set via `wrangler secret put`
+or a local `.dev.vars` file) instead of `ng serve`.
 
 ## Related follow-ups
 

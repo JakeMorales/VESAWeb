@@ -90,6 +90,7 @@ export class NhostService {
           discord_id
           display_name
           overstat_id
+          elo
         }
       }
     `;

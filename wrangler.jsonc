@@ -28,6 +28,12 @@
   "observability": {
     "enabled": true
   },
+  // Non-secret config for the /api/league-signup route (worker/index.js).
+  // GOOGLE_SERVICE_ACCOUNT_KEY is a per-environment Worker secret, not set here.
+  "vars": {
+    "LEAGUE_SIGNUP_SHEET_ID": "1fZfivipoR0X4Zp6q1v6UBVYozehChyx976ucAeBQRcc",
+    "LEAGUE_SIGNUP_SHEET_TAB": "Discord Submittals"
+  },
   // Deployed as worker "vesaweb-dev". Inherits main/assets/compatibility_date;
   // routes are intentionally not inherited, so this env only claims dev.vesa.gg.
   "env": {
