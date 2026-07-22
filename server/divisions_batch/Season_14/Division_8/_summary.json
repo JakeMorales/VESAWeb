@@ -1,21 +1,10 @@
 {
   "season": "Season_14",
   "division": "8",
-  "generatedAt": "2026-07-21T23:04:23.499Z",
+  "generatedAt": "2026-07-22T01:09:41.716Z",
   "seasonStandings": [
     {
       "rank": 1,
-      "teamId": 9,
-      "teamName": "Purple Cobras",
-      "points": 108,
-      "wins": 6,
-      "matchDaysPlayed": 6,
-      "kills": 196,
-      "trend": "same",
-      "trendDelta": 0
-    },
-    {
-      "rank": 2,
       "teamId": 1,
       "teamName": "Just Worse",
       "points": 105,
@@ -23,6 +12,17 @@
       "matchDaysPlayed": 6,
       "kills": 205,
       "trend": "up",
+      "trendDelta": 2
+    },
+    {
+      "rank": 2,
+      "teamId": 9,
+      "teamName": "Purple Cobras",
+      "points": 103,
+      "wins": 6,
+      "matchDaysPlayed": 6,
+      "kills": 196,
+      "trend": "down",
       "trendDelta": 1
     },
     {
@@ -38,9 +38,9 @@
     },
     {
       "rank": 4,
-      "teamId": 13,
+      "teamId": 12,
       "teamName": "Atlas Gaming",
-      "points": 83,
+      "points": 86,
       "wins": 3,
       "matchDaysPlayed": 6,
       "kills": 183,
@@ -49,9 +49,9 @@
     },
     {
       "rank": 5,
-      "teamId": 12,
+      "teamId": 13,
       "teamName": "Sloppy Foes",
-      "points": 79,
+      "points": 80,
       "wins": 1,
       "matchDaysPlayed": 6,
       "kills": 145,
@@ -60,42 +60,9 @@
     },
     {
       "rank": 6,
-      "teamId": 10,
-      "teamName": "Bad Decision Club Redux",
-      "points": 68,
-      "wins": 1,
-      "matchDaysPlayed": 6,
-      "kills": 124,
-      "trend": "up",
-      "trendDelta": 1
-    },
-    {
-      "rank": 7,
-      "teamId": 11,
-      "teamName": "3 Deaf Squirrels",
-      "points": 68,
-      "wins": 2,
-      "matchDaysPlayed": 6,
-      "kills": 102,
-      "trend": "up",
-      "trendDelta": 3
-    },
-    {
-      "rank": 8,
-      "teamId": 2,
-      "teamName": "Whiskey N' Coke",
-      "points": 66,
-      "wins": 2,
-      "matchDaysPlayed": 6,
-      "kills": 157,
-      "trend": "down",
-      "trendDelta": 3
-    },
-    {
-      "rank": 9,
       "teamId": 22,
       "teamName": "VTX Floaters",
-      "points": 61,
+      "points": 73.2,
       "wins": 2,
       "matchDaysPlayed": 4,
       "kills": 141,
@@ -103,37 +70,70 @@
       "trendDelta": 0
     },
     {
-      "rank": 10,
-      "teamId": 7,
-      "teamName": "Vortex Legacy",
-      "points": 58,
-      "wins": 1,
+      "rank": 7,
+      "teamId": 11,
+      "teamName": "3 Deaf Squirrels",
+      "points": 69,
+      "wins": 2,
       "matchDaysPlayed": 6,
-      "kills": 129,
+      "kills": 102,
+      "trend": "up",
+      "trendDelta": 2
+    },
+    {
+      "rank": 8,
+      "teamId": 2,
+      "teamName": "Whiskey N' Coke",
+      "points": 68,
+      "wins": 2,
+      "matchDaysPlayed": 6,
+      "kills": 157,
       "trend": "down",
       "trendDelta": 2
+    },
+    {
+      "rank": 9,
+      "teamId": 10,
+      "teamName": "Bad Decision Club Redux",
+      "points": 67,
+      "wins": 1,
+      "matchDaysPlayed": 6,
+      "kills": 124,
+      "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 10,
+      "teamId": 16,
+      "teamName": "Average Joes",
+      "points": 57,
+      "wins": 0,
+      "matchDaysPlayed": 6,
+      "kills": 105,
+      "trend": "up",
+      "trendDelta": 1
     },
     {
       "rank": 11,
       "teamId": 4,
       "teamName": "Bush Enthusiasts",
-      "points": 57,
+      "points": 56,
       "wins": 1,
       "matchDaysPlayed": 6,
       "kills": 130,
       "trend": "up",
-      "trendDelta": 2
+      "trendDelta": 3
     },
     {
       "rank": 12,
-      "teamId": 16,
-      "teamName": "Average Joes",
+      "teamId": 7,
+      "teamName": "Vortex Legacy",
       "points": 56,
-      "wins": 0,
+      "wins": 1,
       "matchDaysPlayed": 6,
-      "kills": 105,
-      "trend": "same",
-      "trendDelta": 0
+      "kills": 129,
+      "trend": "down",
+      "trendDelta": 2
     },
     {
       "rank": 13,
@@ -144,13 +144,13 @@
       "matchDaysPlayed": 6,
       "kills": 107,
       "trend": "down",
-      "trendDelta": 2
+      "trendDelta": 1
     },
     {
       "rank": 14,
       "teamId": 15,
       "teamName": "Respawn Rejects",
-      "points": 50,
+      "points": 49,
       "wins": 1,
       "matchDaysPlayed": 6,
       "kills": 103,
@@ -159,6 +159,17 @@
     },
     {
       "rank": 15,
+      "teamId": 6,
+      "teamName": "Day Ones",
+      "points": 40.8,
+      "wins": 2,
+      "matchDaysPlayed": 3,
+      "kills": 94,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 16,
       "teamId": 5,
       "teamName": "Personality Hires",
       "points": 40,
@@ -169,10 +180,10 @@
       "trendDelta": 0
     },
     {
-      "rank": 16,
+      "rank": 17,
       "teamId": 14,
       "teamName": "GOM Squad",
-      "points": 36,
+      "points": 37,
       "wins": 1,
       "matchDaysPlayed": 6,
       "kills": 93,
@@ -180,21 +191,10 @@
       "trendDelta": 0
     },
     {
-      "rank": 17,
-      "teamId": 6,
-      "teamName": "Day Ones",
-      "points": 34,
-      "wins": 2,
-      "matchDaysPlayed": 3,
-      "kills": 94,
-      "trend": "same",
-      "trendDelta": 0
-    },
-    {
       "rank": 18,
       "teamId": 18,
       "teamName": "Triple A",
-      "points": 24,
+      "points": 26,
       "wins": 1,
       "matchDaysPlayed": 6,
       "kills": 50,
@@ -205,7 +205,7 @@
       "rank": 19,
       "teamId": 17,
       "teamName": "Time2Starve",
-      "points": 10,
+      "points": 9,
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 43,
@@ -349,22 +349,22 @@
     {
       "rank": 12,
       "teamId": 12,
-      "teamName": "Sloppy Foes",
+      "teamName": "Atlas Gaming",
       "points": 8,
       "wins": 0,
       "matchDaysPlayed": 6,
-      "kills": 145,
+      "kills": 183,
       "trend": "same",
       "trendDelta": 0
     },
     {
       "rank": 13,
       "teamId": 13,
-      "teamName": "Atlas Gaming",
+      "teamName": "Sloppy Foes",
       "points": 7,
       "wins": 0,
       "matchDaysPlayed": 6,
-      "kills": 183,
+      "kills": 145,
       "trend": "same",
       "trendDelta": 0
     },

@@ -1,7 +1,7 @@
 {
   "season": "Season_14",
   "division": "6",
-  "generatedAt": "2026-07-21T23:04:23.460Z",
+  "generatedAt": "2026-07-22T01:09:41.686Z",
   "seasonStandings": [
     {
       "rank": 1,
@@ -16,6 +16,17 @@
     },
     {
       "rank": 2,
+      "teamId": 5,
+      "teamName": "SUS Krew",
+      "points": 89,
+      "wins": 1,
+      "matchDaysPlayed": 6,
+      "kills": 159,
+      "trend": "up",
+      "trendDelta": 1
+    },
+    {
+      "rank": 3,
       "teamId": 1,
       "teamName": "Semi-Retired",
       "points": 88,
@@ -23,10 +34,10 @@
       "matchDaysPlayed": 6,
       "kills": 241,
       "trend": "up",
-      "trendDelta": 4
+      "trendDelta": 2
     },
     {
-      "rank": 3,
+      "rank": 4,
       "teamId": 4,
       "teamName": "Spicy Yacht Club",
       "points": 87,
@@ -34,18 +45,7 @@
       "matchDaysPlayed": 6,
       "kills": 189,
       "trend": "down",
-      "trendDelta": 1
-    },
-    {
-      "rank": 4,
-      "teamId": 5,
-      "teamName": "SUS Krew",
-      "points": 87,
-      "wins": 1,
-      "matchDaysPlayed": 6,
-      "kills": 159,
-      "trend": "down",
-      "trendDelta": 1
+      "trendDelta": 2
     },
     {
       "rank": 5,
@@ -55,30 +55,30 @@
       "wins": 4,
       "matchDaysPlayed": 6,
       "kills": 162,
-      "trend": "same",
-      "trendDelta": 0
+      "trend": "down",
+      "trendDelta": 1
     },
     {
       "rank": 6,
+      "teamId": 18,
+      "teamName": "LCU",
+      "points": 79,
+      "wins": 2,
+      "matchDaysPlayed": 5,
+      "kills": 186,
+      "trend": "up",
+      "trendDelta": 1
+    },
+    {
+      "rank": 7,
       "teamId": 2,
       "teamName": "Snipers Nest Esports",
-      "points": 79,
+      "points": 76,
       "wins": 2,
       "matchDaysPlayed": 6,
       "kills": 167,
       "trend": "down",
-      "trendDelta": 2
-    },
-    {
-      "rank": 7,
-      "teamId": 18,
-      "teamName": "LCU",
-      "points": 78,
-      "wins": 2,
-      "matchDaysPlayed": 5,
-      "kills": 186,
-      "trend": "same",
-      "trendDelta": 0
+      "trendDelta": 1
     },
     {
       "rank": 8,
@@ -104,20 +104,20 @@
     },
     {
       "rank": 10,
-      "teamId": 12,
+      "teamId": 13,
       "teamName": "Fauxliance",
-      "points": 59,
+      "points": 61,
       "wins": 4,
       "matchDaysPlayed": 6,
       "kills": 125,
       "trend": "up",
-      "trendDelta": 3
+      "trendDelta": 2
     },
     {
       "rank": 11,
       "teamId": 17,
       "teamName": "Karnage",
-      "points": 55,
+      "points": 54,
       "wins": 1,
       "matchDaysPlayed": 6,
       "kills": 99,
@@ -126,9 +126,9 @@
     },
     {
       "rank": 12,
-      "teamId": 13,
+      "teamId": 12,
       "teamName": "Tlatoani",
-      "points": 52,
+      "points": 53,
       "wins": 1,
       "matchDaysPlayed": 6,
       "kills": 101,
@@ -139,12 +139,12 @@
       "rank": 13,
       "teamId": 7,
       "teamName": "Tarzans Bush Patrol",
-      "points": 50,
+      "points": 48,
       "wins": 2,
       "matchDaysPlayed": 5,
       "kills": 139,
-      "trend": "down",
-      "trendDelta": 1
+      "trend": "same",
+      "trendDelta": 0
     },
     {
       "rank": 14,
@@ -161,7 +161,7 @@
       "rank": 15,
       "teamId": 9,
       "teamName": "Dino Thugs",
-      "points": 43,
+      "points": 44,
       "wins": 3,
       "matchDaysPlayed": 6,
       "kills": 88,
@@ -172,7 +172,7 @@
       "rank": 16,
       "teamId": 10,
       "teamName": "Badger Grabbers",
-      "points": 42,
+      "points": 43,
       "wins": 1,
       "matchDaysPlayed": 6,
       "kills": 62,
@@ -194,7 +194,7 @@
       "rank": 18,
       "teamId": 14,
       "teamName": "The Fruity Bunch",
-      "points": 28,
+      "points": 32.4,
       "wins": 0,
       "matchDaysPlayed": 3,
       "kills": 60,
@@ -205,7 +205,7 @@
       "rank": 19,
       "teamId": 22,
       "teamName": "Sway GG",
-      "points": 20,
+      "points": 22.8,
       "wins": 0,
       "matchDaysPlayed": 4,
       "kills": 36,
@@ -214,12 +214,12 @@
     },
     {
       "rank": 20,
-      "teamId": 23,
-      "teamName": "The 3 Lordz",
-      "points": 0,
+      "teamId": 20,
+      "teamName": "Arkansas State",
+      "points": 9,
       "wins": 0,
-      "matchDaysPlayed": 1,
-      "kills": 0,
+      "matchDaysPlayed": 4,
+      "kills": 20,
       "trend": "same",
       "trendDelta": 0
     }
@@ -349,22 +349,22 @@
     {
       "rank": 12,
       "teamId": 12,
-      "teamName": "Fauxliance",
+      "teamName": "Tlatoani",
       "points": 8,
       "wins": 0,
       "matchDaysPlayed": 6,
-      "kills": 125,
+      "kills": 101,
       "trend": "same",
       "trendDelta": 0
     },
     {
       "rank": 13,
       "teamId": 13,
-      "teamName": "Tlatoani",
+      "teamName": "Fauxliance",
       "points": 7,
       "wins": 0,
       "matchDaysPlayed": 6,
-      "kills": 101,
+      "kills": 125,
       "trend": "same",
       "trendDelta": 0
     },

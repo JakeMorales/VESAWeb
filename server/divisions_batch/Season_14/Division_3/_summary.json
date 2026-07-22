@@ -1,13 +1,13 @@
 {
   "season": "Season_14",
   "division": "3",
-  "generatedAt": "2026-07-21T23:04:23.393Z",
+  "generatedAt": "2026-07-22T01:09:41.630Z",
   "seasonStandings": [
     {
       "rank": 1,
       "teamId": 14,
       "teamName": "Made Men",
-      "points": 95,
+      "points": 94,
       "wins": 3,
       "matchDaysPlayed": 6,
       "kills": 190,
@@ -18,7 +18,7 @@
       "rank": 2,
       "teamId": 4,
       "teamName": "RAWRXD",
-      "points": 93,
+      "points": 92,
       "wins": 5,
       "matchDaysPlayed": 6,
       "kills": 164,
@@ -38,6 +38,17 @@
     },
     {
       "rank": 4,
+      "teamId": 28,
+      "teamName": "Jedi Mind Tricks",
+      "points": 75.6,
+      "wins": 3,
+      "matchDaysPlayed": 4,
+      "kills": 145,
+      "trend": "up",
+      "trendDelta": 3
+    },
+    {
+      "rank": 5,
       "teamId": 11,
       "teamName": "Low Cortisol",
       "points": 74,
@@ -48,10 +59,10 @@
       "trendDelta": 2
     },
     {
-      "rank": 5,
+      "rank": 6,
       "teamId": 19,
       "teamName": "Equinox",
-      "points": 74,
+      "points": 73,
       "wins": 4,
       "matchDaysPlayed": 6,
       "kills": 142,
@@ -59,10 +70,10 @@
       "trendDelta": 0
     },
     {
-      "rank": 6,
+      "rank": 7,
       "teamId": 10,
       "teamName": "Part-Timers",
-      "points": 70,
+      "points": 69,
       "wins": 2,
       "matchDaysPlayed": 6,
       "kills": 131,
@@ -70,26 +81,15 @@
       "trendDelta": 2
     },
     {
-      "rank": 7,
+      "rank": 8,
       "teamId": 1,
       "teamName": "TTG",
-      "points": 65,
+      "points": 66,
       "wins": 4,
       "matchDaysPlayed": 6,
       "kills": 150,
       "trend": "same",
       "trendDelta": 0
-    },
-    {
-      "rank": 8,
-      "teamId": 28,
-      "teamName": "Jedi Mind Tricks",
-      "points": 63,
-      "wins": 3,
-      "matchDaysPlayed": 4,
-      "kills": 145,
-      "trend": "up",
-      "trendDelta": 3
     },
     {
       "rank": 9,
@@ -115,17 +115,39 @@
     },
     {
       "rank": 11,
+      "teamId": 18,
+      "teamName": "TGUN Diabetes",
+      "points": 49.2,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 75,
+      "trend": "up",
+      "trendDelta": 2
+    },
+    {
+      "rank": 12,
       "teamId": 7,
       "teamName": "Minas Tirith",
-      "points": 48,
+      "points": 49,
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 110,
       "trend": "up",
-      "trendDelta": 4
+      "trendDelta": 3
     },
     {
-      "rank": 12,
+      "rank": 13,
+      "teamId": 17,
+      "teamName": "HG2D",
+      "points": 47,
+      "wins": 0,
+      "matchDaysPlayed": 6,
+      "kills": 105,
+      "trend": "up",
+      "trendDelta": 1
+    },
+    {
+      "rank": 14,
       "teamId": 6,
       "teamName": "Project ELEVEN",
       "points": 46,
@@ -136,43 +158,21 @@
       "trendDelta": 2
     },
     {
-      "rank": 13,
-      "teamId": 17,
-      "teamName": "HG2D",
-      "points": 46,
-      "wins": 0,
-      "matchDaysPlayed": 6,
-      "kills": 105,
-      "trend": "same",
-      "trendDelta": 0
-    },
-    {
-      "rank": 14,
-      "teamId": 18,
-      "teamName": "TGUN Diabetes",
-      "points": 41,
+      "rank": 15,
+      "teamId": 24,
+      "teamName": "Frog & Friends",
+      "points": 39,
       "wins": 1,
       "matchDaysPlayed": 5,
-      "kills": 75,
-      "trend": "up",
-      "trendDelta": 2
-    },
-    {
-      "rank": 15,
-      "teamId": 8,
-      "teamName": "Muskingum",
-      "points": 33,
-      "wins": 0,
-      "matchDaysPlayed": 6,
-      "kills": 99,
-      "trend": "same",
-      "trendDelta": 0
+      "kills": 82,
+      "trend": "down",
+      "trendDelta": 5
     },
     {
       "rank": 16,
       "teamId": 9,
       "teamName": "Bee Happy",
-      "points": 31,
+      "points": 38.4,
       "wins": 1,
       "matchDaysPlayed": 4,
       "kills": 66,
@@ -181,6 +181,28 @@
     },
     {
       "rank": 17,
+      "teamId": 3,
+      "teamName": "Scrubalia",
+      "points": 36,
+      "wins": 1,
+      "matchDaysPlayed": 3,
+      "kills": 80,
+      "trend": "down",
+      "trendDelta": 4
+    },
+    {
+      "rank": 18,
+      "teamId": 8,
+      "teamName": "Muskingum",
+      "points": 32,
+      "wins": 0,
+      "matchDaysPlayed": 6,
+      "kills": 99,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 19,
       "teamId": 20,
       "teamName": "12 Stink Bugs",
       "points": 29,
@@ -191,10 +213,10 @@
       "trendDelta": 0
     },
     {
-      "rank": 18,
+      "rank": 20,
       "teamId": 2,
       "teamName": "YRWeTilted",
-      "points": 25,
+      "points": 27,
       "wins": 1,
       "matchDaysPlayed": 6,
       "kills": 67,

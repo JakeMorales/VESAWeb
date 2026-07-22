@@ -18,6 +18,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const LEAGUE_DIR = path.join(__dirname, '..', 'server', 'divisions_batch');
+const ADJUSTMENTS_DIR = path.join(__dirname, 'season-adjustments');
 
 const LEAGUE_PLACEMENT_POINTS: Record<number, number> = {
   1: 25, 2: 21, 3: 18, 4: 16, 5: 15, 6: 14, 7: 13, 8: 12,
@@ -56,6 +57,47 @@ interface DivisionSummary {
   seasonStandings: StandingEntry[];
   matchPointFinalsStandings: StandingEntry[];
   matchPointChampion: MatchPointChampion | null;
+}
+
+interface TeamAdjustment {
+  seasonAdj?: number;
+  seasonMult?: number;
+  // True DQ / no-show: removed BEFORE ranking, so every other team's placement (and
+  // points) shifts up as if this team never played. Use for teams that genuinely
+  // didn't officially compete (verified: this is what Vanguard's Mile High needed —
+  // without it, every team below them kept the wrong points bracket).
+  excludeFromMp?: boolean;
+  // Real placement, wrong division: the team's games legitimately happened and
+  // should still count toward everyone else's true placement (no reshuffle), but
+  // their own row shouldn't appear in this division's standings/champion. Use for
+  // data-source mixups (e.g. another division's team ending up in this week's file).
+  hideFromMpDisplay?: boolean;
+  // Directly set the regular-season point total from the sheet, bypassing our own
+  // computation entirely. Reserved for teams whose games are split across divisions
+  // mid-season (a transfer) where recomputing from raw files can't reconstruct the
+  // official total — the sheet is treated as source of truth for these.
+  seasonOverride?: number;
+  // Drop this team from the regular-season standings roster entirely (not just its
+  // points). Use for a team's old identity after a mid-season rename/replacement —
+  // the roster is always capped at 20, so an unresolved extra name here crowds out
+  // the real 20th team the sheet lists.
+  excludeFromSeasonStandings?: boolean;
+}
+
+// division -> team name -> adjustment. See scripts/season-adjustments/README or the
+// sheet itself for where these values come from — they're manual admin overrides
+// (attendance multipliers, penalty adjustments, DQs) that can't be derived from
+// raw Overstat game files.
+type SeasonAdjustments = Record<string, Record<string, TeamAdjustment>>;
+
+function loadSeasonAdjustments(season: string): SeasonAdjustments {
+  // "Season_14" -> "S14"
+  const shortName = season.replace(/^Season_/, 'S');
+  const filePath = path.join(ADJUSTMENTS_DIR, `${shortName}.json`);
+  if (!fs.existsSync(filePath)) return {};
+  const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  delete raw._comment;
+  return raw;
 }
 
 interface TeamAccumulator {
@@ -129,7 +171,8 @@ function resetSyntheticIds(): void { nextSyntheticId = 1; }
 function processWeekFile(
   filePath: string,
   filename: string,
-  accMap: Map<string, TeamAccumulator>
+  accMap: Map<string, TeamAccumulator>,
+  excludeKeys: Set<string> = new Set()
 ): Set<string> {
   let data: any;
   try {
@@ -155,6 +198,8 @@ function processWeekFile(
     kills: number;
     gameWins: number;
     players: Set<string>;
+    gameScores: number[];
+    gameKills: number[];
   }>();
 
   for (const game of games) {
@@ -163,6 +208,7 @@ function processWeekFile(
       if (!teamName) continue;
 
       const key = normalizeTeamName(teamName);
+      if (excludeKeys.has(key)) continue;
       const score: number = team.overall_stats?.score ?? 0;
       const kills: number = team.overall_stats?.kills ?? 0;
       const gamePlacement: number = team.overall_stats?.teamPlacement ?? 0;
@@ -178,19 +224,41 @@ function processWeekFile(
         t.kills += kills;
         if (gamePlacement === 1) t.gameWins++;
         players.forEach(p => t.players.add(p));
+        t.gameScores.push(score);
+        t.gameKills.push(kills);
       } else {
         matchDayTotals.set(key, {
           teamName, inGameScore: score, kills,
           gameWins: gamePlacement === 1 ? 1 : 0,
           players: new Set(players),
+          gameScores: [score], gameKills: [kills],
         });
       }
     }
   }
 
-  // Step 2: rank teams by in-game score to determine match-day placement
+  // Step 2: rank teams by in-game score to determine match-day placement.
+  // Ties on total Round Score are broken per the ALGS official tiebreaker: compare
+  // each team's individual match scores sorted descending (best game vs best game,
+  // then next-best, etc.) until the tie breaks; if every game score is identical,
+  // fall back to the same cascade over single-match kills.
+  const cascadeCompare = (a: number[], b: number[]): number => {
+    const sa = [...a].sort((x, y) => y - x);
+    const sb = [...b].sort((x, y) => y - x);
+    for (let i = 0; i < Math.max(sa.length, sb.length); i++) {
+      const diff = (sb[i] ?? 0) - (sa[i] ?? 0);
+      if (diff !== 0) return diff;
+    }
+    return 0;
+  };
   const ranked = Array.from(matchDayTotals.entries())
-    .sort((a, b) => b[1].inGameScore - a[1].inGameScore);
+    .sort((a, b) => {
+      const byScore = b[1].inGameScore - a[1].inGameScore;
+      if (byScore !== 0) return byScore;
+      const byGameScores = cascadeCompare(a[1].gameScores, b[1].gameScores);
+      if (byGameScores !== 0) return byGameScores;
+      return cascadeCompare(a[1].gameKills, b[1].gameKills);
+    });
 
   // Step 3: award VESA league points and update season accumulators
   ranked.forEach(([key, team], index) => {
@@ -230,7 +298,8 @@ function generateDivisionSummary(
   seasonDir: string,
   season: string,
   divisionDir: string,
-  division: string
+  division: string,
+  adjustments: SeasonAdjustments
 ): void {
   const divPath = path.join(seasonDir, divisionDir);
   const allFiles = fs.readdirSync(divPath).filter(f => f.endsWith('.json') && !f.startsWith('_'));
@@ -246,11 +315,23 @@ function generateDivisionSummary(
   const weeklyRankSnapshots: Map<string, number>[] = [];
   let activeTeamKeys = new Set<string>(); // teams from the most recent regular week
 
+  // Manual admin overrides (attendance multipliers, penalty adjustments, DQs) from
+  // the season-adjustments config — can't be derived from raw Overstat game files.
+  const divAdjustments = adjustments[divisionDir] ?? {};
+  const mpExclusions = new Set(
+    Object.entries(divAdjustments)
+      .filter(([, a]) => a.excludeFromMp)
+      .map(([teamName]) => normalizeTeamName(teamName))
+  );
+
   for (const filename of matchFiles) {
     console.log(`    Processing ${filename}...`);
-    const seenKeys = processWeekFile(path.join(divPath, filename), filename, accMap);
+    const isMP = isPlayoffsFile(filename);
+    // DQ'd/excluded teams are dropped before ranking (not just zeroed after) so
+    // everyone else's placement — and therefore points — shifts up correctly.
+    const seenKeys = processWeekFile(path.join(divPath, filename), filename, accMap, isMP ? mpExclusions : undefined);
 
-    if (!isPlayoffsFile(filename)) {
+    if (!isMP) {
       if (seenKeys.size > 0) activeTeamKeys = seenKeys;
       const snap = new Map<string, number>();
       toRankedStandings(accMap, 'leaguePoints', false).forEach(e => snap.set(normalizeTeamName(e.teamName), e.rank));
@@ -258,11 +339,34 @@ function generateDivisionSummary(
     }
   }
 
-  // Only include teams that were active in the most recent regular week (max 20).
-  // Teams that dropped, transferred, or were only present in earlier weeks are excluded.
-  const allStandings = toRankedStandings(accMap, 'leaguePoints', false);
-  const seasonStandings = allStandings
-    .filter(e => activeTeamKeys.size === 0 || activeTeamKeys.has(normalizeTeamName(e.teamName)))
+  // Apply season-total multiplier/adjustment. These apply once to the regular-season
+  // total only — MP Finals points are never re-multiplied (verified against the
+  // Live Standings sheet's "Standings + MP" column, which always shows mult=1
+  // there even for teams with a season-long multiplier).
+  for (const [teamName, adj] of Object.entries(divAdjustments)) {
+    const acc = accMap.get(normalizeTeamName(teamName));
+    if (!acc) continue;
+    if (adj.seasonOverride != null) {
+      acc.leaguePoints = adj.seasonOverride;
+    } else if (adj.seasonMult != null || adj.seasonAdj != null) {
+      const mult = adj.seasonMult ?? 1;
+      const flat = adj.seasonAdj ?? 0;
+      acc.leaguePoints = Math.round((acc.leaguePoints * mult + flat) * 10) / 10;
+    }
+  }
+
+  // Include every team that earned points this season, active or not — teams that
+  // dropped or transferred mid-season still appear in the official standings (the
+  // Live Standings sheet is the source of truth here), just ranked by their total.
+  // A team's old identity before a mid-season rename/replacement is dropped via
+  // excludeFromSeasonStandings so it doesn't crowd out the real 20th-place team.
+  const excludedFromStandings = new Set(
+    Object.entries(divAdjustments)
+      .filter(([, a]) => a.excludeFromSeasonStandings)
+      .map(([teamName]) => normalizeTeamName(teamName))
+  );
+  const seasonStandings = toRankedStandings(accMap, 'leaguePoints', false)
+    .filter(e => !excludedFromStandings.has(normalizeTeamName(e.teamName)))
     .slice(0, 20)
     .map((e, i) => ({ ...e, rank: i + 1 }));
 
@@ -283,7 +387,14 @@ function generateDivisionSummary(
     }
   }
 
-  const mpStandings = toRankedStandings(accMap, 'mpLeaguePoints', true);
+  const hideFromMpDisplay = new Set(
+    Object.entries(divAdjustments)
+      .filter(([, a]) => a.hideFromMpDisplay)
+      .map(([teamName]) => normalizeTeamName(teamName))
+  );
+  const mpStandings = toRankedStandings(accMap, 'mpLeaguePoints', true)
+    .filter(e => !hideFromMpDisplay.has(normalizeTeamName(e.teamName)))
+    .map((e, i) => ({ ...e, rank: i + 1 }));
 
   let matchPointChampion: MatchPointChampion | null = null;
   if (mpStandings.length > 0) {
@@ -332,10 +443,12 @@ function main(): void {
 
     console.log(`\n${season} — ${divisions.length} division(s)`);
 
+    const adjustments = loadSeasonAdjustments(season);
+
     for (const div of divisions) {
       const divNum = div.replace('Division_', '');
       console.log(`  Division ${divNum}:`);
-      generateDivisionSummary(seasonPath, season, div, divNum);
+      generateDivisionSummary(seasonPath, season, div, divNum, adjustments);
     }
   }
 

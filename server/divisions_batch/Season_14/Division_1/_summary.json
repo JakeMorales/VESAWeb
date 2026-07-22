@@ -1,13 +1,13 @@
 {
   "season": "Season_14",
   "division": "1",
-  "generatedAt": "2026-07-21T23:04:23.347Z",
+  "generatedAt": "2026-07-22T01:09:41.595Z",
   "seasonStandings": [
     {
       "rank": 1,
       "teamId": 4,
       "teamName": "Guys Bein Dudes",
-      "points": 128,
+      "points": 132,
       "wins": 6,
       "matchDaysPlayed": 6,
       "kills": 299,
@@ -16,135 +16,135 @@
     },
     {
       "rank": 2,
+      "teamId": 6,
+      "teamName": "Team Hibiscus",
+      "points": 84,
+      "wins": 2,
+      "matchDaysPlayed": 6,
+      "kills": 175,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 3,
       "teamId": 12,
       "teamName": "SLG",
-      "points": 87,
+      "points": 83,
       "wins": 4,
       "matchDaysPlayed": 6,
       "kills": 161,
       "trend": "up",
-      "trendDelta": 2
-    },
-    {
-      "rank": 3,
-      "teamId": 6,
-      "teamName": "Team Hibiscus",
-      "points": 83,
-      "wins": 2,
-      "matchDaysPlayed": 6,
-      "kills": 175,
-      "trend": "down",
       "trendDelta": 1
     },
     {
       "rank": 4,
+      "teamId": 5,
+      "teamName": "Protato Force",
+      "points": 77,
+      "wins": 3,
+      "matchDaysPlayed": 6,
+      "kills": 147,
+      "trend": "down",
+      "trendDelta": 1
+    },
+    {
+      "rank": 5,
       "teamId": 16,
       "teamName": "IGL IS STUPID",
       "points": 77,
       "wins": 2,
       "matchDaysPlayed": 6,
       "kills": 169,
-      "trend": "up",
-      "trendDelta": 1
-    },
-    {
-      "rank": 5,
-      "teamId": 5,
-      "teamName": "Protato Force",
-      "points": 76,
-      "wins": 3,
-      "matchDaysPlayed": 6,
-      "kills": 147,
-      "trend": "down",
-      "trendDelta": 2
+      "trend": "same",
+      "trendDelta": 0
     },
     {
       "rank": 6,
-      "teamId": 2,
+      "teamId": 9,
+      "teamName": "Byfire",
+      "points": 67,
+      "wins": 1,
+      "matchDaysPlayed": 5,
+      "kills": 171,
+      "trend": "up",
+      "trendDelta": 2
+    },
+    {
+      "rank": 7,
+      "teamId": 1,
       "teamName": "Greasy Boyz",
       "points": 65,
       "wins": 1,
       "matchDaysPlayed": 6,
       "kills": 133,
-      "trend": "up",
-      "trendDelta": 1
-    },
-    {
-      "rank": 7,
-      "teamId": 9,
-      "teamName": "Byfire",
-      "points": 62,
-      "wins": 1,
-      "matchDaysPlayed": 5,
-      "kills": 171,
-      "trend": "up",
-      "trendDelta": 3
+      "trend": "same",
+      "trendDelta": 0
     },
     {
       "rank": 8,
       "teamId": 3,
       "teamName": "passion project",
-      "points": 61,
+      "points": 62,
       "wins": 2,
       "matchDaysPlayed": 6,
       "kills": 137,
       "trend": "up",
-      "trendDelta": 1
+      "trendDelta": 2
     },
     {
       "rank": 9,
-      "teamId": 11,
-      "teamName": "Obscura",
-      "points": 60,
-      "wins": 2,
-      "matchDaysPlayed": 6,
-      "kills": 129,
-      "trend": "down",
-      "trendDelta": 3
-    },
-    {
-      "rank": 10,
-      "teamId": 13,
-      "teamName": "D.C Bandit's",
-      "points": 58,
-      "wins": 2,
-      "matchDaysPlayed": 6,
-      "kills": 96,
-      "trend": "up",
-      "trendDelta": 1
-    },
-    {
-      "rank": 11,
       "teamId": 18,
       "teamName": "wigg wigg wigg ballsweat",
-      "points": 58,
+      "points": 60,
       "wins": 2,
       "matchDaysPlayed": 6,
       "kills": 91,
       "trend": "up",
-      "trendDelta": 2
+      "trendDelta": 3
     },
     {
-      "rank": 12,
+      "rank": 10,
       "teamId": 10,
-      "teamName": "PB&J",
-      "points": 54,
-      "wins": 4,
+      "teamName": "Obscura",
+      "points": 59,
+      "wins": 2,
       "matchDaysPlayed": 6,
-      "kills": 108,
+      "kills": 129,
       "trend": "down",
       "trendDelta": 4
     },
     {
-      "rank": 13,
-      "teamId": 15,
-      "teamName": "LZG",
-      "points": 48,
-      "wins": 1,
+      "rank": 11,
+      "teamId": 13,
+      "teamName": "D.C Bandit's",
+      "points": 57,
+      "wins": 2,
       "matchDaysPlayed": 6,
       "kills": 96,
+      "trend": "same",
+      "trendDelta": 0
+    },
+    {
+      "rank": 12,
+      "teamId": 11,
+      "teamName": "PB&J",
+      "points": 55,
+      "wins": 4,
+      "matchDaysPlayed": 6,
+      "kills": 108,
       "trend": "down",
-      "trendDelta": 1
+      "trendDelta": 3
+    },
+    {
+      "rank": 13,
+      "teamId": 2,
+      "teamName": "hakistat.com",
+      "points": 54,
+      "wins": 0,
+      "matchDaysPlayed": 5,
+      "kills": 125,
+      "trend": "up",
+      "trendDelta": 2
     },
     {
       "rank": 14,
@@ -166,17 +166,17 @@
       "matchDaysPlayed": 6,
       "kills": 98,
       "trend": "up",
-      "trendDelta": 3
+      "trendDelta": 4
     },
     {
       "rank": 16,
-      "teamId": 1,
-      "teamName": "hakistat.com",
-      "points": 45,
-      "wins": 0,
-      "matchDaysPlayed": 5,
-      "kills": 125,
-      "trend": "up",
+      "teamId": 15,
+      "teamName": "LZG",
+      "points": 42,
+      "wins": 1,
+      "matchDaysPlayed": 6,
+      "kills": 96,
+      "trend": "down",
       "trendDelta": 1
     },
     {
@@ -188,7 +188,7 @@
       "matchDaysPlayed": 6,
       "kills": 103,
       "trend": "down",
-      "trendDelta": 2
+      "trendDelta": 3
     },
     {
       "rank": 18,
@@ -205,7 +205,7 @@
       "rank": 19,
       "teamId": 7,
       "teamName": "Average Age of 24",
-      "points": 29,
+      "points": 28,
       "wins": 0,
       "matchDaysPlayed": 6,
       "kills": 103,
@@ -214,36 +214,36 @@
     },
     {
       "rank": 20,
-      "teamId": 20,
-      "teamName": "lvl999",
-      "points": 4,
+      "teamId": 21,
+      "teamName": "100 Leaves",
+      "points": 16,
       "wins": 0,
-      "matchDaysPlayed": 1,
-      "kills": 19,
-      "trend": "up",
-      "trendDelta": 1
+      "matchDaysPlayed": 3,
+      "kills": 49,
+      "trend": "same",
+      "trendDelta": 0
     }
   ],
   "matchPointFinalsStandings": [
     {
       "rank": 1,
       "teamId": 1,
-      "teamName": "hakistat.com",
+      "teamName": "Greasy Boyz",
       "points": 25,
       "wins": 0,
-      "matchDaysPlayed": 5,
-      "kills": 125,
+      "matchDaysPlayed": 6,
+      "kills": 133,
       "trend": "same",
       "trendDelta": 0
     },
     {
       "rank": 2,
       "teamId": 2,
-      "teamName": "Greasy Boyz",
+      "teamName": "hakistat.com",
       "points": 21,
       "wins": 0,
-      "matchDaysPlayed": 6,
-      "kills": 133,
+      "matchDaysPlayed": 5,
+      "kills": 125,
       "trend": "same",
       "trendDelta": 0
     },
@@ -327,22 +327,22 @@
     {
       "rank": 10,
       "teamId": 10,
-      "teamName": "PB&J",
+      "teamName": "Obscura",
       "points": 10,
       "wins": 0,
       "matchDaysPlayed": 6,
-      "kills": 108,
+      "kills": 129,
       "trend": "same",
       "trendDelta": 0
     },
     {
       "rank": 11,
       "teamId": 11,
-      "teamName": "Obscura",
+      "teamName": "PB&J",
       "points": 9,
       "wins": 0,
       "matchDaysPlayed": 6,
-      "kills": 129,
+      "kills": 108,
       "trend": "same",
       "trendDelta": 0
     },
@@ -437,11 +437,11 @@
   ],
   "matchPointChampion": {
     "teamId": 1,
-    "teamName": "hakistat.com",
+    "teamName": "Greasy Boyz",
     "players": [
-      "Truth",
-      "seeby",
-      "spaceman"
+      "Noxums",
+      "Zboy5z5",
+      "ntROZE"
     ]
   }
 }
