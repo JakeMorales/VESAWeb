@@ -5,7 +5,7 @@ export const environment = {
     region: 'us-east-1'
   },
   discord: {
-    inviteUrl: 'https://discord.gg/RyvVJqnXbe'
+    inviteUrl: 'https://discord.gg/vesaleague'
   },
   features: {
     playerStats: false,

@@ -40,9 +40,7 @@ import { CURRENT_SEASON, SIGNUPS_OPEN, formatTickerDate } from '../../config/sea
 
         <a
           class="btn primary small register"
-          href="https://discord.gg/RyvVJqnXbe"
-          target="_blank"
-          rel="noopener noreferrer"
+          routerLink="/league/signup"
         >Register</a>
 
         <button
@@ -70,9 +68,7 @@ import { CURRENT_SEASON, SIGNUPS_OPEN, formatTickerDate } from '../../config/sea
         }
         <a
           class="btn primary small"
-          href="https://discord.gg/RyvVJqnXbe"
-          target="_blank"
-          rel="noopener noreferrer"
+          routerLink="/league/signup"
           (click)="closeNav()"
         >Register</a>
       </nav>
