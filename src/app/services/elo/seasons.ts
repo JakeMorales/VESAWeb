@@ -26,7 +26,8 @@ export const ELO_SEASONS: EloSeason[] = [
   { key: 'season-26', label: 'Apex Legends Season 26', start: '2025-08-05', end: '2025-11-03' },
   { key: 'season-27', label: 'Apex Legends Season 27', start: '2025-11-04', end: '2026-02-02' },
   { key: 'season-28', label: 'Apex Legends Season 28', start: '2026-02-03', end: '2026-05-04' },
-  { key: 'season-29', label: 'Apex Legends Season 29', start: '2026-05-05', end: null },
+  { key: 'season-29', label: 'Apex Legends Season 29', start: '2026-05-05', end: '2026-08-03' },
+  { key: 'season-30', label: 'Apex Legends Season 30', start: '2026-08-04', end: null },
 ];
 
 export function seasonForDate(date: string, seasons: EloSeason[] = ELO_SEASONS): EloSeason | undefined {

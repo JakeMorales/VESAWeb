@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-30T15:33:32.664Z",
+  "generatedAt": "2026-08-19T23:57:21.671Z",
   "league": {
     "currentSeason": "Season_14",
     "currentDivisionCount": 8,
@@ -9,40 +9,40 @@
     "totalPlaytime": "3y 3mo 26d"
   },
   "scrims": {
-    "matchesPlayed": 751,
-    "gamesPlayed": 4486,
-    "uniquePlayers": 4450,
-    "totalPlaytime": "6y 8mo 10d"
+    "matchesPlayed": 775,
+    "gamesPlayed": 4630,
+    "uniquePlayers": 4537,
+    "totalPlaytime": "6y 10mo 30d"
   },
-  "totalUniquePlayers": 4876,
+  "totalUniquePlayers": 4962,
   "recentActivity": [
     {
       "type": "scrim_block",
       "icon": "bolt",
       "title": "Scrim Block Completed",
-      "description": "6 games played — VESA Scrim Lobby 3 7/29/2026",
-      "occurredAt": "2026-07-30T02:11:40.000Z"
+      "description": "6 games played — VESA Scrim Lobby 1 8/18/2026",
+      "occurredAt": "2026-08-19T02:05:06.000Z"
     },
     {
       "type": "scrim_block",
       "icon": "bolt",
       "title": "Scrim Block Completed",
-      "description": "6 games played — VESA Scrim Lobby 1 7/29/2026",
-      "occurredAt": "2026-07-30T01:57:48.000Z"
+      "description": "6 games played — VESA Scrim Lobby 1 8/16/2026",
+      "occurredAt": "2026-08-17T02:00:54.000Z"
     },
     {
       "type": "scrim_block",
       "icon": "bolt",
       "title": "Scrim Block Completed",
-      "description": "6 games played — VESA Scrim Lobby 2 7/29/2026",
-      "occurredAt": "2026-07-30T01:55:52.000Z"
+      "description": "6 games played — VESA Scrim Lobby 2 8/16/2026",
+      "occurredAt": "2026-08-17T01:57:02.000Z"
     },
     {
       "type": "scrim_block",
       "icon": "bolt",
       "title": "Scrim Block Completed",
-      "description": "6 games played — VESA Scrim Lobby 2 7/28/2026",
-      "occurredAt": "2026-07-29T02:01:05.000Z"
+      "description": "6 games played — VESA Scrim Lobby 1 8/15/2026",
+      "occurredAt": "2026-08-16T01:58:26.000Z"
     },
     {
       "type": "match_point_champion",
