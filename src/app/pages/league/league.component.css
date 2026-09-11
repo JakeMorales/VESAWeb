@@ -1,8 +1,7 @@
 .league-container {
   min-height: 100vh;
-  width: 100vw;
-  background: linear-gradient(135deg, var(--color-primary-dark) 0%, #000 100%);
-  color: var(--color-text-primary);
-  margin: 0;
-  padding: 0;
+  width: 100%;
+  background: var(--vesa-void);
+  color: var(--vesa-text);
+  padding-bottom: 24px;
 }

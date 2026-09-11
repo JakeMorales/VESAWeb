@@ -22,5 +22,11 @@
     "secure": true,
     "changeOrigin": true,
     "pathRewrite": { "^/hf-league-resolve": "/datasets/VESA-apex/apex-league/raw/main" }
+  },
+  "/discord-api": {
+    "target": "https://discord.com",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": { "^/discord-api": "/api" }
   }
 }

@@ -1,61 +1,39 @@
-/* Game Indicators */
+/* Game Indicators — per-game podium dots */
 .game-indicators {
   display: flex;
-  gap: 0.25rem;
+  gap: 5px;
   align-items: center;
 }
 
 .game-indicator {
   position: relative;
   cursor: help;
-  transition: all 0.2s ease;
+  line-height: 1;
 }
 
 .trophy-icon {
-  font-size: 1.2rem;
-  font-weight: bold;
-  transition: all 0.2s ease;
-  text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+  font-size: 11px;
   display: inline-block;
+  transition: opacity 0.15s;
 }
 
-/* Default gray circle for non-podium placements */
+/* Default: non-podium placement */
 .trophy-icon.default {
-  color: #666666 !important;
-  opacity: 0.6 !important;
+  color: #3a3a4e;
 }
 
-/* Gold circle for 1st place */
 .trophy-icon.gold {
-  color: #FFD700 !important;
-  opacity: 1 !important;
-  text-shadow: 0 0 6px rgba(255, 215, 0, 0.8) !important;
+  color: #ffd77a;
 }
 
-/* Silver circle for 2nd place */
 .trophy-icon.silver {
-  color: #C0C0C0 !important;
-  opacity: 1 !important;
-  text-shadow: 0 0 6px rgba(192, 192, 192, 0.8) !important;
+  color: #cfd4de;
 }
 
-/* Bronze circle for 3rd place */
 .trophy-icon.bronze {
-  color: #CD7F32 !important;
-  opacity: 1 !important;
-  text-shadow: 0 0 6px rgba(205, 127, 50, 0.8) !important;
-}
-
-.game-indicator:hover .trophy-icon {
-  transform: scale(1.2);
+  color: #e0a570;
 }
 
 .game-indicator:hover .trophy-icon.default {
-  opacity: 0.8;
-}
-
-.game-indicator:hover .trophy-icon.gold,
-.game-indicator:hover .trophy-icon.silver,
-.game-indicator:hover .trophy-icon.bronze {
-  filter: brightness(1.2);
+  color: var(--vesa-faint);
 }

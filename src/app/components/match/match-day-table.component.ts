@@ -157,6 +157,10 @@ export class MatchDayTableComponent {
         totalKills: number;
         totalDamage: number;
         totalDowns: number;
+        totalHeadshots: number;
+        totalAssists: number;
+        totalShots: number;
+        totalHits: number;
         totalRevives: number;
         totalRespawns: number;
         gamesPlayed: number;
@@ -192,16 +196,24 @@ export class MatchDayTableComponent {
               totalKills: 0,
               totalDamage: 0,
               totalDowns: 0,
+              totalHeadshots: 0,
+              totalAssists: 0,
+              totalShots: 0,
+              totalHits: 0,
               totalRevives: 0,
               totalRespawns: 0,
               gamesPlayed: 0
             };
           }
-          
+
           const playerStat = teamStandings[result.teamName].playerStats[player.playerName];
           playerStat.totalKills += player.kills;
           playerStat.totalDamage += player.damage;
           playerStat.totalDowns += player.downs;
+          playerStat.totalHeadshots += player.headshots ?? 0;
+          playerStat.totalAssists += player.assists ?? 0;
+          playerStat.totalShots += player.shots ?? 0;
+          playerStat.totalHits += player.hits ?? 0;
           playerStat.totalRevives += player.revives;
           playerStat.totalRespawns += player.respawns;
           playerStat.gamesPlayed += 1;
@@ -221,6 +233,10 @@ export class MatchDayTableComponent {
           totalKills: playerData.totalKills,
           totalDamage: playerData.totalDamage,
           totalDowns: playerData.totalDowns,
+          totalHeadshots: playerData.totalHeadshots,
+          totalAssists: playerData.totalAssists,
+          totalShots: playerData.totalShots,
+          totalHits: playerData.totalHits,
           totalRevives: playerData.totalRevives,
           totalRespawns: playerData.totalRespawns,
           gamesPlayed: playerData.gamesPlayed,

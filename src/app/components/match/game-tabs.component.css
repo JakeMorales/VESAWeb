@@ -1,51 +1,49 @@
-/* Games Tabs */
+/* Game Tabs — segmented mono tabs */
 .games-tabs {
   display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
+  gap: 6px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
 }
 
 .game-tab {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: #e2e8f0;
-  padding: 0.75rem 1.5rem;
-  font-weight: 500;
+  background: transparent;
+  border: 1px solid var(--vesa-line);
+  border-radius: 4px;
+  color: var(--vesa-dim);
+  padding: 8px 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
 }
 
 .game-tab:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
+  color: var(--vesa-text);
+  border-color: var(--vesa-line-strong);
 }
 
 .game-tab.active {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: #f1f5f9;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  color: var(--vesa-text);
+  background: var(--vesa-raised);
+  border-color: var(--vesa-line-strong);
+  box-shadow: inset 0 -2px 0 var(--vesa-red);
 }
 
 .overall-tab.active {
-  background: rgba(255, 165, 0, 0.15);
-  border-color: rgba(255, 165, 0, 0.4);
-  color: #ffa500;
+  box-shadow: inset 0 -2px 0 #f5a623;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .games-tabs {
-    gap: 0.25rem;
+    gap: 4px;
   }
 
   .game-tab {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+    padding: 7px 10px;
+    font-size: 10px;
   }
 }

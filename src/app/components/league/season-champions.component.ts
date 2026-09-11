@@ -87,100 +87,138 @@ export interface SeasonChampions {
   `,
   styles: [`
     .champions-section h2 {
-      font-size: 2rem;
+      font-family: var(--font-display);
+      font-size: 24px;
       font-weight: 700;
-      margin-bottom: 2rem;
-      color: var(--color-text-primary);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      color: var(--vesa-text);
       text-align: center;
     }
 
+    .no-data {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--vesa-faint);
+      padding: 2rem;
+    }
+
     .season-champions-row {
-      margin-bottom: 2rem;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      border-radius: 8px;
-      padding: 1.5rem;
+      margin-bottom: 16px;
+      background: var(--vesa-panel);
+      border: 1px solid var(--vesa-line);
+      border-radius: 6px;
+      padding: 20px 24px;
     }
 
     .season-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+      align-items: baseline;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--vesa-line);
     }
 
     .season-header h3 {
       margin: 0;
-      color: #60a5fa;
-      font-size: 1.25rem;
+      font-family: var(--font-display);
+      color: var(--vesa-text);
+      font-size: 19px;
       font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
 
     .season-id {
-      color: #94a3b8;
-      font-size: 0.875rem;
+      font-family: var(--font-mono);
+      color: var(--vesa-faint);
+      font-size: 10px;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
     }
 
     .champions-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
+      gap: 10px;
     }
 
     /* Single division view - make champion item wider */
     .champions-row:has(.champion-item:only-child) .champion-item {
-      max-width: 300px;
+      max-width: 320px;
       margin: 0 auto;
     }
 
     .champion-item {
-      background: rgba(30, 41, 59, 0.8);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      border-radius: 6px;
-      padding: 1rem;
+      position: relative;
+      background: var(--vesa-raised);
+      border: 1px solid var(--vesa-line);
+      border-radius: 4px;
+      padding: 16px 14px 14px;
       text-align: center;
-      transition: all 0.2s ease;
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+
+    .champion-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--div-color, var(--vesa-line-strong));
     }
 
     .champion-item:hover {
-      border-color: rgba(99, 102, 241, 0.6);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+      border-color: var(--vesa-line-strong);
     }
 
     .champion-name {
       font-weight: 600;
-      color: #e2e8f0;
-      margin: 0.5rem 0;
-      font-size: 0.9rem;
+      color: var(--vesa-text);
+      margin: 8px 0 4px;
+      font-size: 13px;
     }
 
     .champion-points {
-      color: #60a5fa;
-      font-size: 0.875rem;
-      font-weight: 500;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      color: var(--vesa-dim);
+      font-size: 12px;
     }
 
     .division-badge {
-      font-size: 0.75rem;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      font-weight: 600;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.5rem;
       display: inline-block;
+      color: var(--div-color);
+      background: color-mix(in srgb, var(--div-color) 12%, transparent);
     }
 
-    .division-pinnacle { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
-    .division-vanguard { background: linear-gradient(135deg, #f97316, #ea580c); color: white; }
-    .division-ascendant { background: linear-gradient(135deg, #eab308, #ca8a04); color: white; }
-    .division-emergent { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
-    .division-challengers { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
-    .division-contenders { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
+    /* Division identity colors — match the league's division palette */
+    .division-pinnacle    { --div-color: #ff2c5c; }
+    .division-vanguard    { --div-color: #2c9cff; }
+    .division-ascendant   { --div-color: #00d4ff; }
+    .division-emergent    { --div-color: #7c3aed; }
+    .division-challengers { --div-color: #f59e0b; }
+    .division-contenders  { --div-color: #10b981; }
+
+    .champion-item:has(.division-pinnacle)    { --div-color: #ff2c5c; }
+    .champion-item:has(.division-vanguard)    { --div-color: #2c9cff; }
+    .champion-item:has(.division-ascendant)   { --div-color: #00d4ff; }
+    .champion-item:has(.division-emergent)    { --div-color: #7c3aed; }
+    .champion-item:has(.division-challengers) { --div-color: #f59e0b; }
+    .champion-item:has(.division-contenders)  { --div-color: #10b981; }
   `]
 })
 export class SeasonChampionsComponent {

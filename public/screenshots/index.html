@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VESA — Page Design Reference</title>
+  <style>
+    :root {
+      --void: #04040a;
+      --panel: #0b0b14;
+      --raised: #12121e;
+      --line: rgba(235,235,245,0.09);
+      --red: #ff2c5c;
+      --text: #f2f2f7;
+      --dim: #9a9aad;
+      --faint: #62627a;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--void);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      padding: 40px 32px 80px;
+    }
+    header {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 24px;
+      margin-bottom: 48px;
+    }
+    header .eyebrow {
+      font-family: monospace;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 8px;
+    }
+    header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    header h1 span { color: var(--red); }
+    header p {
+      margin-top: 8px;
+      color: var(--dim);
+      font-size: 14px;
+    }
+    .toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 56px;
+    }
+    .toc a {
+      display: inline-block;
+      padding: 6px 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--dim);
+      text-decoration: none;
+      font-size: 12px;
+      font-family: monospace;
+      letter-spacing: 0.08em;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .toc a:hover { border-color: var(--red); color: var(--text); }
+    .page-section {
+      margin-bottom: 72px;
+    }
+    .page-section .section-label {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .page-section .num {
+      font-family: monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--faint);
+      text-transform: uppercase;
+    }
+    .page-section h2 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .page-section .route {
+      font-family: monospace;
+      font-size: 12px;
+      color: var(--red);
+      margin-bottom: 12px;
+      margin-left: 2px;
+    }
+    .page-section .note {
+      font-size: 13px;
+      color: var(--dim);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .screenshot-frame {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--panel);
+    }
+    .screenshot-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .sub-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .sub-label {
+      font-family: monospace;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 8px;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid var(--line);
+      margin: 64px 0;
+    }
+    .notice {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--red);
+      border-radius: 4px;
+      padding: 14px 18px;
+      font-size: 13px;
+      color: var(--dim);
+      line-height: 1.6;
+    }
+    .notice strong { color: var(--text); }
+    footer {
+      margin-top: 80px;
+      border-top: 1px solid var(--line);
+      padding-top: 20px;
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--faint);
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">▸ VESA // DESIGN REFERENCE</div>
+  <h1>Page screenshots<span>.</span></h1>
+  <p>Full-page captures of the VESAWeb Mission Control UI — captured 2026-07-07 at 1440×900. All pages use the local dev server (localhost:4200).</p>
+</header>
+
+<nav class="toc">
+  <a href="#home">Home</a>
+  <a href="#games-collapsed">Games — Collapsed</a>
+  <a href="#games-expanded">Games — Expanded</a>
+  <a href="#games-archive">Games — League Archive</a>
+  <a href="#scrims">Scrims</a>
+  <a href="#league-overview">League Overview</a>
+  <a href="#league-season">League — Current Season</a>
+  <a href="#league-division">League — Division (Pinnacle)</a>
+  <a href="#league-signup">League Signup</a>
+</nav>
+
+<!-- HOME -->
+<section class="page-section" id="home">
+  <div class="section-label">
+    <span class="num">01</span>
+    <h2>Home</h2>
+  </div>
+  <div class="route">/</div>
+  <p class="note">Landing page. Stats strip, hero section, recent activity feed, features showcase, Discord CTA. Stats are currently hardcoded — live data wiring tracked in #34.</p>
+  <div class="screenshot-frame">
+    <img src="01-home.png" alt="Home page">
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- GAMES -->
+<section class="page-section" id="games-collapsed">
+  <div class="section-label">
+    <span class="num">02A</span>
+    <h2>Games — Scrims History (collapsed)</h2>
+  </div>
+  <div class="route">/games</div>
+  <p class="note">Default view. Full file index loaded on first visit, sorted newest-first. Client-side pagination (10/page, 64 pages total). Search filters full in-memory index.</p>
+  <div class="screenshot-frame">
+    <img src="02-games.png" alt="Games page — collapsed">
+  </div>
+</section>
+
+<div class="page-section" id="games-expanded">
+  <div class="section-label">
+    <span class="num">02B</span>
+    <h2>Games — Scrim Expanded (match table)</h2>
+  </div>
+  <div class="route">/games → open first scrim</div>
+  <p class="note">Expanding a scrim row reveals the match day table: game tabs, per-game placement results, overall standings with podium stripes, and collapsible player stats.</p>
+  <div class="screenshot-frame">
+    <img src="02b-games-expanded.png" alt="Games page — expanded scrim">
+  </div>
+</div>
+
+<div class="page-section" id="games-archive">
+  <div class="section-label">
+    <span class="num">02C</span>
+    <h2>Games — League Archive tab</h2>
+  </div>
+  <div class="route">/games → League Archive</div>
+  <p class="note">Segmented control switches to the league archive view: season/division filter dropdowns, Match Point Champions, Season Standings, and Match History views.</p>
+  <div class="screenshot-frame">
+    <img src="02c-games-league-archive.png" alt="Games page — League Archive">
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- SCRIMS -->
+<section class="page-section" id="scrims">
+  <div class="section-label">
+    <span class="num">03</span>
+    <h2>Scrims</h2>
+  </div>
+  <div class="route">/scrims</div>
+  <p class="note">Scrims hub page. Hero, join info, scrim format breakdown, ELO system explainer, leaderboard section. ELO leaderboard data strategy is an open decision (#37).</p>
+  <div class="screenshot-frame">
+    <img src="03-scrims.png" alt="Scrims page">
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- LEAGUE OVERVIEW -->
+<section class="page-section" id="league-overview">
+  <div class="section-label">
+    <span class="num">04</span>
+    <h2>League Overview</h2>
+  </div>
+  <div class="route">/league</div>
+  <p class="note">League hub. Explains the format, shows the 8-division grid with links, Discord and results CTAs.</p>
+  <div class="screenshot-frame">
+    <img src="04-league-overview.png" alt="League overview page">
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- LEAGUE CURRENT SEASON -->
+<section class="page-section" id="league-season">
+  <div class="section-label">
+    <span class="num">05</span>
+    <h2>League — Current Season</h2>
+  </div>
+  <div class="route">/league/current-season</div>
+  <p class="note">Season 14 results. Dynamically loads all 8 divisions from HuggingFace. Each division card shows team count, current week, and links to the division detail page.</p>
+  <div class="screenshot-frame">
+    <img src="05-league-current-season.png" alt="League current season page">
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- DIVISION -->
+<section class="page-section" id="league-division">
+  <div class="section-label">
+    <span class="num">06</span>
+    <h2>League — Division Detail (Pinnacle)</h2>
+  </div>
+  <div class="route">/league/pinnacle</div>
+  <p class="note">Division page. Standings table, per-week match history cards, live/last-played match section with Twitch embed. Match cards link to /match/:id results.</p>
+  <div class="screenshot-frame">
+    <img src="07-league-division-pinnacle.png" alt="Division page — Pinnacle">
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- SIGNUP -->
+<section class="page-section" id="league-signup">
+  <div class="section-label">
+    <span class="num">07</span>
+    <h2>League Signup</h2>
+  </div>
+  <div class="route">/league/signup</div>
+  <p class="note">Season 15 registration form. Discord OAuth gate (sign-in required before form is shown). Season 15 schedule widget below the form. Submission wired to Discord webhook once #11 is complete.</p>
+  <div class="screenshot-frame">
+    <img src="06-league-signup.png" alt="League signup page">
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- NOTES -->
+<div class="notice">
+  <strong>Not captured:</strong> <code>/match/:id</code> (match results detail page) — the Angular dev server returns a 404 for routes ending in <code>.json</code> because webpack-dev-server's <code>historyApiFallback</code> skips routes that look like files. The route works correctly when navigating from within the app via Angular router. Fix: add <code>disableDotRule: true</code> to <code>historyApiFallback</code> in the Angular dev server config, or serve the page from a navigated link. Also not captured: <code>/players</code> and <code>/ratings</code> (feature-flagged off).
+</div>
+
+<footer>
+  VESA Design Reference · Generated 2026-07-07 · localhost:4200 · 1440×900
+</footer>
+
+</body>
+</html>

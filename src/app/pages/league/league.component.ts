@@ -15,6 +15,7 @@ export interface Division {
   description: string;
   teamCount: number;
   currentWeek: number;
+  mpPlayed: boolean;
   color: string;
 }
 
@@ -28,8 +29,9 @@ export interface Division {
 export class LeagueComponent implements OnInit {
   currentSeason = 14;
   totalWeeks = 6;
-  seasonStartDate = new Date('2025-07-21');
-  finalsDate = 'September 1, 2025';
+  seasonStartDate = new Date('2026-05-11');
+  startDate = 'May 11, 2026';
+  finalsDate = 'July 2, 2026';
 
   divisions: Division[] = [];
   loading = true;
@@ -74,6 +76,7 @@ export class LeagueComponent implements OnInit {
               };
               const weekFiles = files.filter(f => /Week_\d+\.json$/i.test(f));
               const currentWeek = weekFiles.length;
+              const mpPlayed = files.some(f => /playoffs|finals|_mp/i.test(f));
               const teamCount = summary?.seasonStandings?.length ?? 0;
               return {
                 id: meta.name.toLowerCase(),
@@ -83,6 +86,7 @@ export class LeagueComponent implements OnInit {
                 description: meta.description,
                 teamCount,
                 currentWeek,
+                mpPlayed,
                 color: meta.color
               } as Division;
             })
@@ -107,12 +111,28 @@ export class LeagueComponent implements OnInit {
     });
   }
 
+  get allDivisionsMpPlayed(): boolean {
+    return this.divisions.length > 0 && this.divisions.every(d => d.mpPlayed);
+  }
+
   getProgressPercentage(): number {
-    return (this.currentWeek / this.totalWeeks) * 100;
+    if (this.divisions.length === 0) return 0;
+    // +1 step accounts for MP Finals so the bar doesn't read as "done" until finals are played.
+    const totalSteps = this.totalWeeks + 1;
+    const completedSteps = this.currentWeek + (this.allDivisionsMpPlayed ? 1 : 0);
+    return Math.min(100, (completedSteps / totalSteps) * 100);
   }
 
   getWeeksRemaining(): number {
     return this.totalWeeks - this.currentWeek;
+  }
+
+  getProgressLabel(): string {
+    if (this.divisions.length === 0) return '';
+    if (this.currentWeek < this.totalWeeks) {
+      return `${this.getWeeksRemaining()} weeks remaining`;
+    }
+    return this.allDivisionsMpPlayed ? 'Match Point Finals complete' : 'Match Point Finals upcoming';
   }
 
   getDaysIntoSeason(): number {

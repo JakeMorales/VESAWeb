@@ -1,37 +1,36 @@
-/* Archive Match History Enhanced Styles */
+/* Archive Match History */
 .matches-section h2 {
-  font-size: 2rem;
+  font-family: var(--font-display);
+  font-size: 24px;
   font-weight: 700;
-  margin-bottom: 2rem;
-  color: #00d4ff;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  color: var(--vesa-text);
   text-align: center;
 }
 
 .matches-list {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 20px;
 }
 
 .match-card {
-  background: rgba(17, 25, 40, 0.6);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 0;
+  background: var(--vesa-panel);
+  border: 1px solid var(--vesa-line);
+  border-radius: 6px;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.15s;
 }
 
 .match-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border-color: var(--vesa-line-strong);
 }
 
 .match-header {
-  background: linear-gradient(135deg, #1e293b, #334155);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 2rem;
+  border-bottom: 1px solid var(--vesa-line);
+  padding: 18px 24px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -39,14 +38,13 @@
 }
 
 .match-title h3 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem 0;
-  color: #f1f5f9;
-  background: linear-gradient(45deg, #00d4ff, #0ea5e9);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0;
+  color: var(--vesa-text);
 }
 
 .match-subtitle {
@@ -56,19 +54,21 @@
 }
 
 .match-number {
-  background: rgba(0, 212, 255, 0.15);
-  border: 1px solid rgba(0, 212, 255, 0.3);
-  border-radius: 6px;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #00d4ff;
+  background: var(--vesa-blue-dim);
+  border-radius: 3px;
+  padding: 3px 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--vesa-blue);
 }
 
 .match-date {
-  font-size: 0.875rem;
-  color: #94a3b8;
-  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--vesa-faint);
 }
 
 .participating-teams {
@@ -79,17 +79,17 @@
 }
 
 .teams-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #94a3b8;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--vesa-faint);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .teams-list {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #e2e8f0;
+  color: var(--vesa-dim);
   text-align: right;
   line-height: 1.4;
 }
@@ -97,53 +97,27 @@
 /* Match Day Table Container */
 .match-card app-match-day-table {
   display: block;
-}
-
-/* Override match day table margins for archive context */
-.match-card app-match-day-table ::ng-deep .match-day-section {
-  margin: 0;
-  border-radius: 0;
-  border: none;
-  background: transparent;
-  backdrop-filter: none;
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .match-header {
-    padding: 1.5rem;
-  }
-  
-  .match-title h3 {
-    font-size: 1.25rem;
-  }
+  padding: 4px 24px 20px;
 }
 
 @media (max-width: 768px) {
   .matches-section h2 {
-    font-size: 1.75rem;
-    margin-bottom: 1.5rem;
+    font-size: 20px;
   }
 
   .matches-list {
-    gap: 2rem;
-  }
-
-  .match-card {
-    border-radius: 16px;
+    gap: 14px;
   }
 
   .match-header {
     flex-direction: column;
     align-items: flex-start;
-    padding: 1.5rem;
-    gap: 1rem;
+    padding: 14px 16px;
+    gap: 0.75rem;
   }
 
-  .match-subtitle {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
+  .match-card app-match-day-table {
+    padding: 4px 16px 16px;
   }
 
   .participating-teams {
@@ -153,36 +127,5 @@
 
   .teams-list {
     text-align: left;
-  }
-}
-
-@media (max-width: 480px) {
-  .matches-section h2 {
-    font-size: 1.5rem;
-  }
-
-  .match-header {
-    padding: 1rem;
-  }
-
-  .match-title h3 {
-    font-size: 1.125rem;
-  }
-
-  .match-number {
-    padding: 0.125rem 0.5rem;
-    font-size: 0.75rem;
-  }
-
-  .match-date {
-    font-size: 0.75rem;
-  }
-
-  .teams-label {
-    font-size: 0.75rem;
-  }
-
-  .teams-list {
-    font-size: 0.8rem;
   }
 }

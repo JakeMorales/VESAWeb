@@ -1,106 +1,52 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DivisionCardComponent, Division } from './division-card.component';
+import { SectionHeaderComponent } from '../ui';
 
 @Component({
   selector: 'app-divisions-grid',
   standalone: true,
-  imports: [CommonModule, DivisionCardComponent],
+  imports: [CommonModule, DivisionCardComponent, SectionHeaderComponent],
   template: `
-    <section class="divisions-section">
-      <div class="divisions-content">
-        <h2>League Divisions</h2>
-        <p class="divisions-description">
-          {{ divisions?.length ?? 0 }} active divisions this season
-        </p>
-        
-        <div class="divisions-grid">
-          <app-division-card 
-            *ngFor="let division of divisions" 
-            [division]="division"
-            [totalWeeks]="totalWeeks">
-          </app-division-card>
-        </div>
+    <section class="wrap divisions-section">
+      <app-section-header index="01" title="Divisions" />
+      <p class="meta">{{ divisions?.length ?? 0 }} active divisions this season</p>
+
+      <div class="divisions-grid">
+        <app-division-card
+          *ngFor="let division of divisions"
+          [division]="division"
+          [totalWeeks]="totalWeeks">
+        </app-division-card>
       </div>
     </section>
   `,
   styles: [`
     .divisions-section {
-      padding: 1rem 2rem 2rem 2rem;
+      padding-top: 56px;
     }
 
-    .divisions-content {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .divisions-content h2 {
-      text-align: center;
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      color: var(--color-text-primary);
-      font-weight: 700;
-    }
-
-    .divisions-description {
-      text-align: center;
-      font-size: 1.125rem;
-      color: var(--color-text-secondary);
-      margin-bottom: 1.5rem;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
+    .meta {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--vesa-faint);
+      margin: -16px 0 24px;
     }
 
     .divisions-grid {
       display: grid;
-      gap: 2rem;
-      grid-template-columns: repeat(auto-fit, 400px);
-      justify-content: center;
-      max-width: 1400px;
-      margin: 0 auto;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
     }
 
-    /* Tablet: auto-fit up to 2 columns */
-    @media (min-width: 768px) and (max-width: 1199px) {
-      .divisions-grid {
-        grid-template-columns: repeat(auto-fit, 400px);
-        gap: 2.5rem;
-        max-width: 850px;
-      }
-    }
-
-    /* Desktop: auto-fit up to 3 columns */
-    @media (min-width: 1200px) {
-      .divisions-grid {
-        grid-template-columns: repeat(auto-fit, 400px);
-        gap: 2.5rem;
-        max-width: 1300px;
-      }
-    }
-
-    /* Large desktop: auto-fit up to 4 columns */
-    @media (min-width: 1400px) {
-      .divisions-content {
-        max-width: 1600px;
-      }
-
-      .divisions-grid {
-        grid-template-columns: repeat(auto-fit, 400px);
-        gap: 3rem;
-        max-width: 1700px;
-      }
-    }
-
-    @media (max-width: 767px) {
+    @media (max-width: 640px) {
       .divisions-section {
-        padding: 1rem 1rem 2rem 1rem;
+        padding-top: 40px;
       }
-      
       .divisions-grid {
         grid-template-columns: 1fr;
-        gap: 2rem;
-        max-width: none;
       }
     }
   `]

@@ -30,43 +30,51 @@ export class MatchLoaderService {
   }
 
   /**
-   * Loads the list of available scrim batch files from HuggingFace dataset API
+   * Loads the full list of available scrim batch files from the HuggingFace
+   * dataset API, sorted newest-first (by date in the filename, then by the
+   * scrim id for same-day sessions).
+   *
+   * The HF tree API returns entries in alphabetical (oldest-first) order and
+   * pages at 1000 entries per request, so we fetch the whole tree in one call
+   * and sort globally — paging the API and sorting per-page shows 2024 scrims
+   * before current ones.
    */
   loadScrimFileList(): Observable<string[]> {
-    return this.http.get<HFTreeEntry[]>(this.HF_API_URL).pipe(
-      map(entries => entries
-        .filter(e => e.type === 'file' && e.path.startsWith('scrim_') && e.path.endsWith('.json'))
-        .map(e => e.path)
-      )
-    );
-  }
-
-  /**
-   * Load a single page of scrim batch filenames from HuggingFace dataset API.
-   * Returns filenames sorted newest-first and a hasMore flag indicating if another page likely exists.
-   */
-  loadScrimFilePage(page: number, pageSize: number): Observable<{ files: string[]; hasMore: boolean }> {
-    const offset = Math.max(0, (page - 1) * pageSize);
-    const url = `${this.HF_API_URL}?limit=${pageSize}&offset=${offset}`;
-    return this.http.get<HFTreeEntry[]>(url).pipe(
+    return this.http.get<HFTreeEntry[]>(`${this.HF_API_URL}?limit=1000`).pipe(
       map(entries => {
-        const files = entries
-          .filter(e => e.type === 'file' && e.path.startsWith('scrim_') && e.path.endsWith('.json'))
+        if (entries.length >= 1000) {
+          // ~640 files as of mid-2026; revisit with cursor-following before the tree hits 1000 entries
+          console.warn('Scrim file tree hit the 1000-entry API page limit; older scrims may be missing.');
+        }
+        const sortKey = (s: string): [string, number] => {
+          const date = s.match(/(\d{4}_\d{2}_\d{2})/)?.[1] ?? '';
+          const id = parseInt(s.match(/_id_(\d+)/)?.[1] ?? '0', 10);
+          return [date, id];
+        };
+        // The uploader renamed files from scrim_ to scrims_ in Dec 2025;
+        // sessions from Dec 2025 through Jan 2026 exist under both names (the
+        // scrims_ copy dated one day later), so drop the scrim_ copy when a
+        // scrims_ file exists for the same session id. Only cross-scheme
+        // duplicates are removed — the dataset also has same-scheme duplicate
+        // ids, which are kept as-is pending a dataset-side cleanup.
+        const isScrimJson = (e: HFTreeEntry) =>
+          e.type === 'file' && /^scrims?_/.test(e.path) && e.path.endsWith('.json');
+        const renamedIds = new Set(
+          entries
+            .filter(e => isScrimJson(e) && e.path.startsWith('scrims_'))
+            .map(e => e.path.match(/_id_(\d+)/)?.[1])
+            .filter((id): id is string => !!id)
+        );
+        return entries
+          .filter(isScrimJson)
           .map(e => e.path)
+          .filter(p => p.startsWith('scrims_') || !renamedIds.has(p.match(/_id_(\d+)/)?.[1] ?? ''))
           .sort((a, b) => {
-            const dateFrom = (s: string) => {
-              const m = s.match(/(\d{4}_\d{2}_\d{2})/);
-              return m ? m[1].replace(/_/g, '-') : '';
-            };
-            const da = dateFrom(a);
-            const db = dateFrom(b);
-            if (!da && !db) return a.localeCompare(b);
-            if (!da) return 1;
-            if (!db) return -1;
-            return db.localeCompare(da); // newest first
+            const [dateA, idA] = sortKey(a);
+            const [dateB, idB] = sortKey(b);
+            if (dateA !== dateB) return dateB.localeCompare(dateA); // newest date first
+            return idB - idA; // latest session first within a day
           });
-        const hasMore = entries.length >= pageSize;
-        return { files, hasMore };
       })
     );
   }

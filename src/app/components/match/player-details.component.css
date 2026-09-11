@@ -1,27 +1,29 @@
-/* Player Details */
+/* Player Details — nested breakdown table */
 .player-details {
-  background: rgba(0, 0, 0, 0.4);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 1rem;
-  overflow: hidden;
+  background: var(--vesa-void);
+  border-top: 1px solid var(--vesa-line);
+  padding: 14px 18px;
+  overflow-x: auto;
 }
 
 .player-header {
   display: grid;
   gap: 0;
-  margin-bottom: 0.5rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  grid-template-columns: 1fr 70px 90px 70px 80px 70px 70px 70px 80px 80px;
+  margin-bottom: 4px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--vesa-line-strong);
+  grid-template-columns: minmax(140px, 1fr) 60px 80px 60px 80px 62px 60px 54px 80px 66px;
+  min-width: 800px;
 }
 
 .player-header-cell {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #f1f5f9;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 400;
+  color: var(--vesa-faint);
   text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.12em;
 }
 
 .player-name-col {
@@ -31,9 +33,10 @@
 .player-row {
   display: grid;
   gap: 0;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  grid-template-columns: 1fr 70px 90px 70px 80px 70px 70px 70px 80px 80px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--vesa-line);
+  grid-template-columns: minmax(140px, 1fr) 60px 80px 60px 80px 62px 60px 54px 80px 66px;
+  min-width: 800px;
 }
 
 .player-row:last-child {
@@ -41,34 +44,21 @@
 }
 
 .player-cell {
-  color: #cbd5e1;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--vesa-dim);
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 12px;
 }
 
 .player-cell.player-name-col {
   text-align: left;
+  font-family: var(--font-body);
   font-weight: 500;
-  color: #f1f5f9;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .player-header,
-  .player-row {
-    grid-template-columns: 1fr 60px 80px 60px 60px 60px 60px 60px 60px 60px;
-    gap: 0.25rem;
-  }
-
-  .player-cell,
-  .player-header-cell {
-    font-size: 0.8rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .player-header,
-  .player-row {
-    grid-template-columns: 1fr 50px 70px 50px 50px 50px 50px 50px 50px 50px;
-  }
+  color: var(--vesa-text);
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 8px;
 }

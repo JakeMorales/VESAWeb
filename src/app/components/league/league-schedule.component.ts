@@ -1,113 +1,6 @@
 import { Component, Input } from '@angular/core';
+import { CURRENT_SEASON, ScheduleEntry } from '../../config/season';
 
-export interface MatchDaySlot {
-  date: Date;
-  divisions?: string;
-}
-
-export interface ScheduleEntry {
-  label: string;
-  type: 'signup' | 'placement' | 'regular' | 'match-point' | 'award' | 'break';
-  date?: Date;       // single-date entries: signup open/close, award show
-  slots?: MatchDaySlot[]; // multi-date entries: placement week, regular weeks, MP
-}
-
-// Division day assignments — Monday: III/V/VIII, Wednesday: II/IV/VII, Thursday: I/VI
-export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
-  {
-    label: 'Signups Open',
-    type: 'signup',
-    date: new Date('2026-07-16T00:00:00-04:00'),
-  },
-  {
-    label: 'Signup Deadline',
-    type: 'signup',
-    date: new Date('2026-07-30T00:00:00-04:00'),
-  },
-  {
-    label: 'Placements',
-    type: 'placement',
-    slots: [
-      { date: new Date('2026-08-03T20:00:00-04:00'), divisions: 'All Divisions' },
-      { date: new Date('2026-08-05T20:00:00-04:00'), divisions: 'All Divisions' },
-      { date: new Date('2026-08-10T20:00:00-04:00'), divisions: 'All Divisions' },
-      { date: new Date('2026-08-12T20:00:00-04:00'), divisions: 'All Divisions' },
-    ],
-  },
-  {
-    label: 'Week 1',
-    type: 'regular',
-    slots: [
-      { date: new Date('2026-08-17T20:00:00-04:00'), divisions: 'Div III, V & VIII' },
-      { date: new Date('2026-08-19T20:00:00-04:00'), divisions: 'Div II, IV & VII' },
-      { date: new Date('2026-08-21T20:00:00-04:00'), divisions: 'Div I & VI' },
-    ],
-  },
-  {
-    label: 'Week 2',
-    type: 'regular',
-    slots: [
-      { date: new Date('2026-08-24T20:00:00-04:00'), divisions: 'Div III, V & VIII' },
-      { date: new Date('2026-08-26T20:00:00-04:00'), divisions: 'Div II, IV & VII' },
-      { date: new Date('2026-08-28T20:00:00-04:00'), divisions: 'Div I & VI' },
-    ],
-  },
-  {
-    label: 'Week 3',
-    type: 'regular',
-    slots: [
-      { date: new Date('2026-08-31T20:00:00-04:00'), divisions: 'Div III, V & VIII' },
-      { date: new Date('2026-09-02T20:00:00-04:00'), divisions: 'Div II, IV & VII' },
-      { date: new Date('2026-09-04T20:00:00-04:00'), divisions: 'Div I & VI' },
-    ],
-  },
-  {
-    label: 'Labor Day Break',
-    type: 'break',
-    date: new Date('2026-09-07T00:00:00-04:00'),
-  },
-  {
-    label: 'Week 4',
-    type: 'regular',
-    slots: [
-      { date: new Date('2026-09-14T20:00:00-04:00'), divisions: 'Div III, V & VIII' },
-      { date: new Date('2026-09-16T20:00:00-04:00'), divisions: 'Div II, IV & VII' },
-      { date: new Date('2026-09-18T20:00:00-04:00'), divisions: 'Div I & VI' },
-    ],
-  },
-  {
-    label: 'Week 5',
-    type: 'regular',
-    slots: [
-      { date: new Date('2026-09-21T20:00:00-04:00'), divisions: 'Div III, V & VIII' },
-      { date: new Date('2026-09-23T20:00:00-04:00'), divisions: 'Div II, IV & VII' },
-      { date: new Date('2026-09-25T20:00:00-04:00'), divisions: 'Div I & VI' },
-    ],
-  },
-  {
-    label: 'Week 6',
-    type: 'regular',
-    slots: [
-      { date: new Date('2026-09-28T20:00:00-04:00'), divisions: 'Div III, V & VIII' },
-      { date: new Date('2026-09-30T20:00:00-04:00'), divisions: 'Div II, IV & VII' },
-      { date: new Date('2026-10-01T20:00:00-04:00'), divisions: 'Div I & VI' },
-    ],
-  },
-  {
-    label: 'Match Point',
-    type: 'match-point',
-    slots: [
-      { date: new Date('2026-10-05T20:00:00-04:00'), divisions: 'Div III, V & VIII' },
-      { date: new Date('2026-10-07T20:00:00-04:00'), divisions: 'Div II, IV & VII' },
-      { date: new Date('2026-10-08T20:00:00-04:00'), divisions: 'Div I & VI' },
-    ],
-  },
-  {
-    label: 'Season 14 Award Show',
-    type: 'award',
-    date: new Date('2026-10-10T00:00:00-04:00'),
-  },
-];
 
 @Component({
   selector: 'app-league-schedule',
@@ -115,7 +8,7 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
   template: `
     <div class="schedule-widget">
       <div class="schedule-header">
-        <h2 class="schedule-title">Season 14 Schedule</h2>
+        <h2 class="schedule-title">Season {{ season }} Schedule</h2>
         <span class="schedule-tz">All match times 8:00 PM ET</span>
       </div>
 
@@ -181,7 +74,7 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
   styles: [`
     .schedule-widget {
       max-width: 760px;
-      margin: 2rem auto 0;
+      margin: 2.5rem auto 0;
       padding: 0 1.5rem;
     }
 
@@ -193,17 +86,20 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
     }
 
     .schedule-title {
-      font-size: 0.78rem;
-      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 400;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: rgba(227,230,243,0.5);
+      letter-spacing: 0.2em;
+      color: var(--vesa-faint);
       margin: 0;
     }
 
     .schedule-tz {
-      font-size: 0.72rem;
-      color: rgba(227,230,243,0.3);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: rgba(235, 235, 245, 0.25);
     }
 
     .division-key {
@@ -217,8 +113,11 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
       display: flex;
       align-items: center;
       gap: 0.4rem;
-      font-size: 0.72rem;
-      color: rgba(227,230,243,0.45);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--vesa-faint);
     }
 
     .key-dot {
@@ -227,19 +126,19 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
       border-radius: 50%;
       flex-shrink: 0;
     }
-    .key-dot.mon { background: #5e6cff; }
-    .key-dot.wed { background: #b45cff; }
-    .key-dot.thu { background: #7ecfff; }
+    .key-dot.mon { background: var(--vesa-blue); }
+    .key-dot.wed { background: var(--vesa-red); }
+    .key-dot.thu { background: var(--vesa-cyan); }
 
     .schedule-list {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(88,101,242,0.2);
-      border-radius: 0.9rem;
+      background: var(--vesa-panel);
+      border: 1px solid var(--vesa-line);
+      border-radius: 6px;
       overflow: hidden;
     }
 
     .week-row {
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid var(--vesa-line);
       position: relative;
     }
     .week-row:last-child { border-bottom: none; }
@@ -248,29 +147,27 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
       content: '';
       position: absolute;
       left: 0; top: 0; bottom: 0;
-      width: 3px;
+      width: 2px;
       background: transparent;
-      border-radius: 3px 0 0 3px;
     }
 
-    .type-signup { background: rgba(255,255,255,0.01); }
+    .type-signup { background: transparent; }
     .type-break {
-      background: rgba(255,255,255,0.01);
       opacity: 0.45;
     }
     .type-break .week-label {
       font-size: 0.78rem;
       font-style: italic;
-      color: rgba(227,230,243,0.45);
+      color: var(--vesa-dim);
     }
-    .type-placement::before { background: #5e6cff; }
-    .type-match-point::before { background: linear-gradient(180deg, #ffd700, #ff8c00); }
-    .type-award::before { background: linear-gradient(180deg, #b45cff, #5e6cff); }
+    .type-placement::before { background: var(--vesa-blue); }
+    .type-match-point::before { background: #f5a623; }
+    .type-award::before { background: var(--vesa-red); }
 
     .is-fully-past { opacity: 0.35; }
     .is-fully-past .week-label { text-decoration: line-through; }
 
-    .is-expanded { background: rgba(94,108,255,0.04); }
+    .is-expanded { background: var(--vesa-raised); }
 
     /* Header button */
     .week-header {
@@ -291,7 +188,7 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
       cursor: pointer;
     }
     .week-header.clickable:hover {
-      background: rgba(94,108,255,0.06);
+      background: rgba(61, 155, 255, 0.05);
     }
     .week-header:disabled {
       cursor: default;
@@ -299,16 +196,16 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
 
     .week-label {
       font-size: 0.85rem;
-      font-weight: 700;
-      color: #e3e6f3;
+      font-weight: 600;
+      color: var(--vesa-text);
     }
 
-    .type-match-point .week-label { color: #ffd700; }
-    .type-award .week-label { color: #d49aff; }
+    .type-match-point .week-label { color: #f5a623; }
+    .type-award .week-label { color: var(--vesa-red); }
     .type-signup .week-label {
       font-size: 0.8rem;
-      font-weight: 600;
-      color: rgba(227,230,243,0.55);
+      font-weight: 500;
+      color: var(--vesa-dim);
     }
 
     .header-right {
@@ -320,14 +217,15 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
 
     .single-date,
     .date-range {
-      font-size: 0.8rem;
-      color: rgba(227,230,243,0.45);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--vesa-faint);
       white-space: nowrap;
     }
 
     .chevron {
       font-size: 1rem;
-      color: rgba(227,230,243,0.3);
+      color: var(--vesa-faint);
       display: inline-block;
       transform: rotate(0deg);
       transition: transform 0.2s ease;
@@ -337,13 +235,17 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
       transform: rotate(90deg);
     }
 
+    @media (prefers-reduced-motion: reduce) {
+      .chevron { transition: none; }
+    }
+
     /* Expanded slot list */
     .match-days {
       display: flex;
       flex-direction: column;
       gap: 0.1rem;
       padding: 0.1rem 1.25rem 0.65rem;
-      border-top: 1px solid rgba(255,255,255,0.05);
+      border-top: 1px solid var(--vesa-line);
     }
 
     .match-day-slot {
@@ -357,35 +259,36 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
     .slot-past .slot-date { text-decoration: line-through; }
 
     .slot-date {
-      font-size: 0.8rem;
-      color: rgba(227,230,243,0.65);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--vesa-dim);
       min-width: 11rem;
       flex-shrink: 0;
     }
 
     .slot-divisions {
       font-size: 0.75rem;
-      color: rgba(227,230,243,0.4);
+      color: var(--vesa-faint);
       flex: 1;
     }
 
     .slot-time {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: rgba(227,230,243,0.35);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--vesa-faint);
       white-space: nowrap;
       flex-shrink: 0;
     }
 
     .slot-completed {
-      font-size: 0.62rem;
-      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: rgba(227,230,243,0.3);
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 1rem;
+      color: var(--vesa-faint);
+      background: rgba(235, 235, 245, 0.06);
+      border: 1px solid var(--vesa-line);
+      border-radius: 3px;
       padding: 0.1rem 0.45rem;
       white-space: nowrap;
       flex-shrink: 0;
@@ -402,7 +305,7 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
         gap: 0.2rem 0.6rem;
       }
 
-      .slot-date { min-width: 0; font-size: 0.78rem; }
+      .slot-date { min-width: 0; font-size: 0.72rem; }
       .slot-divisions { flex-basis: 100%; order: 3; }
       .slot-time, .slot-completed { order: 2; }
     }
@@ -410,6 +313,8 @@ export const SEASON_14_SCHEDULE: ScheduleEntry[] = [
 })
 export class LeagueScheduleComponent {
   @Input() dates: ScheduleEntry[] = [];
+
+  protected readonly season = CURRENT_SEASON;
 
   expandedEntries = new Set<number>();
 

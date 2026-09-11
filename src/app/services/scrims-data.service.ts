@@ -42,22 +42,26 @@ export class ScrimsDataService {
     private http: HttpClient
   ) {}
 
+  /** Cached full scrim file index, sorted newest-first. */
+  private scrimFileIndex$?: Observable<string[]>;
+
   /**
-   * Get list of available scrim batch files from HuggingFace dataset
+   * Get the full index of available scrim batch files, sorted newest-first.
+   * Fetched once and cached for the session; pages are sliced client-side
+   * so pagination knows the true total.
    */
-  /**
-   * Get a page of available scrim batch files from HuggingFace dataset
-   * @param page 1-based page number
-   * @param pageSize number of filenames per page
-   */
-  getScrimFiles(page = 1, pageSize = 10): Observable<{ files: string[]; hasMore: boolean }> {
-    return this.matchLoaderService.loadScrimFilePage(page, pageSize).pipe(
-      catchError((error) => {
-        console.error('Error fetching scrim files page:', error);
-        return of({ files: [], hasMore: false });
-      }),
-      shareReplay(1)
-    );
+  getScrimFileIndex(): Observable<string[]> {
+    if (!this.scrimFileIndex$) {
+      this.scrimFileIndex$ = this.matchLoaderService.loadScrimFileList().pipe(
+        catchError((error) => {
+          console.error('Error fetching scrim file index:', error);
+          this.scrimFileIndex$ = undefined;
+          return of([] as string[]);
+        }),
+        shareReplay(1)
+      );
+    }
+    return this.scrimFileIndex$;
   }
 
   /**

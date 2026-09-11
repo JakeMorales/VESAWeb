@@ -1,17 +1,16 @@
 .grid-container {
   width: 100%;
   max-width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--vesa-panel);
+  border-radius: 6px;
+  border: 1px solid var(--vesa-line);
   overflow: hidden;
-  backdrop-filter: blur(10px);
 }
 
 .grid-header {
   display: grid;
-  background: rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  border-bottom: 1px solid var(--vesa-line);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -33,22 +32,18 @@
 }
 
 .header-cell {
-  padding: 1rem 1.5rem;
-  font-weight: 600;
-  color: var(--color-accent-secondary);
-  font-size: 0.875rem;
+  padding: 12px 20px;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  color: var(--vesa-faint);
+  font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  letter-spacing: 0.18em;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: all 0.2s ease;
+  transition: color 0.15s, background 0.15s;
   box-sizing: border-box;
-}
-
-.header-cell:last-child {
-  border-right: none;
 }
 
 .header-cell.sortable {
@@ -57,15 +52,14 @@
 }
 
 .header-cell.sortable:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--color-text-primary);
+  background: rgba(235, 235, 245, 0.04);
+  color: var(--vesa-text);
 }
 
 .sort-indicator {
   margin-left: 0.5rem;
   font-size: 0.75rem;
-  opacity: 0.7;
-  color: var(--color-accent-primary);
+  color: var(--vesa-red);
 }
 
 .grid-body {
@@ -79,17 +73,16 @@
 }
 
 .grid-body::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 6px;
+  background: var(--vesa-void);
 }
 
 .grid-body::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: #2a2a3a;
   border-radius: 6px;
 }
 
 .grid-body::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #3a3a4e;
 }
 
 .grid-body.no-scrollbar {
@@ -108,9 +101,9 @@
 
 .grid-row {
   display: grid;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.3s ease;
-  min-height: 60px;
+  border-bottom: 1px solid var(--vesa-line);
+  transition: background 0.12s;
+  min-height: 56px;
 }
 
 .scrims-leaderboard-grid .grid-row {
@@ -122,7 +115,7 @@
 }
 
 .grid-row.hoverable:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(61, 155, 255, 0.05);
 }
 
 .grid-row.selectable {
@@ -130,21 +123,22 @@
 }
 
 .grid-row.selectable:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(61, 155, 255, 0.08);
 }
 
 .grid-row.selected {
-  background: rgba(var(--color-accent-primary-rgb), 0.1);
-  border-color: rgba(var(--color-accent-primary-rgb), 0.3);
+  background: var(--vesa-blue-dim);
 }
 
 .grid-cell {
-  padding: 1rem 1.5rem;
-  color: var(--color-text-primary);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 12px 20px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  color: var(--vesa-dim);
   display: flex;
   align-items: center;
-  min-height: 60px;
+  min-height: 56px;
   box-sizing: border-box;
 }
 
@@ -155,14 +149,10 @@
   box-sizing: border-box;
 }
 
-.grid-cell:last-child {
-  border-right: none;
-}
-
 .empty-state {
   padding: 4rem 2rem;
   text-align: center;
-  color: var(--color-text-secondary);
+  color: var(--vesa-dim);
 }
 
 .default-empty {
@@ -174,8 +164,11 @@
 
 .default-empty p {
   margin: 0;
-  font-size: 1.125rem;
-  opacity: 0.7;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--vesa-faint);
 }
 
 /* Responsive Design */
@@ -183,7 +176,7 @@
   .header-cell,
   .grid-cell {
     padding: 0.75rem 1rem;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
   }
 
   .grid-body {
@@ -191,7 +184,7 @@
   }
 
   .header-cell {
-    font-size: 0.75rem;
+    font-size: 9px;
   }
 }
 
@@ -199,7 +192,7 @@
   .header-cell,
   .grid-cell {
     padding: 0.5rem 0.75rem;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
   }
 
   .grid-body {

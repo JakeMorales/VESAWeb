@@ -13,22 +13,25 @@ export interface Division {
   color: string;
 }
 
+/**
+ * Division card — keeps its signature elements (per-division color bar,
+ * large roman numeral, name + stats + "view" affordance) restyled to the
+ * Mission Control system.
+ */
 @Component({
   selector: 'app-division-card',
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="division-card"
-         [routerLink]="['/league', division.id]"
-         [style.--division-color]="division.color">
-      <div class="division-header">
+    <a class="division-card"
+       [routerLink]="['/league', division.id]"
+       [style.--division-color]="division.color">
+      <div class="card-top">
         <div class="division-rank">
           <span class="roman-numeral">{{ division.romanNumeral }}</span>
           <span class="tier-label">Division {{ division.romanNumeral }}</span>
         </div>
-        <div class="header-right">
-          <div class="division-teams">{{ division.teamCount }} Teams</div>
-        </div>
+        <span class="teams-chip">{{ division.teamCount }} teams</span>
       </div>
 
       <h3 class="division-name">{{ division.name }}</h3>
@@ -44,93 +47,91 @@ export interface Division {
         </div>
       </div>
 
-      <div class="division-action">
-        <span class="view-division">View Division →</span>
-      </div>
-    </div>
+      <span class="view-division">View division <span class="arrow">→</span></span>
+    </a>
   `,
   styles: [`
     .division-card {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 2.5rem;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit;
-      backdrop-filter: blur(10px);
       position: relative;
-      overflow: hidden;
-      height: 320px;
-      width: 100%;
-      max-width: 400px;
       display: flex;
       flex-direction: column;
+      background: var(--vesa-panel);
+      border: 1px solid var(--vesa-line);
+      border-radius: 6px;
+      padding: 24px;
+      min-height: 240px;
+      text-decoration: none;
+      color: inherit;
+      overflow: hidden;
+      transition: border-color 0.15s, background 0.15s;
     }
-
+    /* signature per-division color bar */
     .division-card::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      height: 4px;
+      height: 3px;
       background: var(--division-color);
     }
-
-    .division-card:hover {
-      transform: translateY(-8px);
+    .division-card:hover,
+    .division-card:focus-visible {
       border-color: var(--division-color);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      background: var(--vesa-raised);
+    }
+    .division-card:hover .arrow,
+    .division-card:focus-visible .arrow {
+      transform: translateX(4px);
     }
 
-    .division-header {
+    .card-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 1rem;
-    }
-
-    .header-right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
+      margin-bottom: 8px;
     }
 
     .division-rank {
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: 2px;
     }
-
     .roman-numeral {
-      font-size: 1.75rem;
-      font-weight: 900;
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
       color: var(--division-color);
       line-height: 1;
     }
-
     .tier-label {
-      font-size: 0.7rem;
-      color: var(--color-text-secondary);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      color: var(--vesa-faint);
     }
 
-    .division-teams {
-      font-size: 0.8rem;
-      color: var(--color-text-secondary);
-      background: rgba(255, 255, 255, 0.1);
-      padding: 0.4rem 0.8rem;
-      border-radius: 16px;
+    .teams-chip {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--vesa-dim);
+      border: 1px solid var(--vesa-line-strong);
+      border-radius: 3px;
+      padding: 4px 8px;
+      white-space: nowrap;
     }
 
     .division-name {
-      font-size: 1.8rem;
+      font-family: var(--font-display);
+      font-size: 26px;
       font-weight: 700;
-      margin: 0 0 auto 0;
-      color: var(--color-text-primary);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--vesa-text);
+      margin: 0;
       flex: 1;
       display: flex;
       align-items: center;
@@ -138,60 +139,42 @@ export interface Division {
 
     .division-stats {
       display: flex;
-      gap: 1.5rem;
-      margin-bottom: 1rem;
-      align-items: flex-end;
+      gap: 28px;
+      margin-bottom: 16px;
     }
-
     .stat {
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: 3px;
     }
-
     .stat-label {
-      font-size: 0.75rem;
-      color: var(--color-text-secondary);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      color: var(--vesa-faint);
     }
-
     .stat-value {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--color-text-primary);
-    }
-
-    .division-action {
-      margin-top: 0;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-size: 18px;
+      color: var(--vesa-text);
     }
 
     .view-division {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
       color: var(--division-color);
-      font-weight: 600;
-      font-size: 0.875rem;
+    }
+    .arrow {
+      display: inline-block;
+      transition: transform 0.15s ease;
     }
 
-    @media (max-width: 768px) {
-      .division-card {
-        height: auto;
-        min-height: 280px;
-        padding: 2rem;
-        max-width: none;
-      }
-
-      .division-stats {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: stretch;
-      }
-
-      .division-name {
-        font-size: 1.6rem;
-        margin-bottom: 1rem;
-        flex: none;
-        display: block;
-      }
+    @media (prefers-reduced-motion: reduce) {
+      .arrow { transition: none; }
     }
   `]
 })

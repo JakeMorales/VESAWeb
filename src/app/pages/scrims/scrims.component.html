@@ -1,15 +1,18 @@
 <div class="scrims-container">
   <!-- Hero Section -->
-  <app-scrims-hero [stats]="scrimStats"></app-scrims-hero>
+  <app-scrims-hero [stats]="(scrimStats$ | async) ?? emptyStats"></app-scrims-hero>
+
+  <!-- Leaderboard -->
+  <app-scrims-leaderboard-section
+    [players]="(leaderboard$ | async) ?? []"
+    [seasonLabel]="(seasonLabel$ | async) ?? ''">
+  </app-scrims-leaderboard-section>
 
   <!-- ELO System Explanation -->
   <app-elo-system></app-elo-system>
 
   <!-- Scrim Format -->
   <app-scrim-format></app-scrim-format>
-
-  <!-- Leaderboard -->
-  <app-scrims-leaderboard-section [players]="topLeaderboard"></app-scrims-leaderboard-section>
 
   <!-- Join Section -->
   <app-join-scrims></app-join-scrims>

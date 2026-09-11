@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges, Pipe, PipeTransform } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { DivisionSummary, StandingEntry } from '../../services/league.service';
+import { IconComponent } from '../ui';
 
 @Pipe({ name: 'seasonLabel', standalone: true })
 export class SeasonLabelPipe implements PipeTransform {
@@ -12,7 +13,7 @@ export class SeasonLabelPipe implements PipeTransform {
 @Component({
   selector: 'app-season-standings',
   standalone: true,
-  imports: [CommonModule, DatePipe, SeasonLabelPipe],
+  imports: [CommonModule, DatePipe, SeasonLabelPipe, IconComponent],
   template: `
     <div class="standings-container">
       <div *ngIf="loading" class="loading-indicator">Loading standings...</div>
@@ -29,7 +30,7 @@ export class SeasonLabelPipe implements PipeTransform {
 
         <!-- Match Point Champion -->
         <div *ngIf="summary.matchPointChampion" class="champion-banner">
-          <div class="champion-crown">&#x1F451;</div>
+          <app-icon class="champion-crown" name="trophy" [size]="28" />
           <div class="champion-info">
             <div class="champion-label">Match Point Champion</div>
             <div class="champion-team">{{ summary.matchPointChampion.teamName }}</div>
@@ -93,38 +94,41 @@ export class SeasonLabelPipe implements PipeTransform {
   `,
   styles: [`
     .standings-container {
-      padding: 1rem 0;
+      padding: 8px 0;
     }
 
-    .loading-indicator {
-      text-align: center;
-      color: var(--color-text-secondary, #aaa);
-      padding: 3rem;
-      font-size: 1.1rem;
-    }
-
+    .loading-indicator,
     .empty-state {
       text-align: center;
-      color: var(--color-text-secondary, #aaa);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--vesa-faint);
       padding: 3rem 1rem;
-      line-height: 2;
     }
 
     .standings-header {
       text-align: center;
-      margin-bottom: 1.5rem;
+      margin-bottom: 20px;
     }
 
     .standings-header h3 {
-      font-size: 1.4rem;
+      font-family: var(--font-display);
+      font-size: 22px;
       font-weight: 700;
-      color: var(--color-text-primary, #fff);
-      margin: 0 0 0.25rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--vesa-text);
+      margin: 0 0 4px;
     }
 
     .generated-note {
-      font-size: 0.8rem;
-      color: var(--color-text-secondary, #aaa);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--vesa-faint);
       margin: 0;
     }
 
@@ -132,16 +136,17 @@ export class SeasonLabelPipe implements PipeTransform {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 1rem;
-      background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(255, 165, 0, 0.08));
-      border: 1px solid rgba(255, 215, 0, 0.3);
-      border-radius: 12px;
-      padding: 1.25rem 2rem;
-      margin-bottom: 2rem;
+      gap: 18px;
+      background: rgba(255, 215, 122, 0.05);
+      border: 1px solid rgba(255, 215, 122, 0.35);
+      border-radius: 6px;
+      padding: 18px 24px;
+      margin-bottom: 24px;
     }
 
     .champion-crown {
-      font-size: 2rem;
+      color: #ffd77a;
+      flex-shrink: 0;
     }
 
     .champion-info {
@@ -149,66 +154,71 @@ export class SeasonLabelPipe implements PipeTransform {
     }
 
     .champion-label {
-      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--color-text-secondary, #aaa);
-      margin-bottom: 0.25rem;
+      letter-spacing: 0.2em;
+      color: var(--vesa-faint);
+      margin-bottom: 4px;
     }
 
     .champion-team {
-      font-size: 1.3rem;
+      font-family: var(--font-display);
+      font-size: 22px;
       font-weight: 700;
-      color: #ffd700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #ffd77a;
     }
 
     .champion-roster {
-      font-size: 0.85rem;
-      color: var(--color-text-secondary, #ccc);
-      margin-top: 0.25rem;
+      font-size: 13px;
+      color: var(--vesa-dim);
+      margin-top: 4px;
     }
 
     .table-section {
-      margin-bottom: 2rem;
+      margin-bottom: 24px;
     }
 
     .table-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--color-text-primary, #fff);
-      margin: 0 0 0.75rem;
-      padding-left: 0.5rem;
-      border-left: 3px solid var(--color-accent-primary, #e8c46a);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--vesa-faint);
+      margin: 0 0 10px;
+      padding-left: 10px;
+      border-left: 2px solid var(--vesa-red);
     }
 
     .table-scroll {
       overflow-x: auto;
-      border-radius: 12px;
+      border-radius: 6px;
     }
 
     .standings-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.95rem;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 12px;
+      font-size: 14px;
+      background: var(--vesa-panel);
+      border: 1px solid var(--vesa-line);
+      border-radius: 6px;
       overflow: hidden;
     }
 
-    .standings-table thead tr {
-      background: rgba(255, 255, 255, 0.07);
-    }
-
     .standings-table th {
-      padding: 0.75rem 1rem;
+      padding: 11px 16px;
       text-align: center;
-      font-weight: 600;
-      color: var(--color-text-secondary, #aaa);
-      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      font-weight: 400;
+      color: var(--vesa-faint);
+      font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.18em;
       white-space: nowrap;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid var(--vesa-line);
     }
 
     .standings-table th.team-col {
@@ -217,32 +227,40 @@ export class SeasonLabelPipe implements PipeTransform {
     }
 
     .standings-table td {
-      padding: 0.65rem 1rem;
+      padding: 10px 16px;
       text-align: center;
-      color: var(--color-text-primary, #fff);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      color: var(--vesa-dim);
+      border-bottom: 1px solid var(--vesa-line);
+    }
+
+    .standings-table tbody tr:last-child td {
+      border-bottom: none;
     }
 
     .standings-table td.team-col {
       text-align: left;
+      font-family: var(--font-body);
       font-weight: 600;
+      color: var(--vesa-text);
     }
 
     .standings-table td.total-pts {
-      font-weight: 700;
-      color: var(--color-accent-primary, #e8c46a);
+      font-weight: 600;
+      color: var(--vesa-text);
+    }
+
+    .standings-table tbody tr {
+      transition: background 0.12s;
     }
 
     .standings-table tbody tr:hover {
-      background: rgba(255, 255, 255, 0.04);
-    }
-
-    .standings-table tbody tr.top-three td {
-      background: rgba(232, 196, 106, 0.03);
+      background: rgba(61, 155, 255, 0.05);
     }
 
     .rank-col {
-      width: 2.5rem;
+      width: 3rem;
       text-align: center;
     }
 
@@ -250,28 +268,31 @@ export class SeasonLabelPipe implements PipeTransform {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 1.75rem;
-      height: 1.75rem;
-      border-radius: 50%;
-      font-size: 0.8rem;
-      font-weight: 700;
-      background: rgba(255, 255, 255, 0.07);
-      color: var(--color-text-secondary, #aaa);
+      min-width: 1.8rem;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      border: 1px solid transparent;
+      color: var(--vesa-faint);
     }
 
     .rank-badge[data-rank="1"] {
-      background: rgba(255, 215, 0, 0.2);
-      color: #ffd700;
+      color: #ffd77a;
+      background: rgba(255, 215, 122, 0.1);
+      border-color: rgba(255, 215, 122, 0.4);
     }
 
     .rank-badge[data-rank="2"] {
-      background: rgba(192, 192, 192, 0.2);
-      color: #c0c0c0;
+      color: #cfd4de;
+      background: rgba(207, 212, 222, 0.1);
+      border-color: rgba(207, 212, 222, 0.35);
     }
 
     .rank-badge[data-rank="3"] {
-      background: rgba(205, 127, 50, 0.2);
-      color: #cd7f32;
+      color: #e0a570;
+      background: rgba(224, 165, 112, 0.1);
+      border-color: rgba(224, 165, 112, 0.35);
     }
   `]
 })
