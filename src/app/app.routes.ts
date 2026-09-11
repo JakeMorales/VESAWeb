@@ -30,7 +30,7 @@ const ratingsLeaderboardGuard: CanActivateFn = () => {
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'players/:id', component: PlayerProfileComponent },
+  { path: 'players/:id', component: PlayerProfileComponent, canActivate: [playerStatsGuard] },
   { path: 'players', component: PlayerStatsComponent, canActivate: [playerStatsGuard] },
   { path: 'games', component: GamesComponent },
   { path: 'scrims', component: ScrimsComponent },

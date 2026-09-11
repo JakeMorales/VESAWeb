@@ -402,26 +402,24 @@ export class NhostService {
 
   // Get a player by their ID 
    getPlayerById(id: string): Observable<Player | null> {
-    const query = `
-      query GetPlayerById($id: uuid!) {
-        players_by_pk(id: $id) {
-          id
-          discord_id
-          display_name
-          elo
-          overstat_id
-          avatar_url
-          platform
+      const query = `
+        query GetPlayerById($id: uuid!) {
+          players(where: { id: { _eq: $id } }, limit: 1) {
+            id
+            discord_id
+            display_name
+            elo
+            overstat_id
+          }
         }
-      }
-    `;
-    return from(
-      this.nhost.graphql.request(query, { id }).then((response: any) => {
-        if (response.error || !response.data?.players_by_pk) return null;
-        return response.data.players_by_pk as Player;
-      })
-    );
-  }
+      `;
+      return from(
+        this.nhost.graphql.request(query, { id }).then((response: any) => {
+          if (response.error || !response.data?.players?.length) return null;
+          return response.data.players[0] as Player;
+        })
+      );
+    }
 
   // Get a players scrims history by their ID
   getPlayerScrimHistory(playerId: string): Observable<ScrimPlayerStats[]> {

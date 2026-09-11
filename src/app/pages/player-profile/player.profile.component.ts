@@ -305,53 +305,68 @@ import { Component, OnInit } from '@angular/core';
     ) {}
 
     ngOnInit() {
-      const name = decodeURIComponent(this.route.snapshot.paramMap.get('id')!);
+       const id = this.route.snapshot.paramMap.get('id')!;
 
-      // TODO: swap to getPlayerById(uuid) once route uses UUID (scrim-bot#170) 
-      this.nhost.getPlayerByDisplayName(name).subscribe({
+        this.nhost.getPlayerById(id).subscribe({
         next: (player) => {
           this.player = player;
-          this.initials = (player?.display_name ?? name).slice(0, 2).toUpperCase();
           this.loading = false;
 
-          if (player?.id) {
-            this.nhost.getPlayerScrimHistory(player.id).subscribe({
-              next: (stats) => {
-                this.agg = this.computeAggregate(stats);
-                this.recentScrims = stats;
-                this.characterUsage = this.parseCharacters(stats);
-                if (this.leagueSummary && this.characterUsage.length > 0) {
-                  this.leagueSummary = { ...this.leagueSummary, topLegend: this.characterUsage[0].name };
-                }
-              },
-              error: () => {}
-            });
+          if (!player) {
+            this.leagueLoading = false;
+            return;
           }
-        },
-        error: () => { this.loading = false; }
-      });
 
-    //  get the player's league history across all seasons, sort it, compute a summary, and build the season history for display
-      this.leagueService.getSeasons().pipe(
-        switchMap(seasons =>
-          seasons.length
-            ? forkJoin(seasons.map(s => this.leagueService.getPlayerLeagueHistory(name, s)))
-            : of([[]] as PlayerLeagueAppearance[][])
-        ),
-        map(results => results.flat()),
-        switchMap(appearances => {
-          this.leagueHistory = this.sortLeagueNewestFirst(appearances);
-          this.leagueSummary = this.computeLeagueSummary(this.leagueHistory);
-          return this.buildSeasonHistory(appearances);
-        })
-      ).subscribe({
-        next: (records) => {
-          this.seasonHistory = records;
-          this.leagueLoading = false;
-        },
-        error: () => { this.leagueLoading = false; }
-      });
-    }
+          this.initials = (player.display_name ?? '').slice(0, 2).toUpperCase();
+
+          this.nhost.getPlayerScrimHistory(player.id).subscribe({
+            next: (stats) => {
+              this.agg = this.computeAggregate(stats);
+              this.recentScrims = stats;
+              this.characterUsage = this.parseCharacters(stats);
+              if (this.leagueSummary && this.characterUsage.length > 0) {
+                this.leagueSummary = { ...this.leagueSummary, topLegend:
+
+        this.characterUsage[0].name };
+                  }
+                },
+                error: () => {}
+              });
+              const name = player.display_name ?? '';
+              if (!name) {
+                this.leagueLoading = false;
+                return;
+              }
+
+              this.leagueService.getSeasons().pipe(
+                switchMap(seasons =>
+                  seasons.length
+                    ? forkJoin(seasons.map(s =>
+        this.leagueService.getPlayerLeagueHistory(name, s)))
+                    : of([[]] as PlayerLeagueAppearance[][])
+                ),
+                map(results => results.flat()),
+                switchMap(appearances => {
+                  this.leagueHistory = this.sortLeagueNewestFirst(appearances);
+                  this.leagueSummary = this.computeLeagueSummary(this.leagueHistory);
+                  return this.buildSeasonHistory(appearances);
+                })
+              ).subscribe({
+                next: (records) => {
+                  this.seasonHistory = records;
+                  this.leagueLoading = false;
+                },
+                error: () => { this.leagueLoading = false; }
+              });
+            },
+            error: () => {
+              this.loading = false;
+              this.leagueLoading = false;
+            }
+          });
+        }
+      
+        
     // Returns a formatted label for a season based on its name.
     seasonLabel(season: string): string {
       const m = season.match(/\d+/);
