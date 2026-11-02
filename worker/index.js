@@ -17,14 +17,6 @@ const HF_ROUTES = {
 const DISCORD_PREFIX = '/discord-api';
 const DISCORD_TARGET = 'https://discord.com/api';
 
-// Short links served on chat.vesa.gg (e.g. chat.vesa.gg/league). Update the
-// invite here and every link on the site follows, since the site links here.
-const CHAT_HOST = 'chat.vesa.gg';
-const DISCORD_INVITES = {
-  '/league': 'https://discord.gg/zz27BnQYt9',
-  '/scrims': 'https://discord.gg/b42hCDb3KH',
-};
-
 // Edge-cache TTL for HuggingFace responses, to stay under upstream rate limits.
 const HF_CACHE_TTL_SECONDS = 300;
 
@@ -161,13 +153,6 @@ async function handleLeagueSignup(request, env) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-
-    if (url.hostname === CHAT_HOST) {
-      const invite = DISCORD_INVITES[url.pathname.replace(/\/+$/, '').toLowerCase()];
-      return invite
-        ? Response.redirect(invite, 302)
-        : Response.redirect('https://vesa.gg/', 302);
-    }
 
     const hfPrefix = Object.keys(HF_ROUTES).find((p) => matchPrefix(url.pathname, p));
     if (hfPrefix) {

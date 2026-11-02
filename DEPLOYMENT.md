@@ -24,7 +24,7 @@ static build and proxies external API calls (see `wrangler.jsonc` and
 | Environment | Worker | Domain | Deploys from |
 |---|---|---|---|
 | dev | `vesaweb-dev` | dev.vesa.gg | `main` (every merge) |
-| prod | `vesaweb` | vesa.gg, www.vesa.gg, chat.vesa.gg | `release` (manual promotion) |
+| prod | `vesaweb` | vesa.gg, www.vesa.gg | `release` (manual promotion) |
 
 - **Feature branches are local-only** (`npm start`). Nothing deploys until the
   branch merges to `main`.
