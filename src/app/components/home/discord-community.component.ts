@@ -16,7 +16,7 @@ import { IconComponent, SectionHeaderComponent } from '../ui';
             <p>Official league matches, tournaments, and competitive announcements.</p>
             <a
               class="btn primary small"
-              href="https://discord.gg/vesaleague"
+              href="https://chat.vesa.gg/league"
               target="_blank"
               rel="noopener noreferrer"
             >Join League Discord</a>
@@ -29,7 +29,7 @@ import { IconComponent, SectionHeaderComponent } from '../ui';
             <p>Practice matches, pickup games, and community scrimmages.</p>
             <a
               class="btn ghost small"
-              href="https://discord.gg/vesa"
+              href="https://chat.vesa.gg/scrims"
               target="_blank"
               rel="noopener noreferrer"
             >Join Scrims Discord</a>
