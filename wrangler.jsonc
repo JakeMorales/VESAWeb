@@ -1,7 +1,7 @@
 // Cloudflare Worker config: serves the Angular build + API proxy (see worker/index.js).
 //
 // Two environments, both deployed by Cloudflare Workers Builds (see DEPLOYMENT.md):
-//   - top-level (prod):  worker "vesaweb",     vesa.gg + www.vesa.gg,  deploys from `release`
+//   - top-level (prod):  worker "vesaweb",     vesa.gg + www.vesa.gg + chat.vesa.gg,  deploys from `release`
 //   - env.dev:           worker "vesaweb-dev", dev.vesa.gg,            deploys from `main`
 {
   "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
@@ -23,7 +23,9 @@
   // the apex or www (delete any registrar placeholder records first).
   "routes": [
     { "pattern": "vesa.gg", "custom_domain": true },
-    { "pattern": "www.vesa.gg", "custom_domain": true }
+    { "pattern": "www.vesa.gg", "custom_domain": true },
+    // Discord invite short links (chat.vesa.gg/league, /scrims); see worker/index.js.
+    { "pattern": "chat.vesa.gg", "custom_domain": true }
   ],
   "observability": {
     "enabled": true
